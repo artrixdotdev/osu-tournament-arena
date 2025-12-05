@@ -14,6 +14,7 @@
    },
    "dependencies": {
       "@ota/db": "workspace:*",
+      "@ota/env": "workspace:*",
       "@ota/ui": "workspace:*",
       "@ota/validators": "workspace:*",
       "@t3-oss/env-core": "^0.13.8",
