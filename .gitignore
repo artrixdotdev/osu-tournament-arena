@@ -51,5 +51,8 @@ dist/
 # turbo
 .turbo
 
+# Local turso db
+*.sqlite*
+
 # tanstack
 .tanstack

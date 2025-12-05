@@ -1,4 +1,4 @@
-import { cn } from "@acme/ui";
+import { cn } from "@ota/ui";
 
 export function Input({
   className,
