@@ -44,6 +44,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# opennext
+.open-next
+
 # typescript
 dist/
 .cache
@@ -56,3 +59,6 @@ dist/
 
 # tanstack
 .tanstack
+
+# wrangler
+.wrangler

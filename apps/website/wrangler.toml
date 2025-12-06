@@ -1,0 +1,20 @@
+  main = ".open-next/worker.js"
+  name = "my-app"
+  compatibility_date = "2025-03-25"
+  compatibility_flags = ["nodejs_compat"]
+
+  [assets]
+  directory = ".open-next/assets"
+  binding = "ASSETS"
+
+# For local development, use: wrangler pages dev .open-next
+# For production deployment, connect your Git repository to Cloudflare Pages
+# The build command will be: pnpm build (which runs next build && opennext build)
+
+# Environment variables will be set via Cloudflare dashboard or wrangler secret put
+# Required secrets (set via Cloudflare Dashboard or `wrangler secret put`):
+# - DATABASE_URL (your Turso database URL)
+# - DATABASE_AUTH_TOKEN (your Turso auth token)
+# - AUTH_SECRET (generate with: openssl rand -base64 32)
+# - AUTH_DISCORD_ID (Discord OAuth client ID)
+# - AUTH_DISCORD_SECRET (Discord OAuth client secret)

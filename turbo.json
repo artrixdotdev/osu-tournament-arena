@@ -57,9 +57,10 @@
    "globalPassThroughEnv": [
       "NODE_ENV",
       "CI",
-      "VERCEL",
-      "VERCEL_ENV",
-      "VERCEL_URL",
+      "CF_PAGES",
+      "CF_PAGES_URL",
+      "CF_PAGES_BRANCH",
+      "CF_PAGES_COMMIT_SHA",
       "npm_lifecycle_event"
    ]
 }
