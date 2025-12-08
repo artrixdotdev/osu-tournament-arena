@@ -44,11 +44,11 @@ export const env = createEnv({
    },
    /**
     * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
+    * Note: experimental__runtimeEnv is only for client-side variables (NEXT_PUBLIC_*).
+    * Server-side variables are automatically available.
     */
    experimental__runtimeEnv: {
       NODE_ENV: process.env.NODE_ENV,
-      CF_PAGES_URL: process.env.CF_PAGES_URL,
-      CF_PAGES_BRANCH: process.env.CF_PAGES_BRANCH,
       // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
    },
    skipValidation:

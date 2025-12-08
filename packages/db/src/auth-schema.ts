@@ -2,12 +2,18 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 // sqlite is a bit dumb and doesn't support boolean or timestamp columns natively
 
-// const boolean = () => integer({ mode: "boolean" });
+const boolean = () => integer({ mode: "boolean" });
 const timestamp = () => integer({ mode: "timestamp" });
 
 export const user = sqliteTable("user", () => ({
    id: text().primaryKey(),
    name: text().notNull(),
+   emailVerified: boolean().default(false),
+   image: text(),
+   email: text(),
+   osuId: text(),
+   discordId: text(),
+   updatedAt: timestamp().notNull(),
    createdAt: timestamp().notNull(),
 }));
 
@@ -43,7 +49,7 @@ export const account = sqliteTable("account", (t) => ({
    updatedAt: timestamp().notNull(),
 }));
 
-export const verification = sqliteTable("verification", (t) => ({
+export const verification = sqliteTable("verification", () => ({
    id: text().primaryKey(),
    identifier: text().notNull(),
    value: text().notNull(),
