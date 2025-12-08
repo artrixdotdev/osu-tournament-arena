@@ -16,6 +16,7 @@
       "with-env": "dotenv -e ../../.env --"
    },
    "dependencies": {
+      "@libsql/client": "latest",
       "@opennextjs/cloudflare": "^1.14.3",
       "@ota/db": "workspace:*",
       "@ota/env": "workspace:*",
@@ -30,7 +31,6 @@
       "@trpc/tanstack-react-query": "catalog:",
       "better-auth": "catalog:",
       "drizzle-orm": "^0.44.7",
-      "@libsql/client": "latest",
       "next": "^16.0.7",
       "react": "catalog:react19",
       "react-dom": "catalog:react19",
