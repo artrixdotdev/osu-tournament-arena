@@ -13,7 +13,12 @@ import { user } from "./auth";
 export interface TournamentDiscord {
    serverId: string;
    channels: TournamentDiscordChannels;
-   roles: Record<StaffRole, string>;
+   roles: Record<StaffRole | "SPECTATOR" | "PLAYER" | "CAPTAIN", string>;
+}
+
+export interface TeamDiscord {
+   channelId: string;
+   roleId: string;
 }
 
 export interface TournamentDiscordChannels {
@@ -96,7 +101,7 @@ export const tournament = sqliteTable("tournament", {
    lobbySize: integer().notNull(),
    teamSize: integer().notNull(),
 
-   discordData: json<TournamentDiscord>(),
+   discord: json<TournamentDiscord>(),
 });
 
 export const tournamentRelations = relations(tournament, ({ many }) => ({
@@ -320,8 +325,7 @@ export const team = sqliteTable(
       createdAt: timestamp().notNull(),
       updatedAt: timestamp().notNull(),
       tournamentId: text().notNull(),
-      discordRoleId: text(),
-      discordChannelId: text(),
+      discord: json<TeamDiscord>(),
    },
    (table) => [
       index("team_tournament_idx").on(table.tournamentId),
