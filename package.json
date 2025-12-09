@@ -30,6 +30,7 @@
       "@turbo/gen": "^2.6.3",
       "dotenv-cli": "^10.0.0",
       "prettier": "catalog:",
+      "shadcn": "^3.5.2",
       "turbo": "^2.6.3",
       "typescript": "catalog:"
    },

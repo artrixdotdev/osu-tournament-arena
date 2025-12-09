@@ -11,19 +11,8 @@ import "~/app/styles.css";
 
 export const metadata: Metadata = {
    metadataBase: new URL(baseUrl),
-   title: "Create T3 Turbo",
-   description: "Simple monorepo with shared backend for web & mobile apps",
-   openGraph: {
-      title: "Create T3 Turbo",
-      description: "Simple monorepo with shared backend for web & mobile apps",
-      url: baseUrl,
-      siteName: "Create T3 Turbo",
-   },
-   twitter: {
-      card: "summary_large_image",
-      site: "@jullerino",
-      creator: "@jullerino",
-   },
+   title: "open!tournament arena",
+   description: "The hub for all your osu! tournament needs",
 };
 
 export const viewport: Viewport = {
