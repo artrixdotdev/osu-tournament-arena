@@ -61,6 +61,8 @@ export enum Mods {
    HD = "HD",
    HR = "HR",
    DT = "DT",
+   EZ = "EZ",
+   FL = "FL",
    HT = "HT",
    RX = "RX",
    AP = "AP",
