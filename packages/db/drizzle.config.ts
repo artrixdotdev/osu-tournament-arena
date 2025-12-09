@@ -5,7 +5,7 @@ import { dbEnv } from "@ota/env";
 const env = dbEnv();
 
 export default {
-   schema: "./src/schema.ts",
+   schema: "./src/schema/index.ts",
    dialect: "turso",
    dbCredentials: {
       url: env.DATABASE_URL,

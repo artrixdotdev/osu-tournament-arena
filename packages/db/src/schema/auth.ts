@@ -1,9 +1,6 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-// sqlite is a bit dumb and doesn't support boolean or timestamp columns natively
-
-const boolean = () => integer({ mode: "boolean" });
-const timestamp = () => integer({ mode: "timestamp" });
+import { boolean, timestamp } from "../util";
 
 export const user = sqliteTable("user", () => ({
    id: text().primaryKey(),
