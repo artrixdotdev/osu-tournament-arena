@@ -10,9 +10,11 @@
       "cssVariables": true
    },
    "aliases": {
-      "utils": "@ota/ui",
-      "components": "src/",
-      "ui": "src/"
+      "lib": "~",
+      "utils": "~",
+      "components": "~/components/",
+      "ui": "~/ui/",
+      "hooks": "~/hooks/"
    },
 
    "registries": {
