@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { authClient } from "~/auth/client";
+import { useEffect, useState } from "react";
+
 import { Button } from "@ota/ui/button";
+
+import { authClient } from "~/auth/client";
 
 export default function TestAuthPage() {
    const [session, setSession] = useState<any>(null);
@@ -20,7 +22,7 @@ export default function TestAuthPage() {
          const data = await authClient.getSession();
          const sessionData = data.data?.session ?? null;
          setSession(sessionData);
-         
+
          // Fetch accounts separately if user is logged in
          if (sessionData?.userId) {
             try {
@@ -33,11 +35,13 @@ export default function TestAuthPage() {
          } else {
             setAccounts([]);
          }
-         
+
          setError(null);
       } catch (err) {
          console.error("Error loading session:", err);
-         setError(err instanceof Error ? err.message : "Failed to load session");
+         setError(
+            err instanceof Error ? err.message : "Failed to load session",
+         );
       } finally {
          setLoading(false);
       }
@@ -53,7 +57,9 @@ export default function TestAuthPage() {
          });
       } catch (err) {
          console.error("Error signing in with osu!:", err);
-         setError(err instanceof Error ? err.message : "Failed to sign in with osu!");
+         setError(
+            err instanceof Error ? err.message : "Failed to sign in with osu!",
+         );
       }
    }
 
@@ -67,7 +73,11 @@ export default function TestAuthPage() {
          });
       } catch (err) {
          console.error("Error signing in with Discord:", err);
-         setError(err instanceof Error ? err.message : "Failed to sign in with Discord");
+         setError(
+            err instanceof Error
+               ? err.message
+               : "Failed to sign in with Discord",
+         );
       }
    }
 
@@ -82,7 +92,9 @@ export default function TestAuthPage() {
          });
       } catch (err) {
          console.error("Error linking Discord:", err);
-         setError(err instanceof Error ? err.message : "Failed to link Discord");
+         setError(
+            err instanceof Error ? err.message : "Failed to link Discord",
+         );
       }
    }
 
@@ -120,12 +132,14 @@ export default function TestAuthPage() {
    }, []);
 
    const hasOsuAccount = accounts.some((acc) => acc.providerId === "osu");
-   const hasDiscordAccount = accounts.some((acc) => acc.providerId === "discord");
+   const hasDiscordAccount = accounts.some(
+      (acc) => acc.providerId === "discord",
+   );
 
    if (loading) {
       return (
          <main className="container mx-auto p-8">
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex min-h-screen items-center justify-center">
                <p>Loading...</p>
             </div>
          </main>
@@ -133,31 +147,33 @@ export default function TestAuthPage() {
    }
 
    return (
-      <main className="container mx-auto p-8 max-w-4xl">
+      <main className="container mx-auto max-w-4xl p-8">
          <div className="space-y-6">
             <div>
-               <h1 className="text-4xl font-bold mb-2">OAuth Test Page</h1>
+               <h1 className="mb-2 text-4xl font-bold">OAuth Test Page</h1>
                <p className="text-muted-foreground">
                   Test osu! and Discord OAuth authentication and account linking
                </p>
             </div>
 
             {error && (
-               <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+               <div className="bg-destructive/10 border-destructive/20 rounded-md border p-4">
                   <p className="text-destructive font-medium">Error:</p>
-                  <p className="text-sm text-destructive/80">{error}</p>
+                  <p className="text-destructive/80 text-sm">{error}</p>
                </div>
             )}
 
-            <div className="bg-card border rounded-lg p-6 space-y-4">
+            <div className="bg-card space-y-4 rounded-lg border p-6">
                <h2 className="text-2xl font-semibold">Session Status</h2>
                {session ? (
                   <div className="space-y-2">
                      <p>
-                        <span className="font-medium">User ID:</span> {session.userId}
+                        <span className="font-medium">User ID:</span>{" "}
+                        {session.userId}
                      </p>
                      <p>
-                        <span className="font-medium">Session ID:</span> {session.id}
+                        <span className="font-medium">Session ID:</span>{" "}
+                        {session.id}
                      </p>
                   </div>
                ) : (
@@ -165,14 +181,18 @@ export default function TestAuthPage() {
                )}
             </div>
 
-            <div className="bg-card border rounded-lg p-6 space-y-4">
+            <div className="bg-card space-y-4 rounded-lg border p-6">
                <h2 className="text-2xl font-semibold">Linked Accounts</h2>
                {accounts.length > 0 ? (
                   <div className="space-y-2">
                      {accounts.map((acc) => (
                         <div key={acc.id} className="flex items-center gap-2">
-                           <span className="font-medium capitalize">{acc.providerId}:</span>
-                           <span className="text-muted-foreground">{acc.accountId}</span>
+                           <span className="font-medium capitalize">
+                              {acc.providerId}:
+                           </span>
+                           <span className="text-muted-foreground">
+                              {acc.accountId}
+                           </span>
                         </div>
                      ))}
                   </div>
@@ -181,20 +201,26 @@ export default function TestAuthPage() {
                )}
             </div>
 
-            <div className="bg-card border rounded-lg p-6 space-y-4">
-               <h2 className="text-2xl font-semibold">Authentication Actions</h2>
+            <div className="bg-card space-y-4 rounded-lg border p-6">
+               <h2 className="text-2xl font-semibold">
+                  Authentication Actions
+               </h2>
                <div className="flex flex-wrap gap-4">
                   {!session ? (
                      <>
                         <Button onClick={signInWithOsu} size="lg">
                            Sign In with osu!
                         </Button>
-                        <Button onClick={signInWithDiscord} variant="outline" size="lg">
+                        <Button
+                           onClick={signInWithDiscord}
+                           variant="outline"
+                           size="lg"
+                        >
                            Sign In with Discord
                         </Button>
-                        <p className="text-sm text-muted-foreground w-full mt-2">
-                           Note: Discord sign-in will fail if you don't have an account. Try
-                           signing up with osu! first.
+                        <p className="text-muted-foreground mt-2 w-full text-sm">
+                           Note: Discord sign-in will fail if you don't have an
+                           account. Try signing up with osu! first.
                         </p>
                      </>
                   ) : (
@@ -205,16 +231,25 @@ export default function TestAuthPage() {
                            </Button>
                         )}
                         {hasOsuAccount && !hasDiscordAccount && (
-                           <Button onClick={linkDiscord} variant="outline" size="lg">
+                           <Button
+                              onClick={linkDiscord}
+                              variant="outline"
+                              size="lg"
+                           >
                               Link Discord Account
                            </Button>
                         )}
                         {hasOsuAccount && hasDiscordAccount && (
-                           <p className="text-sm text-muted-foreground">
-                              Both accounts are linked. You can sign in with either provider.
+                           <p className="text-muted-foreground text-sm">
+                              Both accounts are linked. You can sign in with
+                              either provider.
                            </p>
                         )}
-                        <Button onClick={signOut} variant="destructive" size="lg">
+                        <Button
+                           onClick={signOut}
+                           variant="destructive"
+                           size="lg"
+                        >
                            Sign Out
                         </Button>
                      </>
@@ -222,35 +257,43 @@ export default function TestAuthPage() {
                </div>
             </div>
 
-            <div className="bg-card border rounded-lg p-6 space-y-4">
+            <div className="bg-card space-y-4 rounded-lg border p-6">
                <h2 className="text-2xl font-semibold">Test Scenarios</h2>
                <div className="space-y-2 text-sm">
                   <div>
                      <p className="font-medium">1. Create Account with osu!:</p>
                      <p className="text-muted-foreground">
-                        Click "Sign In with osu!" when not logged in. This should create a new
+                        Click "Sign In with osu!" when not logged in. This
+                        should create a new account.
+                     </p>
+                  </div>
+                  <div>
+                     <p className="font-medium">
+                        2. Try Creating Account with Discord:
+                     </p>
+                     <p className="text-muted-foreground">
+                        Click "Sign In with Discord" when not logged in. This
+                        should fail with an error message.
+                     </p>
+                  </div>
+                  <div>
+                     <p className="font-medium">
+                        3. Link Discord After osu! Signup:
+                     </p>
+                     <p className="text-muted-foreground">
+                        After signing up with osu!, click "Link Discord
+                        Account". This should successfully link your Discord
                         account.
                      </p>
                   </div>
                   <div>
-                     <p className="font-medium">2. Try Creating Account with Discord:</p>
-                     <p className="text-muted-foreground">
-                        Click "Sign In with Discord" when not logged in. This should fail with an
-                        error message.
+                     <p className="font-medium">
+                        4. Login with Discord (After Linking):
                      </p>
-                  </div>
-                  <div>
-                     <p className="font-medium">3. Link Discord After osu! Signup:</p>
                      <p className="text-muted-foreground">
-                        After signing up with osu!, click "Link Discord Account". This should
-                        successfully link your Discord account.
-                     </p>
-                  </div>
-                  <div>
-                     <p className="font-medium">4. Login with Discord (After Linking):</p>
-                     <p className="text-muted-foreground">
-                        After linking Discord, sign out and try signing in with Discord. This should
-                        work since the account already exists.
+                        After linking Discord, sign out and try signing in with
+                        Discord. This should work since the account already
+                        exists.
                      </p>
                   </div>
                </div>

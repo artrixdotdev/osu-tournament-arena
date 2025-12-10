@@ -1,5 +1,5 @@
 {
-  "extends": "@ota/tsconfig/compiled-package.json",
-  "include": ["src"],
-  "exclude": ["node_modules"]
+   "extends": "@ota/tsconfig/compiled-package.json",
+   "include": ["src"],
+   "exclude": ["node_modules"]
 }

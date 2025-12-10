@@ -1,5 +1,5 @@
 {
-  "extends": "@ota/tsconfig/base.json",
-  "include": ["."],
-  "exclude": ["node_modules"]
+   "extends": "@ota/tsconfig/base.json",
+   "include": ["."],
+   "exclude": ["node_modules"]
 }

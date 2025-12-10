@@ -156,7 +156,7 @@ const defineStepper = <const Steps extends Stepperize.Step[]>(
                      data-disabled={props.disabled}
                   >
                      <Button
-                        id={`step-${step.id}`}
+                        id={`step-${step?.id}`}
                         date-component="stepper-step-indicator"
                         type="button"
                         role="tab"
@@ -454,7 +454,8 @@ const onStepKeyDown = (
 
    if (directions.next.includes(key) || directions.prev.includes(key)) {
       const direction = directions.next.includes(key) ? "next" : "prev";
-      const step = direction === "next" ? nextStep : prevStep;
+      const step =
+         direction === "next" ? nextStep : (prevStep as Stepperize.Step | null);
 
       if (!step) {
          return;
@@ -483,15 +484,16 @@ const getStepState = (currentIndex: number, stepIndex: number) => {
    return "inactive";
 };
 
+/* eslint-disable @typescript-eslint/no-namespace */
 namespace Stepper {
    export type StepperVariant = "horizontal" | "vertical" | "circle";
    export type StepperLabelOrientation = "horizontal" | "vertical";
 
-   export type ConfigProps = {
+   export interface ConfigProps {
       variant?: StepperVariant;
       labelOrientation?: StepperLabelOrientation;
       tracking?: boolean;
-   };
+   }
 
    export type DefineProps<Steps extends Stepperize.Step[]> = Omit<
       Stepperize.StepperReturn<Steps>,
@@ -523,12 +525,12 @@ namespace Stepper {
       };
    };
 
-   export type CircleStepIndicatorProps = {
+   export interface CircleStepIndicatorProps {
       currentStep: number;
       totalSteps: number;
       size?: number;
       strokeWidth?: number;
-   };
+   }
 }
 
 type AsChildProps<T extends React.ElementType> = React.ComponentProps<T> & {

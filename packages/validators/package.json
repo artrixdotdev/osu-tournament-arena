@@ -1,32 +1,32 @@
 {
-  "name": "@ota/validators",
-  "private": true,
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
-    }
-  },
-  "license": "MIT",
-  "scripts": {
-    "build": "tsc",
-    "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint --flag unstable_native_nodejs_ts_config",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
-  },
-  "dependencies": {
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@ota/eslint-config": "workspace:*",
-    "@ota/prettier-config": "workspace:*",
-    "@ota/tsconfig": "workspace:*",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
-    "typescript": "catalog:"
-  },
-  "prettier": "@ota/prettier-config"
+   "name": "@ota/validators",
+   "private": true,
+   "type": "module",
+   "exports": {
+      ".": {
+         "types": "./dist/index.d.ts",
+         "default": "./src/index.ts"
+      }
+   },
+   "license": "MIT",
+   "scripts": {
+      "build": "tsc",
+      "clean": "git clean -xdf .cache .turbo dist node_modules",
+      "dev": "tsc",
+      "format": "prettier --check . --ignore-path ../../.gitignore",
+      "lint": "eslint --flag unstable_native_nodejs_ts_config",
+      "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+   },
+   "dependencies": {
+      "zod": "catalog:"
+   },
+   "devDependencies": {
+      "@ota/eslint-config": "workspace:*",
+      "@ota/prettier-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "typescript": "catalog:"
+   },
+   "prettier": "@ota/prettier-config"
 }

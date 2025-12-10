@@ -5,11 +5,11 @@ import { nextjsConfig } from "@ota/eslint-config/nextjs";
 import { reactConfig } from "@ota/eslint-config/react";
 
 export default defineConfig(
-  {
-    ignores: [".next/**"],
-  },
-  baseConfig,
-  reactConfig,
-  nextjsConfig,
-  restrictEnvAccess,
+   {
+      ignores: [".next/**"],
+   },
+   baseConfig,
+   reactConfig,
+   nextjsConfig,
+   restrictEnvAccess,
 );
