@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { cn } from "@ota/ui";
 import { ThemeProvider, ThemeToggle } from "@ota/ui/theme";
 import { Toaster } from "@ota/ui/toast";
 
-import { baseUrl, env } from "~/env";
-import { cn } from "../../../../packages/ui/src";
+import { baseUrl } from "~/env";
 
 import "~/app/styles.css";
 

@@ -4,5 +4,34 @@
    // For a full list of overridable settings, and general information on folder-specific settings,//zed.dev/docs/configuring-zed#settings-files
    "prettier": {
       "allowed": true
+   },
+
+   "languages": {
+      "TypeScript": {
+         "language_servers": ["typescript-language-server", "!vtsls", "..."]
+      },
+      "TSX": {
+         "language_servers": ["typescript-language-server", "!vtsls", "..."]
+      },
+      "JavaScript": {
+         "language_servers": ["typescript-language-server", "!vtsls", "..."]
+      }
+   },
+
+   "lsp": {
+      "typescript-language-server": {
+         "initialization_options": {
+            "preferences": {
+               "includeInlayParameterNameHints": "all",
+               "includeInlayParameterNameHintsWhenArgumentMatchesName": true,
+               "includeInlayFunctionParameterTypeHints": true,
+               "includeInlayVariableTypeHints": true,
+               "includeInlayVariableTypeHintsWhenTypeMatchesName": true,
+               "includeInlayPropertyDeclarationTypeHints": true,
+               "includeInlayFunctionLikeReturnTypeHints": true,
+               "includeInlayEnumMemberValueHints": true
+            }
+         }
+      }
    }
 }

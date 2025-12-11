@@ -43,6 +43,7 @@ export const auth = betterAuth({
    databaseHooks: {
       user: {
          create: {
+            /* eslint-disable @typescript-eslint/require-await  */
             before: async (userData) => {
                return {
                   data: {
@@ -118,7 +119,13 @@ export const auth = betterAuth({
                      return null;
                   }
 
-                  const profile = await response.json();
+                  interface Profile {
+                     id: number;
+                     username: string;
+                     avatar_url: string;
+                  }
+
+                  const profile = (await response.json()) as Profile;
 
                   return {
                      id: profile.id.toString(),
