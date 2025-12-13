@@ -16,6 +16,7 @@
       "ui": "~/ui/",
       "hooks": "~/hooks/"
    },
+   "iconLibrary": "lucide",
 
    "registries": {
       "@react-bits": "https://reactbits.dev/r/{name}.json"
