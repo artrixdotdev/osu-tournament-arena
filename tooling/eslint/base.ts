@@ -14,7 +14,6 @@ export const restrictEnvAccess = defineConfig(
    {
       files: ["**/*.js", "**/*.ts", "**/*.tsx"],
       rules: {
-         "@typescript-eslint/no-namespace": "off",
          "no-restricted-properties": [
             "error",
             {
@@ -74,7 +73,9 @@ export const baseConfig = defineConfig(
                allowConstantLoopConditions: true,
             },
          ],
-         "@typescript-eslint/no-non-null-assertion": "error",
+         "@typescript-eslint/no-non-null-assertion": "off",
+         "@typescript-eslint/no-unsafe-member-access": "off",
+         "@typescript-eslint/no-namespace": "off",
          "import/consistent-type-specifier-style": [
             "error",
             "prefer-top-level",
