@@ -35,7 +35,8 @@
       "react": "catalog:react19",
       "react-dom": "catalog:react19",
       "superjson": "2.2.3",
-      "zod": "catalog:"
+      "zod": "catalog:",
+      "lucide-react": "catalog:"
    },
    "devDependencies": {
       "@ota/eslint-config": "workspace:*",

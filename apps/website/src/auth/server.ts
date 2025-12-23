@@ -12,8 +12,9 @@ import { authEnv } from "@ota/env";
 const env = authEnv();
 const OSU_PROVIDER_ID = "osu";
 const DISCORD_PROVIDER_ID = "discord";
-console.log(env.AUTH_DISCORD_SECRET);
+
 export const auth = betterAuth({
+   baseURL: "http://localhost:3000",
    database: drizzleAdapter(db, {
       provider: "sqlite",
       schema: {

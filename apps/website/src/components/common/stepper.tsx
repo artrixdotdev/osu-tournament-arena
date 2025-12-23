@@ -40,12 +40,14 @@ export const useStepper = (stepCount: number) => {
 export interface StepperProps {
    children: React.ReactNode[];
    className?: string;
+   containerClassName?: string;
    ariaLabel?: string;
 }
 
 export const Stepper: React.FC<StepperProps> = ({
    children,
    className,
+   containerClassName,
    ariaLabel = "Multi-step form",
 }) => {
    const stepper = useStepper(children.length);
@@ -77,7 +79,7 @@ export const Stepper: React.FC<StepperProps> = ({
    return (
       <div
          ref={containerRef}
-         className={cn("flex flex-col gap-4 outline-none", className)}
+         className={cn("flex flex-col gap-4 outline-none", containerClassName)}
          role="region"
          aria-label={ariaLabel}
          tabIndex={0}
@@ -86,6 +88,7 @@ export const Stepper: React.FC<StepperProps> = ({
          {/* Step content */}
          <div
             role="tabpanel"
+            className={className}
             aria-label={`Step ${stepper.currentStep + 1} of ${children.length}`}
          >
             {children[stepper.currentStep]}
@@ -106,11 +109,9 @@ export const Stepper: React.FC<StepperProps> = ({
                   aria-label={`Go to step ${index + 1} of ${children.length}`}
                   tabIndex={-1}
                   className={cn(
-                     "h-2 w-full rounded transition-colors duration-300",
+                     "h-2 w-full cursor-pointer rounded transition-colors duration-300",
                      "focus:ring-accent focus:ring-2 focus:ring-offset-2 focus:outline-none",
-                     index === stepper.currentStep
-                        ? "bg-accent"
-                        : "bg-secondary",
+                     index === stepper.currentStep ? "bg-accent" : "bg-muted",
                   )}
                   onClick={() => stepper.setStep(index)}
                />
