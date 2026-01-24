@@ -15,7 +15,6 @@ catalog:
    better-auth: ^1.4.6
    eslint: ^9.39.1
    prettier: ^3.7.4
-   prettier-plugin-svelte: ^3.4.1
    tailwindcss: ^4.1.17
    typescript: ^5.9.3
    vite: ^7.3
@@ -46,3 +45,4 @@ overrides:
 publicHoistPattern:
    - "@ianvs/prettier-plugin-sort-imports"
    - prettier-plugin-tailwindcss
+   - prettier-plugin-svelte

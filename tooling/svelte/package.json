@@ -1,0 +1,27 @@
+{
+   "name": "@ota/svelte-config",
+   "private": true,
+   "type": "module",
+   "exports": {
+      ".": "./svelte.config.ts"
+   },
+   "license": "MIT",
+   "scripts": {
+      "build": "tsc",
+      "clean": "git clean -xdf .cache .turbo dist node_modules",
+      "dev": "tsc",
+      "format": "prettier --check . --ignore-path ../../.gitignore",
+      "lint": "eslint",
+      "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+   },
+   "devDependencies": {
+      "@ota/prettier-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "typescript": "catalog:",
+      "svelte": "catalog:",
+      "@sveltejs/adapter-cloudflare": "7.2"
+   },
+   "prettier": "@ota/prettier-config"
+}
