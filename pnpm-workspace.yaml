@@ -20,12 +20,17 @@ catalog:
    vite: ^7.3
    zod: ^4.1.13
    "@lucide/svelte": ^0.563
+   "@sveltejs/kit": ^2.50
+   svelte: ^5.48
+   svelte-check: ^4.3
+   shadcn-svelte: ^2.0.0
 
 catalogs:
-   svelte:
-      svelte: ^5.48
-      "@sveltejs/kit": ^2.50
-      svelte-check: ^4.3
+   react19:
+      react: ^19.0.0
+      react-dom: ^19.0.0
+      "@types/react": ^19.0.0
+      "@types/react-dom": ^19.0.0
 
 ignoredBuiltDependencies:
    - sharp
