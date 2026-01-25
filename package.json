@@ -3,9 +3,9 @@
    "private": true,
    "engines": {
       "node": "^25.2.1",
-      "pnpm": "^10.19.0"
+      "pnpm": "^10.28.0"
    },
-   "packageManager": "pnpm@10.19.0",
+   "packageManager": "pnpm@10.28.0",
    "scripts": {
       "build": "turbo run build",
       "clean": "git clean -xdf node_modules",
