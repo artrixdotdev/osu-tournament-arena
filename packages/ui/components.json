@@ -1,24 +1,16 @@
 {
-   "$schema": "https://ui.shadcn.com/schema.json",
+   "$schema": "https://shadcn-svelte.com/schema.json",
    "style": "new-york",
-   "rsc": true,
-   "tsx": true,
+   "typescript": true,
    "tailwind": {
-      "config": "",
-      "css": "unused.css",
-      "baseColor": "zinc",
-      "cssVariables": true
+      "css": "../../tooling/tailwind/theme.css",
+      "baseColor": "zinc"
    },
    "aliases": {
-      "lib": "~",
-      "utils": "~",
-      "components": "~/components/",
-      "ui": "~/ui/",
-      "hooks": "~/hooks/"
-   },
-   "iconLibrary": "lucide",
-
-   "registries": {
-      "@react-bits": "https://reactbits.dev/r/{name}.json"
+      "components": "@ota/ui/components",
+      "utils": "@ota/ui/utils",
+      "ui": "@ota/ui/components/ui",
+      "hooks": "@ota/ui/hooks",
+      "lib": "@ota/ui"
    }
 }
