@@ -4,8 +4,7 @@
    "type": "module",
    "exports": {
       "./base": "./base.ts",
-      "./nextjs": "./nextjs.ts",
-      "./react": "./react.ts"
+      "./svelte": "./svelte.ts"
    },
    "scripts": {
       "clean": "git clean -xdf .cache .turbo node_modules",
