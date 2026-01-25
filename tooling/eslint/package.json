@@ -22,10 +22,10 @@
    "devDependencies": {
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
-      "globals": "^17.1.0",
       "@ota/tsconfig": "workspace:*",
       "@types/node": "catalog:",
       "eslint": "catalog:",
+      "globals": "^17.1.0",
       "prettier": "catalog:",
       "typescript": "catalog:"
    },

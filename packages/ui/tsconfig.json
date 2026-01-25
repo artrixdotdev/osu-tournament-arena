@@ -1,9 +1,10 @@
 {
-   "extends": ["@otca/tsconfig/svelte.json", "./.svelte-kit/tsconfig.json"],
+   "extends": ["@ota/tsconfig/svelte.json", "./.svelte-kit/tsconfig.json"],
    "compilerOptions": {
       "declaration": true,
       "declarationMap": true,
       "allowArbitraryExtensions": true,
-      "moduleResolution": "bundler",
    },
+   "include": ["dist", "./src/**/*.svelte", "./src/**/*.ts", "index.ts"],
+   "exclude": ["node_modules", ".svelte-kit"],
 }

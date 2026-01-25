@@ -6,31 +6,24 @@ packages:
 catalog:
    "@better-auth/cli": ^1.4.6
    "@eslint/js": ^9.38.0
+   "@lucide/svelte": ^0.563.1
+   "@sveltejs/kit": ^2.50
+   "@sveltejs/vite-plugin-svelte": 5.1.0
    "@tailwindcss/postcss": ^4.1.16
    "@tailwindcss/vite": ^4.1.16
    "@trpc/client": ^11.7.1
    "@trpc/server": ^11.7.1
    "@types/node": 22.18.12
-   "@sveltejs/vite-plugin-svelte": 5.1.0
    better-auth: ^1.4.6
    eslint: ^9.39.1
    prettier: ^3.7.4
+   shadcn-svelte: ^2.0.0
+   svelte: ^5.48
+   svelte-check: ^4.3
    tailwindcss: ^4.1.17
    typescript: ^5.9.3
    vite: ^7.3
    zod: ^4.1.13
-   "@lucide/svelte": ^0.563
-   "@sveltejs/kit": ^2.50
-   svelte: ^5.48
-   svelte-check: ^4.3
-   shadcn-svelte: ^2.0.0
-
-catalogs:
-   react19:
-      react: ^19.0.0
-      react-dom: ^19.0.0
-      "@types/react": ^19.0.0
-      "@types/react-dom": ^19.0.0
 
 ignoredBuiltDependencies:
    - sharp
