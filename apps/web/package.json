@@ -11,8 +11,12 @@
       "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
    },
+   "dependencies": {
+      "@trpc/server": "catalog:"
+   },
    "devDependencies": {
       "@ota/db": "workspace:*",
+      "@ota/api": "workspace:*",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
