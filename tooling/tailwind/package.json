@@ -25,6 +25,7 @@
       "@types/node": "catalog:",
       "eslint": "catalog:",
       "prettier": "catalog:",
+      "tw-animate-css": "catalog:",
       "typescript": "catalog:"
    },
    "prettier": "@ota/prettier-config"

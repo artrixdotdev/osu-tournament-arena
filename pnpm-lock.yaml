@@ -39,6 +39,9 @@ catalogs:
     tailwindcss:
       specifier: ^4.1.17
       version: 4.1.17
+    tw-animate-css:
+      specifier: ^1.4.0
+      version: 1.4.0
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -128,7 +131,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.17
       tw-animate-css:
-        specifier: ^1.4.0
+        specifier: 'catalog:'
         version: 1.4.0
       typescript:
         specifier: 'catalog:'
@@ -445,6 +448,9 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.7.4
+      tw-animate-css:
+        specifier: 'catalog:'
+        version: 1.4.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
