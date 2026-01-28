@@ -18,10 +18,18 @@ export interface TRPCBuilder {
    token?: string;
    /** Base URL for the API */
    baseUrl?: string;
+   /** Auth Cookie */
+   cookie?: string;
 }
 
 // Initialize the tRPC client
-export const trpc = ({ provider, env, token, baseUrl = "" }: TRPCBuilder) =>
+export const trpc = ({
+   provider,
+   env,
+   token,
+   baseUrl = "",
+   cookie,
+}: TRPCBuilder) =>
    createTRPCClient<AppRouter>({
       links: [
          loggerLink({
@@ -37,6 +45,7 @@ export const trpc = ({ provider, env, token, baseUrl = "" }: TRPCBuilder) =>
                const headers = new Map<string, string>();
 
                if (provider) headers.set("x-trpc-source", provider);
+               if (cookie) headers.set("Cookie", cookie);
                if (token) headers.set("Authorization", `Bearer ${token}`);
 
                return Object.fromEntries(headers);
