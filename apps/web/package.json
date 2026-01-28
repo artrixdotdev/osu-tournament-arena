@@ -8,21 +8,22 @@
       "build": "vite build",
       "preview": "vite preview",
       "prepare": "svelte-kit sync || echo ''",
-      "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+      "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
+      "format": "prettier --write .",
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
    },
    "dependencies": {
-      "@trpc/server": "catalog:"
-   },
-   "devDependencies": {
+      "@trpc/server": "catalog:",
       "@ota/db": "workspace:*",
       "@ota/api": "workspace:*",
+      "@ota/ui": "workspace:*"
+   },
+   "devDependencies": {
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
       "@ota/tailwind-config": "workspace:*",
       "@ota/tsconfig": "workspace:*",
-      "@ota/ui": "workspace:*",
       "@sveltejs/kit": "catalog:",
       "@sveltejs/vite-plugin-svelte": "catalog:",
       "@types/node": "catalog:",
