@@ -13,7 +13,7 @@
       "auth:generate": "pnpm -F @ota/auth generate",
       "db:push": "turbo -F @ota/db push",
       "db:studio": "turbo -F @ota/db studio",
-      "dev": "turbo watch dev --continue",
+      "dev": "dotenv -c -- turbo watch dev --continue",
       "dev:next": "turbo watch dev -F @ota/website...",
       "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
       "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
