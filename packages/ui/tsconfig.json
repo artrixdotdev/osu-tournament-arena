@@ -3,8 +3,8 @@
    "compilerOptions": {
       "declaration": true,
       "declarationMap": true,
-      "allowArbitraryExtensions": true,
+      "allowArbitraryExtensions": true
    },
-   "include": ["dist", "./src/**/*.svelte", "./src/**/*.ts", "index.ts"],
-   "exclude": ["node_modules", ".svelte-kit"],
+   "include": ["./src/**/*.svelte", "./src/**/*.ts"],
+   "exclude": ["node_modules", ".svelte-kit"]
 }
