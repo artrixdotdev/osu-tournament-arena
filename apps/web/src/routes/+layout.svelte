@@ -1,14 +1,15 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+   import favicon from "$lib/assets/favicon.svg";
 
-	import "@ota/tailwind-config/theme";
-	import { Button } from "@ota/ui/components/button/index.ts"
+   import "@ota/tailwind-config/theme";
 
-	let { children } = $props();
+   import { Button } from "@ota/ui/components/button/index.ts";
+
+   let { children } = $props();
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+   <link rel="icon" href={favicon} />
 </svelte:head>
-<Button >hI</Button>
+<Button>hI</Button>
 {@render children?.()}
