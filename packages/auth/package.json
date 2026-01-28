@@ -1,0 +1,32 @@
+{
+   "name": "@ota/auth",
+   "private": true,
+   "type": "module",
+   "exports": {
+      ".": "./src/index.ts"
+   },
+   "license": "MIT",
+   "scripts": {
+      "build": "tsc",
+      "clean": "git clean -xdf .cache .turbo dist node_modules",
+      "dev": "tsc",
+      "format": "prettier --check . --ignore-path ../../.gitignore",
+      "lint": "eslint",
+      "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+   },
+   "devDependencies": {
+      "@ota/eslint-config": "workspace:*",
+      "@ota/prettier-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "@types/node": "catalog:",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "typescript": "catalog:"
+   },
+   "prettier": "@ota/prettier-config",
+   "dependencies": {
+      "better-auth": "catalog:",
+      "@ota/db": "workspace:*",
+      "@ota/env": "workspace:*"
+   }
+}

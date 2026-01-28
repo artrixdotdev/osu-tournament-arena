@@ -16,7 +16,9 @@
       "@trpc/server": "catalog:",
       "@ota/db": "workspace:*",
       "@ota/api": "workspace:*",
-      "@ota/ui": "workspace:*"
+      "@ota/ui": "workspace:*",
+      "@ota/auth": "workspace:*",
+      "better-auth": "catalog:"
    },
    "devDependencies": {
       "@ota/eslint-config": "workspace:*",

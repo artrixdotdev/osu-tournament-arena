@@ -76,6 +76,8 @@ export const baseConfig = defineConfig(
          "@typescript-eslint/no-non-null-assertion": "off",
          "@typescript-eslint/no-unsafe-member-access": "off",
          "@typescript-eslint/no-namespace": "off",
+         "@typescript-eslint/require-await": "warn",
+         "@typescript-eslint/no-explicit-any": "warn",
          "import/consistent-type-specifier-style": [
             "error",
             "prefer-top-level",

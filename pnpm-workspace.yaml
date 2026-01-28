@@ -15,7 +15,7 @@ catalog:
    "@types/node": 22.18.12
    "@trpc/client": "^11.8.1"
    "@trpc/server": "^11.8.1"
-   better-auth: ^1.4.6
+   better-auth: ^1.4.17
    eslint: ^9.39.1
    prettier: ^3.7.4
    shadcn-svelte: ^2.0.0
