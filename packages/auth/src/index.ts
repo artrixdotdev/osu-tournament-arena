@@ -1,4 +1,8 @@
-import type { OAuth2Tokens } from "better-auth";
+import type {
+   BetterAuthOptions,
+   BetterAuthPlugin,
+   OAuth2Tokens,
+} from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { genericOAuth } from "better-auth/plugins";
@@ -18,8 +22,15 @@ interface AccountData {
    accountId: string;
 }
 
-export const getAuthConfig = (...plugins: any[]) => {
+export const getAuthConfig = ({
+   baseURL = "http://localhost:5173",
+   plugins,
+}: {
+   baseURL?: string;
+   plugins: BetterAuthPlugin[];
+}) => {
    return {
+      baseURL,
       database: drizzleAdapter(db, {
          provider: "sqlite",
          schema: {
@@ -47,15 +58,15 @@ export const getAuthConfig = (...plugins: any[]) => {
          },
       },
       databaseHooks: getDatabaseHooks(),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       plugins: [...getAuthPlugins(), ...plugins],
-   };
+   } satisfies BetterAuthOptions;
 };
 
 function getDatabaseHooks() {
    return {
       user: {
          create: {
+            // eslint-disable-next-line @typescript-eslint/require-await
             before: async (userData: object) => {
                return {
                   data: {
