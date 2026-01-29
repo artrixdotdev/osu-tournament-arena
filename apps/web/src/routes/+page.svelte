@@ -1,6 +1,5 @@
 <script lang="ts">
-   import { authClient } from "$lib/auth-client";
-
+   import { authClient } from "@ota/auth/client";
    import { Button } from "@ota/ui/components/button/index.ts";
 </script>
 
