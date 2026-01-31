@@ -17,6 +17,7 @@
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/tsconfig": "workspace:*",
+      "@types/node": "catalog:",
       "eslint": "catalog:",
       "prettier": "catalog:",
       "typescript": "catalog:"
