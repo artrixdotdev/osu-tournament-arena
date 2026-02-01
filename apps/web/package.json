@@ -1,0 +1,44 @@
+{
+   "name": "@ota/web",
+   "private": true,
+   "version": "0.0.1",
+   "type": "module",
+   "scripts": {
+      "dev": "vite dev",
+      "build": "vite build",
+      "preview": "vite preview",
+      "prepare": "svelte-kit sync || echo ''",
+      "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
+      "format": "prettier --write .",
+      "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+   },
+   "dependencies": {
+      "@ota/api": "workspace:*",
+      "@ota/auth": "workspace:*",
+      "@ota/db": "workspace:*",
+      "@ota/ui": "workspace:*",
+      "@trpc/server": "catalog:",
+      "better-auth": "catalog:"
+   },
+   "devDependencies": {
+      "@ota/eslint-config": "workspace:*",
+      "@ota/prettier-config": "workspace:*",
+      "@ota/svelte-config": "workspace:*",
+      "@ota/tailwind-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "@sveltejs/kit": "catalog:",
+      "@sveltejs/vite-plugin-svelte": "catalog:",
+      "@types/node": "catalog:",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "svelte": "catalog:",
+      "svelte-check": "catalog:",
+      "tailwind-variants": "^3.2.2",
+      "tailwindcss": "catalog:",
+      "tw-animate-css": "catalog:",
+      "typescript": "catalog:",
+      "vite": "catalog:",
+      "wrangler": "4.53.0"
+   },
+   "prettier": "@ota/prettier-config"
+}

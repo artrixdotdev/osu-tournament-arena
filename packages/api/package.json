@@ -1,0 +1,33 @@
+{
+   "name": "@ota/api",
+   "private": true,
+   "type": "module",
+   "exports": {
+      "./client": "./src/client/index.ts",
+      "./server": "./src/server/index.ts"
+   },
+   "license": "MIT",
+   "scripts": {
+      "clean": "git clean -xdf .cache .turbo dist node_modules",
+      "format": "prettier --check . --ignore-path ../../.gitignore",
+      "lint": "eslint",
+      "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+   },
+   "devDependencies": {
+      "@ota/eslint-config": "workspace:*",
+      "@ota/prettier-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "@types/node": "catalog:",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "typescript": "catalog:"
+   },
+   "prettier": "@ota/prettier-config",
+   "dependencies": {
+      "@ota/db": "workspace:*",
+      "@trpc/client": "catalog:",
+      "@trpc/server": "catalog:",
+      "superjson": "^2.2.6",
+      "zod": "catalog:"
+   }
+}

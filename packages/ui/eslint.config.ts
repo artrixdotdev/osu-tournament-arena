@@ -1,12 +1,15 @@
 import { defineConfig } from "eslint/config";
 
-import { baseConfig } from "@ota/eslint-config/base";
-import { reactConfig } from "@ota/eslint-config/react";
+import svelteConfig from "@ota/eslint-config/svelte";
 
 export default defineConfig(
    {
       ignores: ["dist/**"],
    },
-   baseConfig,
-   reactConfig,
+   svelteConfig,
+   {
+      rules: {
+         "svelte/no-navigation-without-resolve": "off",
+      },
+   },
 );

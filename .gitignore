@@ -26,6 +26,7 @@ apps/expo/android
 
 # production
 build
+.svelte-kit
 
 # misc
 .DS_Store

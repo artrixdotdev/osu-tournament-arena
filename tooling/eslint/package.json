@@ -4,8 +4,7 @@
    "type": "module",
    "exports": {
       "./base": "./base.ts",
-      "./nextjs": "./nextjs.ts",
-      "./react": "./react.ts"
+      "./svelte": "./svelte.ts"
    },
    "scripts": {
       "clean": "git clean -xdf .cache .turbo node_modules",
@@ -15,19 +14,18 @@
    "dependencies": {
       "@eslint/compat": "^1.4.0",
       "@eslint/js": "catalog:",
-      "@next/eslint-plugin-next": "^16.0.0",
       "eslint-plugin-import": "^2.32.0",
-      "eslint-plugin-jsx-a11y": "^6.10.2",
-      "eslint-plugin-react": "^7.37.5",
-      "eslint-plugin-react-hooks": "^7.0.1",
+      "eslint-plugin-svelte": "^3.14",
       "eslint-plugin-turbo": "^2.5.8",
       "typescript-eslint": "^8.46.2"
    },
    "devDependencies": {
       "@ota/prettier-config": "workspace:*",
+      "@ota/svelte-config": "workspace:*",
       "@ota/tsconfig": "workspace:*",
       "@types/node": "catalog:",
       "eslint": "catalog:",
+      "globals": "^17.1.0",
       "prettier": "catalog:",
       "typescript": "catalog:"
    },

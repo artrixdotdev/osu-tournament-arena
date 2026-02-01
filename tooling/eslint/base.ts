@@ -6,35 +6,35 @@ import turboPlugin from "eslint-plugin-turbo";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-/**
- * All packages that leverage t3-env should use this rule
- */
-export const restrictEnvAccess = defineConfig(
-   { ignores: ["**/env.ts"] },
-   {
-      files: ["**/*.js", "**/*.ts", "**/*.tsx"],
-      rules: {
-         "no-restricted-properties": [
-            "error",
-            {
-               object: "process",
-               property: "env",
-               message:
-                  "Use `import { env } from '~/env'` instead to ensure validated types.",
-            },
-         ],
-         "no-restricted-imports": [
-            "error",
-            {
-               name: "process",
-               importNames: ["env"],
-               message:
-                  "Use `import { env } from '~/env'` instead to ensure validated types.",
-            },
-         ],
-      },
-   },
-);
+// /**
+//  * All packages that leverage t3-env should use this rule
+//  */
+// export const restrictEnvAccess = defineConfig(
+//    { ignores: ["**/env.ts"] },
+//    {
+//       files: ["**/*.js", "**/*.ts", "**/*.tsx"],
+//       rules: {
+//          "no-restricted-properties": [
+//             "error",
+//             {
+//                object: "process",
+//                property: "env",
+//                message:
+//                   "Use `import { env } from '~/env'` instead to ensure validated types.",
+//             },
+//          ],
+//          "no-restricted-imports": [
+//             "error",
+//             {
+//                name: "process",
+//                importNames: ["env"],
+//                message:
+//                   "Use `import { env } from '~/env'` instead to ensure validated types.",
+//             },
+//          ],
+//       },
+//    },
+// );
 
 export const baseConfig = defineConfig(
    // Ignore files not tracked by VCS and any config files
@@ -42,7 +42,7 @@ export const baseConfig = defineConfig(
    includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
    { ignores: ["**/*.config.*"] },
    {
-      files: ["**/*.js", "**/*.ts", "**/*.tsx"],
+      files: ["**/*.js", "**/*.ts", "**/*.svelte", "**/*.svx"],
       plugins: {
          import: importPlugin,
          turbo: turboPlugin,
@@ -76,6 +76,8 @@ export const baseConfig = defineConfig(
          "@typescript-eslint/no-non-null-assertion": "off",
          "@typescript-eslint/no-unsafe-member-access": "off",
          "@typescript-eslint/no-namespace": "off",
+         "@typescript-eslint/require-await": "warn",
+         "@typescript-eslint/no-explicit-any": "warn",
          "import/consistent-type-specifier-style": [
             "error",
             "prefer-top-level",

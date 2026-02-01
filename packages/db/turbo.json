@@ -5,7 +5,8 @@
       "dev": {
          "outputs": ["db.sqlite"],
          "cache": false,
-         "interruptible": false
+         "interruptible": false,
+         "persistent": true
       }
    }
 }
