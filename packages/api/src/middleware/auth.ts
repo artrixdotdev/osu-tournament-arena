@@ -8,7 +8,7 @@ export const authMiddleware = os
    .$context<ORPCContext>()
    .middleware(async ({ context, next }) => {
       const sessionData = await auth.api.getSession({
-         headers: context.reqHeaders,
+         headers: context.reqHeaders ?? new Headers(),
       });
 
       if (!sessionData?.session) {
