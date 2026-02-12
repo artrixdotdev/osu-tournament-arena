@@ -1,6 +1,8 @@
 {
    "extends": "@ota/tsconfig/base.json",
-   "compilerOptions": {},
+   "compilerOptions": {
+      "composite": true,
+   },
    "include": ["*.ts", "src"],
-   "exclude": ["node_modules"]
+   "exclude": ["node_modules"],
 }

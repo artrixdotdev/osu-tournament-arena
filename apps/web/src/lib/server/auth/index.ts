@@ -1,14 +1,13 @@
 import { getRequestEvent } from "$app/server";
-import { betterAuth } from "better-auth";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 
-import { getAuthConfig } from "@ota/auth";
+import { auth as baseAuth } from "@ota/auth";
 
-const plugins = [sveltekitCookies(getRequestEvent)];
+// Some dumb hacks to allow us to have an independant auth instance
+baseAuth.options.baseURL = "http://localhost:5173";
+baseAuth.options.plugins.push(sveltekitCookies(getRequestEvent));
 
-export const auth = betterAuth(
-   getAuthConfig({ baseURL: "http://localhost:5173", plugins }),
-);
+export const auth = baseAuth;
 
 export type Auth = typeof auth;
 export type Session = typeof auth.$Infer.Session;

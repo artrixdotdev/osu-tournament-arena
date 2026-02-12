@@ -1,10 +1,7 @@
-import type {
-   BetterAuthOptions,
-   BetterAuthPlugin,
-   OAuth2Tokens,
-} from "better-auth";
+import type { BetterAuthPlugin, OAuth2Tokens } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
+import { betterAuth } from "better-auth/minimal";
 import { genericOAuth } from "better-auth/plugins";
 
 import { and, eq } from "@ota/db";
@@ -22,45 +19,37 @@ interface AccountData {
    accountId: string;
 }
 
-export const getAuthConfig = ({
-   baseURL = "http://localhost:5173",
-   plugins,
-}: {
-   baseURL?: string;
-   plugins: BetterAuthPlugin[];
-}) => {
-   return {
-      baseURL,
-      database: drizzleAdapter(db, {
-         provider: "sqlite",
-         schema: {
-            user: schema.user,
-            account: schema.account,
-            verification: schema.verification,
-            session: schema.session,
-         },
-      }),
-      session: {
-         expiresIn: 60 * 60 * 24 * 30,
-         updateAge: 60 * 60 * 24,
+export const auth = betterAuth({
+   baseURL: "",
+   database: drizzleAdapter(db, {
+      provider: "sqlite",
+      schema: {
+         user: schema.user,
+         account: schema.account,
+         verification: schema.verification,
+         session: schema.session,
       },
-      account: {
-         accountLinking: {
-            enabled: true,
-            allowDifferentEmails: true,
-            updateUserInfoOnLink: true,
-         },
+   }),
+   session: {
+      expiresIn: 60 * 60 * 24 * 30,
+      updateAge: 60 * 60 * 24,
+   },
+   account: {
+      accountLinking: {
+         enabled: true,
+         allowDifferentEmails: true,
+         updateUserInfoOnLink: true,
       },
-      socialProviders: {
-         discord: {
-            clientId: env.AUTH_DISCORD_ID,
-            clientSecret: env.AUTH_DISCORD_SECRET,
-         },
+   },
+   socialProviders: {
+      discord: {
+         clientId: env.AUTH_DISCORD_ID,
+         clientSecret: env.AUTH_DISCORD_SECRET,
       },
-      databaseHooks: getDatabaseHooks(),
-      plugins: [...getAuthPlugins(), ...plugins],
-   } satisfies BetterAuthOptions;
-};
+   },
+   databaseHooks: getDatabaseHooks(),
+   plugins: [...getAuthPlugins()],
+});
 
 function getDatabaseHooks() {
    return {
@@ -129,7 +118,7 @@ function updateUserOAuthIds() {
    };
 }
 
-function getAuthPlugins() {
+function getAuthPlugins(): BetterAuthPlugin[] {
    return [
       genericOAuth({
          config: [

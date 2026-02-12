@@ -3,7 +3,8 @@
  */
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import { RouterClient } from "@orpc/server";
+
+import type { RouterClient } from "@orpc/server";
 
 /**
  * We only import the `AppRouter` type from the server - this is not available at runtime

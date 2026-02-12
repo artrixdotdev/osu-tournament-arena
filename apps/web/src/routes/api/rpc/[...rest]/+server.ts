@@ -1,5 +1,6 @@
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
+import { RequestHeadersPlugin } from "@orpc/server/plugins";
 import { error } from "@sveltejs/kit";
 
 import { appRouter } from "@ota/api/server";
@@ -7,11 +8,8 @@ import { appRouter } from "@ota/api/server";
 import type { RequestHandler } from "./$types";
 
 const handler = new RPCHandler(appRouter, {
-   interceptors: [
-      onError((error) => {
-         console.error(error);
-      }),
-   ],
+   interceptors: [onError(console.error)],
+   plugins: [new RequestHeadersPlugin()],
 });
 
 const handle: RequestHandler = async ({ request }) => {

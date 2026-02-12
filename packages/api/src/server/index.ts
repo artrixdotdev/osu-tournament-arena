@@ -1,9 +1,9 @@
-import { publicProcedure, router } from "../orpc";
+import { base, router } from "../orpc";
 
 export const appRouter = router({
    user: {
       me: {
-         user: publicProcedure.handler(() => {
+         user: base.handler(() => {
             return { a: 1 };
          }),
       },
