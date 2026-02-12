@@ -24,9 +24,11 @@
    },
    "prettier": "@ota/prettier-config",
    "dependencies": {
+      "@orpc/client": "catalog:",
+      "@orpc/contract": "catalog:",
+      "@orpc/server": "catalog:",
+      "@orpc/zod": "catalog:",
       "@ota/db": "workspace:*",
-      "@trpc/client": "catalog:",
-      "@trpc/server": "catalog:",
       "superjson": "^2.2.6",
       "zod": "catalog:"
    }

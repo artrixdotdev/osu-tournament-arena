@@ -13,11 +13,13 @@
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
    },
    "dependencies": {
+      "@orpc/client": "catalog:",
+      "@orpc/contract": "catalog:",
+      "@orpc/server": "catalog:",
       "@ota/api": "workspace:*",
       "@ota/auth": "workspace:*",
       "@ota/db": "workspace:*",
       "@ota/ui": "workspace:*",
-      "@trpc/server": "catalog:",
       "better-auth": "catalog:"
    },
    "devDependencies": {

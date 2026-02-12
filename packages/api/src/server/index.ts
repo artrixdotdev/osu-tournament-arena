@@ -1,11 +1,9 @@
-// import { db } from "@ota/db/client";
-
-import { publicProcedure, router } from "../trpc";
+import { publicProcedure, router } from "../orpc";
 
 export const appRouter = router({
    user: {
       me: {
-         user: publicProcedure.query((_ok) => {
+         user: publicProcedure.handler(() => {
             return { a: 1 };
          }),
       },
