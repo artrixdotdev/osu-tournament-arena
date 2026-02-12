@@ -31,7 +31,7 @@
       "dotenv-cli": "^10.0.0",
       "prettier": "catalog:",
       "shadcn": "^3.5.2",
-      "turbo": "^2.6.3",
+      "turbo": "^2.8.7",
       "typescript": "catalog:"
    },
    "prettier": "@ota/prettier-config"
