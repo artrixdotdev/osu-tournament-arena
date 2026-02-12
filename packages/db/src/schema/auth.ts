@@ -1,4 +1,4 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { boolean, timestamp } from "../util";
 
@@ -12,6 +12,8 @@ export const user = sqliteTable("user", () => ({
    discordId: text(),
    updatedAt: timestamp().notNull(),
    createdAt: timestamp().notNull(),
+   /* Timezone as a UTC offset */
+   timezone: integer().notNull().default(0),
 }));
 
 export const session = sqliteTable("session", () => ({
