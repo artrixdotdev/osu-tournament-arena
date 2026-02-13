@@ -49,8 +49,7 @@ export function orpc({
    return createORPCClient(
       new RPCLink({
          url: () => {
-            // @ts-expect-error - Should be fine, we have enough checks
-            const isServer = typeof window === "undefined";
+            const isServer = typeof globalThis.window === "undefined";
 
             if (isServer) {
                const resolvedBaseUrl = resolve(baseUrl);
@@ -61,9 +60,7 @@ export function orpc({
             }
 
             const resolvedBaseUrl =
-               resolve(baseUrl) ??
-               // @ts-expect-error - Should be fine, we have enough checks
-               window.location.origin;
+               resolve(baseUrl) ?? globalThis.window.location.origin;
             return `${resolvedBaseUrl}/api/rpc`;
          },
          headers() {
