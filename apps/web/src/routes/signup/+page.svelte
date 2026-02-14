@@ -29,6 +29,9 @@
                signupCompleted: result.signupCompletedAt !== null,
             };
             signupStore.initialize(status);
+            if (status.hasDiscord) {
+               signupStore.completeStep("discord");
+            }
          }
       } catch (e) {
          console.error("Failed to load signup status:", e);
@@ -39,7 +42,7 @@
       loading = true;
       error = null;
       try {
-         await authClient.signIn.social({
+         await authClient.linkSocial({
             provider: "discord",
             callbackURL: "/signup",
          });
