@@ -1,5 +1,6 @@
 <script lang="ts">
-   import { authClient } from "@ota/auth/client";
+   import { goto } from "$app/navigation";
+
    import { Button } from "@ota/ui/components/button/index.ts";
 
    let { data } = $props();
@@ -14,13 +15,10 @@
    {:else}
       <Button
          onclick={async () => {
-            await authClient.signIn.social({
-               provider: "osu",
-               callbackURL: "/signup",
-            });
+            await goto("/signup");
          }}
       >
-         Sign In with osu!
+         Create an account
       </Button>
    {/if}
 </div>
