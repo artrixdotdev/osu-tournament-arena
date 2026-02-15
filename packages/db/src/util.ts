@@ -1,5 +1,6 @@
 // sqlite is a bit dumb and doesn't support boolean or timestamp columns natively
 
+import { sql } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
 
 export const boolean = () => integer({ mode: "boolean" });
@@ -10,3 +11,16 @@ export const enumurate = <const T extends Record<string, string>>(x: T) => {
    const values = Object.values(x) as [T[keyof T], ...T[keyof T][]];
    return text({ enum: values });
 };
+
+/**
+ * Audit timestamps for database entities
+ */
+export const auditTimestamps = {
+   createdAt: timestamp()
+      .notNull()
+      .$default(() => new Date()),
+   updatedAt: timestamp()
+      .notNull()
+      .$default(() => new Date())
+      .$onUpdate(() => new Date()),
+} as const;

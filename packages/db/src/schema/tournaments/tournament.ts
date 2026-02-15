@@ -8,7 +8,7 @@ import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import type { TournamentDiscord } from "./types";
-import { boolean, json, timestamp } from "../../util";
+import { auditTimestamps, boolean, json, timestamp } from "../../util";
 import { bracket } from "./bracket";
 import { mappool } from "./mappool";
 import { player } from "./player";
@@ -68,9 +68,6 @@ export const tournament = sqliteTable("tournament", {
    /** Soft deletion flag */
    isDeleted: boolean().notNull(),
 
-   createdAt: timestamp().notNull(),
-   updatedAt: timestamp().notNull(),
-
    // Tournament Settings
    /** Maximum players per lobby */
    lobbySize: integer().notNull(),
@@ -80,6 +77,8 @@ export const tournament = sqliteTable("tournament", {
 
    /** Discord bot integration settings */
    discord: json<TournamentDiscord>(),
+
+   ...auditTimestamps,
 });
 
 /**

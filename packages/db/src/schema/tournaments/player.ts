@@ -8,7 +8,7 @@ import { relations } from "drizzle-orm";
 import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 import type { TimeSlot } from "./types";
-import { boolean, json, timestamp } from "../../util";
+import { auditTimestamps, boolean, json, timestamp } from "../../util";
 import { user } from "../auth";
 import { round } from "./bracket";
 import { screening } from "./screening";
@@ -46,9 +46,6 @@ export const player = sqliteTable(
       /** Display name for the tournament */
       name: text().notNull(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
-
       tournamentId: text().notNull(),
 
       /** NULL if player is a free agent */
@@ -59,6 +56,8 @@ export const player = sqliteTable(
 
       /** Whether player is team captain */
       isCaptain: boolean().notNull().default(false),
+
+      ...auditTimestamps,
    },
    (table) => [
       index("player_tournament_idx").on(table.tournamentId),
@@ -125,8 +124,7 @@ export const playerAvailability = sqliteTable(
       /** Array of available time windows */
       timeSlots: json<TimeSlot[]>().notNull().default([]),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("player_availability_player_idx").on(table.playerId),

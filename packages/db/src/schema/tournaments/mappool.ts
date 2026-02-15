@@ -7,7 +7,7 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { enumurate, json, timestamp } from "../../util";
+import { auditTimestamps, enumurate, json } from "../../util";
 import { round } from "./bracket";
 import { qualifierLobby } from "./qualifier";
 import { staff } from "./staff";
@@ -40,8 +40,7 @@ export const mappool = sqliteTable(
    {
       id: text().primaryKey(),
       tournamentId: text().notNull(),
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [index("mappool_tournament_idx").on(table.tournamentId)],
 );

@@ -7,7 +7,7 @@
 import { relations } from "drizzle-orm";
 import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
-import { boolean, enumurate, timestamp } from "../../util";
+import { auditTimestamps, boolean, enumurate } from "../../util";
 import { player } from "./player";
 import { staff } from "./staff";
 import { tournament } from "./tournament";
@@ -66,8 +66,7 @@ export const screening = sqliteTable(
       /** Staff member who reviewed */
       reviewedBy: text(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("screening_player_idx").on(table.playerId),
@@ -120,8 +119,7 @@ export const screeningAppeal = sqliteTable(
       /** Staff member who reviewed */
       reviewedBy: text(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("screening_appeal_player_idx").on(table.playerId),

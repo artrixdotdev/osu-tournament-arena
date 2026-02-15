@@ -13,7 +13,7 @@ import {
    unique,
 } from "drizzle-orm/sqlite-core";
 
-import { boolean, enumurate, timestamp } from "../../util";
+import { auditTimestamps, boolean, enumurate, timestamp } from "../../util";
 import { mappool } from "./mappool";
 import { staff } from "./staff";
 import { team } from "./team";
@@ -89,8 +89,7 @@ export const qualifierLobby = sqliteTable(
       /** When all maps were completed */
       completedAt: timestamp(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("qualifier_lobby_tournament_idx").on(table.tournamentId),
@@ -153,7 +152,7 @@ export const qualifierParticipant = sqliteTable(
       /** Whether team showed up and played */
       attended: boolean().notNull().default(false),
 
-      createdAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("qualifier_participant_lobby_idx").on(table.lobbyId),

@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import type { TeamDiscord } from "./types";
-import { boolean, json, timestamp } from "../../util";
+import { auditTimestamps, boolean, json, timestamp } from "../../util";
 import { player } from "./player";
 import { qualifierParticipant } from "./qualifier";
 import { tournament } from "./tournament";
@@ -55,13 +55,12 @@ export const team = sqliteTable(
       /** Whether team has been eliminated from bracket */
       isEliminated: boolean().notNull().default(false),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
-
       tournamentId: text().notNull(),
 
       /** Discord channel and role assignment */
       discord: json<TeamDiscord>(),
+
+      ...auditTimestamps,
    },
    (table) => [
       index("team_tournament_idx").on(table.tournamentId),

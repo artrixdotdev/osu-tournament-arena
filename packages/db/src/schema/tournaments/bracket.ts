@@ -7,7 +7,7 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { boolean, enumurate, timestamp } from "../../util";
+import { auditTimestamps, boolean, enumurate, timestamp } from "../../util";
 import { map, mappool } from "./mappool";
 import { playerAvailability } from "./player";
 import { refereeAvailability, staff } from "./staff";
@@ -64,8 +64,7 @@ export const bracket = sqliteTable(
       /** Whether grand finals requires bracket reset */
       grandFinalsReset: boolean().notNull().default(true),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [index("bracket_tournament_idx").on(table.tournamentId)],
 );
@@ -132,8 +131,7 @@ export const round = sqliteTable(
       /** Week start for scheduling */
       weekStart: timestamp(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("round_bracket_idx").on(table.bracketId),
@@ -268,8 +266,7 @@ export const match = sqliteTable(
       startedAt: timestamp(),
       completedAt: timestamp(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("match_bracket_idx").on(table.bracketId),
@@ -371,7 +368,7 @@ export const matchPickBan = sqliteTable(
       /** Chronological order */
       order: integer().notNull(),
 
-      createdAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("match_pick_ban_match_idx").on(table.matchId),
@@ -452,8 +449,7 @@ export const matchMapResult = sqliteTable(
       /** When map finished */
       completedAt: timestamp(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("match_map_result_match_idx").on(table.matchId),

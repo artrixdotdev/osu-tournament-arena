@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { boolean, timestamp } from "../util";
+import { auditTimestamps, boolean, timestamp } from "../util";
 
 export const user = sqliteTable("user", () => ({
    id: text().primaryKey(),
@@ -10,23 +10,21 @@ export const user = sqliteTable("user", () => ({
    email: text(),
    osuId: text(),
    discordId: text(),
-   updatedAt: timestamp().notNull(),
-   createdAt: timestamp().notNull(),
    /* Timezone as a UTC offset */
    timezone: integer().notNull().default(0),
+   ...auditTimestamps,
 }));
 
 export const session = sqliteTable("session", () => ({
    id: text().primaryKey(),
    expiresAt: timestamp().notNull(),
    token: text().notNull().unique(),
-   createdAt: timestamp().notNull(),
-   updatedAt: timestamp().notNull(),
    ipAddress: text(),
    userAgent: text(),
    userId: text()
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+   ...auditTimestamps,
 }));
 
 export const account = sqliteTable("account", (t) => ({
@@ -44,8 +42,7 @@ export const account = sqliteTable("account", (t) => ({
    refreshTokenExpiresAt: timestamp(),
    scope: text(),
    password: text(),
-   createdAt: timestamp().notNull(),
-   updatedAt: timestamp().notNull(),
+   ...auditTimestamps,
 }));
 
 export const verification = sqliteTable("verification", () => ({
@@ -53,6 +50,5 @@ export const verification = sqliteTable("verification", () => ({
    identifier: text().notNull(),
    value: text().notNull(),
    expiresAt: timestamp().notNull(),
-   createdAt: timestamp(),
-   updatedAt: timestamp(),
+   ...auditTimestamps,
 }));
