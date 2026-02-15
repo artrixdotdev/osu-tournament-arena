@@ -1,42 +1,57 @@
-# sv
+# @ota/web
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Main SvelteKit web application for osu! Tournament Arena.
 
-## Creating a project
+## Technologies
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **[SvelteKit](https://kit.svelte.dev/)** - Full-stack web framework
+- **[Svelte 5](https://svelte.dev/)** - UI framework with runes
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Styling
+- **[oRPC](https://orpc.unnoq.com/)** - Typesafe API calls
+- **[Cloudflare](https://developers.cloudflare.com/)** - Deployment via adapter-cloudflare
 
-```sh
-# create a new project
-npx sv create my-app
+## Folder Structure
+
+```
+src/
+├── lib/              # Shared utilities and helpers
+├── routes/
+│   ├── +page.svelte          # Home page
+│   ├── +layout.svelte        # Root layout
+│   └── api/rpc/[...rest]/    # oRPC API endpoint
+└── static/           # Static assets
 ```
 
-To recreate this project with the same configuration:
+## Development
 
-```sh
-# recreate this project
-pnpm dlx sv create --template minimal --types ts --install pnpm ./
-```
+```bash
+# From project root
+pnpm dev
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Or filter to web only
+pnpm dev:next
 ```
 
 ## Building
 
-To create a production version of your app:
-
-```sh
-npm run build
+```bash
+pnpm --filter @ota/web build
 ```
 
-You can preview the production build with `npm run preview`.
+## API Routes
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+The `/api/rpc/[...rest]` route handles all oRPC procedure calls. Procedures are defined in `@ota/api/server`.
+
+## Authentication
+
+Uses `@ota/auth/client` for client-side auth:
+
+```svelte
+<script>
+   import { authClient } from "@ota/auth/client";
+</script>
+
+<button onclick={() => authClient.signIn.social({ provider: "osu" })}>
+   Sign in with osu!
+</button>
+```
