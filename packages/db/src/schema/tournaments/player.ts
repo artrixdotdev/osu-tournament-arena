@@ -8,7 +8,7 @@ import { relations } from "drizzle-orm";
 import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 import type { TimeSlot } from "./types";
-import { auditTimestamps, boolean, json, timestamp } from "../../util";
+import { auditTimestamps, boolean, json } from "../../util";
 import { user } from "../auth";
 import { round } from "./bracket";
 import { screening } from "./screening";

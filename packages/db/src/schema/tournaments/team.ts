@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import type { TeamDiscord } from "./types";
-import { auditTimestamps, boolean, json, timestamp } from "../../util";
+import { auditTimestamps, boolean, json } from "../../util";
 import { player } from "./player";
 import { qualifierParticipant } from "./qualifier";
 import { tournament } from "./tournament";
