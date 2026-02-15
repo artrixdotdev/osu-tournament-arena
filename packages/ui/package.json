@@ -38,6 +38,7 @@
       "sonner": "^2.0.7"
    },
    "devDependencies": {
+      "@internationalized/date": "^3.11.0",
       "@lucide/svelte": "catalog:",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
@@ -46,6 +47,7 @@
       "@sveltejs/kit": "catalog:",
       "@sveltejs/package": "^2.5.0",
       "@sveltejs/vite-plugin-svelte": "catalog:",
+      "bits-ui": "^2.15.5",
       "eslint": "catalog:",
       "prettier": "catalog:",
       "svelte": "catalog:",

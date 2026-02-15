@@ -23,6 +23,7 @@
       "better-auth": "catalog:"
    },
    "devDependencies": {
+      "@lucide/svelte": "catalog:",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
