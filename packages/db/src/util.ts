@@ -1,6 +1,5 @@
 // sqlite is a bit dumb and doesn't support boolean or timestamp columns natively
 
-import { sql } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
 
 export const boolean = () => integer({ mode: "boolean" });
