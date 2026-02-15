@@ -10,7 +10,6 @@ export const user = sqliteTable("user", () => ({
    email: text(),
    osuId: text(),
    discordId: text(),
-   /* Timezone as a UTC offset */
    timezone: integer().notNull().default(0),
    ...auditTimestamps,
 }));
