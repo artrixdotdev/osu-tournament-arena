@@ -121,6 +121,9 @@ importers:
       better-auth:
         specifier: 'catalog:'
         version: 1.4.17(@prisma/client@5.22.0(prisma@5.22.0))(@sveltejs/kit@2.50.1(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.48.2)(vite@7.3.1(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)))(svelte@5.48.2)(typescript@5.9.3)(vite@7.3.1(@types/node@22.18.12)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)))(better-sqlite3@12.2.0)(drizzle-kit@0.31.5)(drizzle-orm@0.44.7(@cloudflare/workers-types@4.20260124.0)(@libsql/client@0.15.15(bufferutil@4.0.8)(utf-8-validate@6.0.4))(@neondatabase/serverless@0.10.0)(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@prisma/client@5.22.0(prisma@5.22.0))(@types/better-sqlite3@7.6.13)(@types/pg@8.11.10)(@vercel/postgres@0.10.0(utf-8-validate@6.0.4))(better-sqlite3@12.2.0)(gel@2.0.0)(kysely@0.28.5)(mysql2@3.11.3)(postgres@3.4.4)(prisma@5.22.0))(mysql2@3.11.3)(prisma@5.22.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(svelte@5.48.2)
+      mode-watcher:
+        specifier: ^1.1.0
+        version: 1.1.0(svelte@5.48.2)
     devDependencies:
       '@lucide/svelte':
         specifier: 'catalog:'
@@ -5163,6 +5166,11 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
 
+  mode-watcher@1.1.0:
+    resolution: {integrity: sha512-mUT9RRGPDYenk59qJauN1rhsIMKBmWA3xMF+uRwE8MW/tjhaDSCCARqkSuDTq8vr4/2KcAxIGVjACxTjdk5C3g==}
+    peerDependencies:
+      svelte: ^5.27.0
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -5804,6 +5812,16 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  runed@0.23.4:
+    resolution: {integrity: sha512-9q8oUiBYeXIDLWNK5DfCWlkL0EW3oGbk845VdKlPeia28l751VpfesaB/+7pI6rnbx1I6rqoZ2fZxptOJLxILA==}
+    peerDependencies:
+      svelte: ^5.7.0
+
+  runed@0.25.0:
+    resolution: {integrity: sha512-7+ma4AG9FT2sWQEA0Egf6mb7PBT2vHyuHail1ie8ropfSjvZGtEAx8YTmUjv/APCsdRRxEVvArNjALk9zFSOrg==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   runed@0.35.1:
     resolution: {integrity: sha512-2F4Q/FZzbeJTFdIS/PuOoPRSm92sA2LhzTnv6FXhCoENb3huf5+fDuNOg1LNvGOouy3u/225qxmuJvcV3IZK5Q==}
     peerDependencies:
@@ -6109,6 +6127,12 @@ packages:
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.30.2
+
+  svelte-toolbelt@0.7.1:
+    resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte2tsx@0.7.46:
     resolution: {integrity: sha512-S++Vw3w47a8rBuhbz4JK0fcGea8tOoX1boT53Aib8+oUO2EKeOG+geXprJVTDfBlvR+IJdf3jIpR2RGwT6paQA==}
@@ -11245,6 +11269,12 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
+  mode-watcher@1.1.0(svelte@5.48.2):
+    dependencies:
+      runed: 0.25.0(svelte@5.48.2)
+      svelte: 5.48.2
+      svelte-toolbelt: 0.7.1(svelte@5.48.2)
+
   mri@1.2.0: {}
 
   mrmime@2.0.1: {}
@@ -11981,6 +12011,16 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  runed@0.23.4(svelte@5.48.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.48.2
+
+  runed@0.25.0(svelte@5.48.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.48.2
+
   runed@0.35.1(@sveltejs/kit@2.50.1(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.48.2)(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)))(svelte@5.48.2)(typescript@5.9.3)(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.21.0)(yaml@2.8.1)))(svelte@5.48.2):
     dependencies:
       dequal: 2.0.3
@@ -12384,6 +12424,13 @@ snapshots:
       svelte: 5.48.2
     transitivePeerDependencies:
       - '@sveltejs/kit'
+
+  svelte-toolbelt@0.7.1(svelte@5.48.2):
+    dependencies:
+      clsx: 2.1.1
+      runed: 0.23.4(svelte@5.48.2)
+      style-to-object: 1.0.14
+      svelte: 5.48.2
 
   svelte2tsx@0.7.46(svelte@5.48.2)(typescript@5.9.3):
     dependencies:

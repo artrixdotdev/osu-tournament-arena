@@ -1,6 +1,7 @@
 <script lang="ts">
    import favicon from "$lib/assets/favicon.svg";
    import AppSidebar from "$lib/components/app-sidebar.svelte";
+   import { ModeWatcher } from "mode-watcher";
 
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
 
@@ -12,6 +13,8 @@
 <svelte:head>
    <link rel="icon" href={favicon} />
 </svelte:head>
+
+<ModeWatcher />
 
 <Sidebar.Provider>
    <AppSidebar />
