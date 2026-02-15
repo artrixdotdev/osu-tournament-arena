@@ -28,8 +28,8 @@
       "@orpc/contract": "catalog:",
       "@orpc/server": "catalog:",
       "@orpc/zod": "catalog:",
-      "@ota/db": "workspace:*",
       "@ota/auth": "workspace:*",
+      "@ota/db": "workspace:*",
       "superjson": "^2.2.6",
       "zod": "catalog:"
    }

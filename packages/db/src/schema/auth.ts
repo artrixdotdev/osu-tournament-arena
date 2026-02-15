@@ -12,8 +12,8 @@ export const user = sqliteTable("user", () => ({
    discordId: text(),
    updatedAt: timestamp().notNull(),
    createdAt: timestamp().notNull(),
-   /* Timezone as a UTC offset */
    timezone: integer().notNull().default(0),
+   signupCompletedAt: timestamp(),
 }));
 
 export const session = sqliteTable("session", () => ({

@@ -10,11 +10,13 @@ declare global {
       // interface Error {}
       interface Locals {
          session?: Omit<Session, "ipAddress" | "userAgent" | "userId"> & {
-            // Weird hacks to make typescript happy
             ipAddress?: string | null;
             userAgent?: string | null;
          };
-         user?: Omit<User, "osuId", "discordId">;
+         user?: Omit<User, "osuId" | "discordId"> & {
+            discordId?: string | null;
+            signupCompletedAt?: Date | null;
+         };
       }
       // interface PageData {}
       // interface PageState {}
