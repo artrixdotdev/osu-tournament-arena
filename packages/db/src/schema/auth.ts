@@ -11,6 +11,7 @@ export const user = sqliteTable("user", () => ({
    osuId: text(),
    discordId: text(),
    timezone: integer().notNull().default(0),
+   signupCompletedAt: timestamp(),
    ...auditTimestamps,
 }));
 
