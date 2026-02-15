@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import type { StaffRole, TimeSlot } from "./types";
-import { array, json, timestamp } from "../../util";
+import { array, auditTimestamps, json, timestamp } from "../../util";
 import { user } from "../auth";
 import { round } from "./bracket";
 import { tournament } from "./tournament";
@@ -49,14 +49,13 @@ export const staff = sqliteTable(
       /** Display name for tournament */
       name: text().notNull(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
-
       tournamentId: text().notNull(),
       userId: text().notNull(),
 
       /** Array of assigned roles */
       roles: array<StaffRole>().notNull().default([]),
+
+      ...auditTimestamps,
    },
    (table) => [
       index("staff_tournament_idx").on(table.tournamentId),
@@ -131,8 +130,7 @@ export const refereeAvailability = sqliteTable(
       /** Maximum matches referee wants to handle */
       maxMatches: integer(),
 
-      createdAt: timestamp().notNull(),
-      updatedAt: timestamp().notNull(),
+      ...auditTimestamps,
    },
    (table) => [
       index("referee_availability_referee_idx").on(table.refereeId),
