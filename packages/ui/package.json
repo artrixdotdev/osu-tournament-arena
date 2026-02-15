@@ -13,6 +13,7 @@
       "./attachments/*": "./src/attachments/ui",
       "./icons/*": "./src/components/icons/*",
       "./components/*": "./src/components/ui/*",
+      "./components/ui/*": "./src/components/ui/*",
       "./styles/*": "./src/styles/*",
       "./transitions/*": "./src/transitions/*",
       "./hooks/*": "./src/hooks/*"
