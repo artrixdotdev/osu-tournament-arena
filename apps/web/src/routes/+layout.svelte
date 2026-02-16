@@ -7,7 +7,7 @@
 
    import "@ota/tailwind-config/theme";
 
-   let { children } = $props();
+   let { children, data } = $props();
 </script>
 
 <svelte:head>
@@ -17,7 +17,7 @@
 <ModeWatcher />
 
 <Sidebar.Provider>
-   <AppSidebar />
+   <AppSidebar user={data.user ?? undefined} />
    <main class="w-full">
       <Sidebar.Trigger />
       {@render children?.()}
