@@ -1,18 +1,26 @@
 <script lang="ts">
-   import { goto, invalidateAll } from "$app/navigation";
+   import { invalidateAll } from "$app/navigation";
    import {
       ArrowUp01Icon,
+      Award01Icon,
+      BookOpen01Icon,
       Calendar01Icon,
+      Clock01Icon,
+      Compass01Icon,
       Home01Icon,
-      Mailbox01Icon,
+      LoginIcon,
+      Menu01Icon,
+      Message01Icon,
       Search01Icon,
       Settings01Icon,
+      SidebarLeft01Icon,
+      UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
 
    import type { user as User } from "@ota/db/schema";
    import { authClient } from "@ota/auth/client";
-   import { Button } from "@ota/ui/components/button/index.ts";
+   import * as Avatar from "@ota/ui/components/avatar/index.ts";
    import * as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
 
@@ -21,48 +29,164 @@
    }: { user?: Omit<typeof User.$inferSelect, "osuId" | "discordId"> } =
       $props();
 
-   // Menu items.
-   const items = [
+   const sidebar = Sidebar.useSidebar();
+
+   const mainItems = [
       {
          title: "Home",
-         url: "#",
+         url: "/",
          icon: Home01Icon,
       },
       {
-         title: "Inbox",
-         url: "#",
-         icon: Mailbox01Icon,
-      },
-      {
-         title: "Calendar",
-         url: "#",
+         title: "Schedule",
+         url: "/schedule",
          icon: Calendar01Icon,
       },
       {
-         title: "Search",
-         url: "#",
-         icon: Search01Icon,
+         title: "Browse",
+         url: "/browse",
+         icon: Compass01Icon,
+      },
+   ];
+
+   const contentItems = [
+      {
+         title: "Tournaments",
+         url: "/tournaments",
+         icon: Award01Icon,
       },
       {
-         title: "Settings",
-         url: "#",
-         icon: Settings01Icon,
+         title: "Teams",
+         url: "/teams",
+         icon: UserGroupIcon,
+      },
+      {
+         title: "Players",
+         url: "/players",
+         icon: Search01Icon,
+      },
+   ];
+
+   const activityItems = [
+      {
+         title: "My Library",
+         url: "/library",
+         icon: BookOpen01Icon,
+      },
+      {
+         title: "History",
+         url: "/history",
+         icon: Clock01Icon,
+      },
+      {
+         title: "Forums",
+         url: "/forums",
+         icon: Message01Icon,
       },
    ];
 </script>
 
 <Sidebar.Root collapsible="icon">
+   <!-- Sidebar trigger at top — hamburger when expanded, sidebar icon when collapsed -->
+   <Sidebar.Header class="p-2">
+      <Sidebar.Menu>
+         <Sidebar.MenuItem>
+            <Sidebar.MenuButton
+               onclick={() => sidebar.toggle()}
+               tooltipContent="Toggle sidebar"
+            >
+               {#if sidebar.state === "expanded"}
+                  <HugeiconsIcon
+                     icon={Menu01Icon}
+                     size={18}
+                     strokeWidth={1.5}
+                  />
+               {:else}
+                  <HugeiconsIcon
+                     icon={SidebarLeft01Icon}
+                     size={18}
+                     strokeWidth={1.5}
+                  />
+               {/if}
+               <span>Menu</span>
+            </Sidebar.MenuButton>
+         </Sidebar.MenuItem>
+      </Sidebar.Menu>
+   </Sidebar.Header>
+
    <Sidebar.Content>
+      <!-- Main navigation -->
       <Sidebar.Group>
-         <Sidebar.GroupLabel>Application</Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
-               {#each items as item (item.title)}
+               {#each mainItems as item (item.title)}
                   <Sidebar.MenuItem>
-                     <Sidebar.MenuButton>
+                     <Sidebar.MenuButton tooltipContent={item.title}>
                         {#snippet child({ props })}
                            <a href={item.url} {...props}>
-                              <HugeiconsIcon icon={item.icon} />
+                              <HugeiconsIcon
+                                 icon={item.icon}
+                                 size={18}
+                                 strokeWidth={1.5}
+                              />
+                              <span>{item.title}</span>
+                           </a>
+                        {/snippet}
+                     </Sidebar.MenuButton>
+                  </Sidebar.MenuItem>
+               {/each}
+            </Sidebar.Menu>
+         </Sidebar.GroupContent>
+      </Sidebar.Group>
+
+      <!-- Content section -->
+      <Sidebar.Group>
+         <Sidebar.GroupLabel
+            class="text-[10px] tracking-widest uppercase opacity-50"
+         >
+            Content
+         </Sidebar.GroupLabel>
+         <Sidebar.GroupContent>
+            <Sidebar.Menu>
+               {#each contentItems as item (item.title)}
+                  <Sidebar.MenuItem>
+                     <Sidebar.MenuButton tooltipContent={item.title}>
+                        {#snippet child({ props })}
+                           <a href={item.url} {...props}>
+                              <HugeiconsIcon
+                                 icon={item.icon}
+                                 size={18}
+                                 strokeWidth={1.5}
+                              />
+                              <span>{item.title}</span>
+                           </a>
+                        {/snippet}
+                     </Sidebar.MenuButton>
+                  </Sidebar.MenuItem>
+               {/each}
+            </Sidebar.Menu>
+         </Sidebar.GroupContent>
+      </Sidebar.Group>
+
+      <!-- My Activity section -->
+      <Sidebar.Group>
+         <Sidebar.GroupLabel
+            class="text-[10px] tracking-widest uppercase opacity-50"
+         >
+            My Activity
+         </Sidebar.GroupLabel>
+         <Sidebar.GroupContent>
+            <Sidebar.Menu>
+               {#each activityItems as item (item.title)}
+                  <Sidebar.MenuItem>
+                     <Sidebar.MenuButton tooltipContent={item.title}>
+                        {#snippet child({ props })}
+                           <a href={item.url} {...props}>
+                              <HugeiconsIcon
+                                 icon={item.icon}
+                                 size={18}
+                                 strokeWidth={1.5}
+                              />
                               <span>{item.title}</span>
                            </a>
                         {/snippet}
@@ -73,7 +197,25 @@
          </Sidebar.GroupContent>
       </Sidebar.Group>
    </Sidebar.Content>
+
    <Sidebar.Footer>
+      <Sidebar.Menu>
+         <Sidebar.MenuItem>
+            <Sidebar.MenuButton tooltipContent="Settings">
+               {#snippet child({ props })}
+                  <a href="/settings" {...props}>
+                     <HugeiconsIcon
+                        icon={Settings01Icon}
+                        size={18}
+                        strokeWidth={1.5}
+                     />
+                     <span>Settings</span>
+                  </a>
+               {/snippet}
+            </Sidebar.MenuButton>
+         </Sidebar.MenuItem>
+      </Sidebar.Menu>
+
       {#if user}
          <Sidebar.Menu>
             <Sidebar.MenuItem>
@@ -82,12 +224,26 @@
                      {#snippet child({ props })}
                         <Sidebar.MenuButton
                            {...props}
+                           size="lg"
                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                           {user.name}
+                           <Avatar.Root>
+                              <Avatar.Image src={user.image} alt={user.name} />
+                              <Avatar.Fallback
+                                 >{user.name.charAt(0)}</Avatar.Fallback
+                              >
+                           </Avatar.Root>
+                           {#if sidebar.state === "expanded"}
+                              <div class="flex flex-col gap-0.5 leading-none">
+                                 <span class="text-sm font-medium"
+                                    >{user.name}</span
+                                 >
+                              </div>
+                           {/if}
                            <HugeiconsIcon
                               icon={ArrowUp01Icon}
                               class="ms-auto"
+                              size={16}
                            />
                         </Sidebar.MenuButton>
                      {/snippet}
@@ -99,7 +255,6 @@
                      <DropdownMenu.Item>
                         <button
                            onclick={async () => {
-                              console.debug("clicked");
                               await authClient.signOut();
                               await invalidateAll();
                            }}
@@ -112,13 +267,18 @@
             </Sidebar.MenuItem>
          </Sidebar.Menu>
       {:else}
-         <Button
-            onclick={async () => {
-               await goto("/signup");
-            }}
-         >
-            Create an account
-         </Button>
+         <Sidebar.Menu>
+            <Sidebar.MenuItem>
+               <Sidebar.MenuButton tooltipContent="Sign up">
+                  {#snippet child({ props })}
+                     <a href="/signup" {...props}>
+                        <HugeiconsIcon size={18} icon={LoginIcon} />
+                        <span>Sign up</span>
+                     </a>
+                  {/snippet}
+               </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+         </Sidebar.Menu>
       {/if}
    </Sidebar.Footer>
 </Sidebar.Root>
