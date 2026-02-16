@@ -14,25 +14,27 @@
    <link rel="icon" href={favicon} />
 </svelte:head>
 
-<ModeWatcher />
+<svelte:boundary>
+   <ModeWatcher />
 
-<Sidebar.Provider>
-   <AppSidebar user={data.user ?? undefined} />
-   <Sidebar.Inset>
-      <header
-         class="border-border/40 flex h-12 items-center gap-3 border-b px-4"
-      >
-         <div
-            class="bg-primary flex size-7 items-center justify-center rounded-md text-xs font-bold text-white"
+   <Sidebar.Provider>
+      <AppSidebar user={data.user ?? undefined} />
+      <Sidebar.Inset>
+         <header
+            class="border-border/40 flex h-12 items-center gap-3 border-b px-4"
          >
-            O
-         </div>
-         <span class="text-sm font-semibold tracking-wide"
-            >osu! tournament arena</span
-         >
-      </header>
-      <main class="w-full">
-         {@render children?.()}
-      </main>
-   </Sidebar.Inset>
-</Sidebar.Provider>
+            <div
+               class="bg-primary flex size-7 items-center justify-center rounded-md text-xs font-bold text-white"
+            >
+               O
+            </div>
+            <span class="text-sm font-semibold tracking-wide">
+               osu! tournament arena
+            </span>
+         </header>
+         <main class="w-full">
+            {@render children?.()}
+         </main>
+      </Sidebar.Inset>
+   </Sidebar.Provider>
+</svelte:boundary>
