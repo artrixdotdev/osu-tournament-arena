@@ -24,7 +24,8 @@
       "mode-watcher": "^1.1.0"
    },
    "devDependencies": {
-      "@lucide/svelte": "catalog:",
+      "@hugeicons/core-free-icons": "catalog:",
+      "@hugeicons/svelte": "catalog:",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",

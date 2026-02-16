@@ -39,8 +39,9 @@
       "sonner": "^2.0.7"
    },
    "devDependencies": {
+      "@hugeicons/core-free-icons": "catalog:",
+      "@hugeicons/svelte": "catalog:",
       "@internationalized/date": "^3.11.0",
-      "@lucide/svelte": "catalog:",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",

@@ -1,6 +1,7 @@
 <script lang="ts">
    import type { ComponentProps } from "svelte";
-   import PanelLeftIcon from "@lucide/svelte/icons/panel-left";
+   import { SidebarLeft01Icon } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
 
    import { Button } from "@ota/ui/components/ui/button/index.js";
    import { cn } from "@ota/ui/utils.js";
@@ -32,6 +33,6 @@
    }}
    {...restProps}
 >
-   <PanelLeftIcon />
+   <HugeiconsIcon icon={SidebarLeft01Icon} />
    <span class="sr-only">Toggle Sidebar</span>
 </Button>

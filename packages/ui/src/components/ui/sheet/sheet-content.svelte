@@ -23,7 +23,8 @@
 
 <script lang="ts">
    import type { ComponentProps, Snippet } from "svelte";
-   import XIcon from "@lucide/svelte/icons/x";
+   import { Cancel01Icon } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
    import { Dialog as SheetPrimitive } from "bits-ui";
 
    import type { WithoutChildrenOrChild } from "@ota/ui/utils.js";
@@ -58,7 +59,7 @@
       <SheetPrimitive.Close
          class="ring-offset-background focus-visible:ring-ring absolute end-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none"
       >
-         <XIcon class="size-4" />
+         <HugeiconsIcon icon={Cancel01Icon} size={16} />
          <span class="sr-only">Close</span>
       </SheetPrimitive.Close>
    </SheetPrimitive.Content>

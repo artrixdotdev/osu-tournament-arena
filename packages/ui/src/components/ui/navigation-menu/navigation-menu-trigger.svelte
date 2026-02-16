@@ -9,7 +9,8 @@
 </script>
 
 <script lang="ts">
-   import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+   import { ChevronDownIcon } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
    import { NavigationMenu as NavigationMenuPrimitive } from "bits-ui";
 
    let {
@@ -28,8 +29,10 @@
 >
    {@render children?.()}
 
-   <ChevronDownIcon
-      class="relative top-[1px] ms-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
+   <HugeiconsIcon
+      icon={ChevronDownIcon}
+      size={12}
+      class="relative top-[1px] ms-1 transition duration-300 group-data-[state=open]:rotate-180"
       aria-hidden="true"
    />
 </NavigationMenuPrimitive.Trigger>

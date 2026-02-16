@@ -1,7 +1,7 @@
 <script lang="ts">
    import type { Snippet } from "svelte";
-   import CheckIcon from "@lucide/svelte/icons/check";
-   import MinusIcon from "@lucide/svelte/icons/minus";
+   import { MinusSignIcon, Tick01Icon } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
    import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 
    import type { WithoutChildrenOrChild } from "@ota/ui/utils.js";
@@ -35,9 +35,13 @@
          class="pointer-events-none absolute start-2 flex size-3.5 items-center justify-center"
       >
          {#if indeterminate}
-            <MinusIcon class="size-4" />
+            <HugeiconsIcon icon={MinusSignIcon} size={16} />
          {:else}
-            <CheckIcon class={cn("size-4", !checked && "text-transparent")} />
+            <HugeiconsIcon
+               icon={Tick01Icon}
+               size={16}
+               class={cn(!checked && "text-transparent")}
+            />
          {/if}
       </span>
       {@render childrenProp?.()}

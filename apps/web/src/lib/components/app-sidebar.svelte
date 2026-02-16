@@ -1,11 +1,14 @@
 <script lang="ts">
    import { goto, invalidateAll } from "$app/navigation";
-   import CalendarIcon from "@lucide/svelte/icons/calendar";
-   import ChevronUpIcon from "@lucide/svelte/icons/chevron-up";
-   import HouseIcon from "@lucide/svelte/icons/house";
-   import InboxIcon from "@lucide/svelte/icons/inbox";
-   import SearchIcon from "@lucide/svelte/icons/search";
-   import SettingsIcon from "@lucide/svelte/icons/settings";
+   import {
+      ArrowUp01Icon,
+      Calendar01Icon,
+      Home01Icon,
+      Mailbox01Icon,
+      Search01Icon,
+      Settings01Icon,
+   } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
 
    import type { user as User } from "@ota/db/schema";
    import { authClient } from "@ota/auth/client";
@@ -23,27 +26,27 @@
       {
          title: "Home",
          url: "#",
-         icon: HouseIcon,
+         icon: Home01Icon,
       },
       {
          title: "Inbox",
          url: "#",
-         icon: InboxIcon,
+         icon: Mailbox01Icon,
       },
       {
          title: "Calendar",
          url: "#",
-         icon: CalendarIcon,
+         icon: Calendar01Icon,
       },
       {
          title: "Search",
          url: "#",
-         icon: SearchIcon,
+         icon: Search01Icon,
       },
       {
          title: "Settings",
          url: "#",
-         icon: SettingsIcon,
+         icon: Settings01Icon,
       },
    ];
 </script>
@@ -59,7 +62,7 @@
                      <Sidebar.MenuButton>
                         {#snippet child({ props })}
                            <a href={item.url} {...props}>
-                              <item.icon />
+                              <HugeiconsIcon icon={item.icon} />
                               <span>{item.title}</span>
                            </a>
                         {/snippet}
@@ -82,7 +85,10 @@
                            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                            {user.name}
-                           <ChevronUpIcon class="ms-auto" />
+                           <HugeiconsIcon
+                              icon={ArrowUp01Icon}
+                              class="ms-auto"
+                           />
                         </Sidebar.MenuButton>
                      {/snippet}
                   </DropdownMenu.Trigger>
