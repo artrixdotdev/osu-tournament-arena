@@ -6,6 +6,8 @@ packages:
 catalog:
    "@better-auth/cli": ^1.4.6
    "@eslint/js": ^9.39.2
+   "@discordjs/rest": ^2.6.0
+   discord-api-types: ^0.38.39
    "@lucide/svelte": ^0.563.1
    "@sveltejs/kit": ^2.50
    "@sveltejs/vite-plugin-svelte": 5.1.0
