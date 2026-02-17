@@ -3,10 +3,7 @@
    "private": true,
    "type": "module",
    "exports": {
-      ".": "./dist/src/index.js",
-      "./auth": "./dist/src/auth.js",
-      "./db": "./dist/src/db.js",
-      "./discord": "./dist/src/discord.js"
+      ".": "./src/index.ts"
    },
    "license": "MIT",
    "scripts": {
