@@ -1,5 +1,5 @@
+import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { onError } from "@orpc/server";
-import { RPCHandler } from "@orpc/server/fetch";
 import { RequestHeadersPlugin } from "@orpc/server/plugins";
 import { error } from "@sveltejs/kit";
 
@@ -7,18 +7,22 @@ import { appRouter } from "@ota/api/server";
 
 import type { RequestHandler } from "./$types";
 
-const handler = new RPCHandler(appRouter, {
+const handler = new OpenAPIHandler(appRouter, {
    interceptors: [onError(console.error)],
    plugins: [new RequestHeadersPlugin()],
 });
 
 const handle: RequestHandler = async ({ request }) => {
-   const { response } = await handler.handle(request, {
-      prefix: "/api/rpc",
+   const { matched, response } = await handler.handle(request, {
+      prefix: "/api",
       context: {},
    });
 
-   return response ?? error(404, "Not Found");
+   if (matched) {
+      return response;
+   }
+
+   return error(404, "Not Found");
 };
 
 export const GET = handle;
