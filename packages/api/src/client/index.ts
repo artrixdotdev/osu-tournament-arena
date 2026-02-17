@@ -56,12 +56,12 @@ export function orpc({
                if (!resolvedBaseUrl) {
                   throw new Error("baseUrl is required on server-side");
                }
-               return `${resolvedBaseUrl}/api/rpc`;
+               return `${resolvedBaseUrl}/rpc`;
             }
 
             const resolvedBaseUrl =
                resolve(baseUrl) ?? globalThis.window.location.origin;
-            return `${resolvedBaseUrl}/api/rpc`;
+            return `${resolvedBaseUrl}/rpc`;
          },
          headers() {
             const headers = new Map<string, string>();
