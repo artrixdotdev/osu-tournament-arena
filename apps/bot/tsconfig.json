@@ -1,0 +1,10 @@
+{
+   "extends": "@ota/tsconfig/app.json",
+   "include": ["register.ts", "src"],
+   "exclude": ["node_modules"],
+   "compilerOptions": {
+      "paths": {
+         "@/*": ["./src"]
+      }
+   }
+}

@@ -1,0 +1,14 @@
+{
+   "$schema": "https://json.schemastore.org/tsconfig",
+   "extends": "./base.json",
+   "compilerOptions": {
+      "noEmit": false,
+      "outDir": "${configDir}/dist",
+      "moduleResolution": "bundler",
+      "module": "esnext",
+      "target": "esnext",
+      "verbatimModuleSyntax": true,
+      "isolatedModules": true,
+      "lib": ["esnext", "DOM", "DOM.Iterable"]
+   }
+}

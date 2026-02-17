@@ -1,16 +1,10 @@
 {
-   "name": "@ota/env",
+   "name": "@ota/bot",
    "private": true,
    "type": "module",
-   "exports": {
-      ".": "./dist/src/index.js",
-      "./auth": "./dist/src/auth.js",
-      "./db": "./dist/src/db.js",
-      "./discord": "./dist/src/discord.js"
-   },
    "license": "MIT",
    "scripts": {
-      "build": "tsc",
+      "build": "tsc && node dist/register.js",
       "clean": "git clean -xdf .cache .turbo dist node_modules",
       "dev": "tsc",
       "format": "prettier --check . --ignore-path ../../.gitignore",
@@ -20,16 +14,17 @@
    "devDependencies": {
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
-      "@ota/tsconfig": "workspace:*",
       "@types/node": "catalog:",
+      "@ota/tsconfig": "workspace:*",
+      "@ota/env": "workspace:*",
+      "@ota/discord": "workspace:*",
       "eslint": "catalog:",
       "prettier": "catalog:",
       "typescript": "catalog:"
    },
    "prettier": "@ota/prettier-config",
    "dependencies": {
-      "@t3-oss/env-core": "^0.13.8",
-      "@t3-oss/env-nextjs": "^0.13.8",
-      "zod": "catalog:"
+      "discord-hono": "^0.20.3",
+      "discord-api-types": "catalog:"
    }
 }

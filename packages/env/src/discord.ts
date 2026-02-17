@@ -5,7 +5,8 @@ export function discordEnv() {
    return createEnv({
       server: {
          DISCORD_TOKEN: z.string().min(1),
-         DISCORD_SERVER_ID: z.string().min(1),
+         // Dev discord server
+         DISCORD_SERVER_ID: z.string().optional(),
          DISCORD_PUBLIC_KEY: z.string().min(1),
          AUTH_DISCORD_ID: z.string().min(1),
       },

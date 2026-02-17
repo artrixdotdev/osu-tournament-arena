@@ -101,6 +101,43 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  apps/bot:
+    dependencies:
+      discord-api-types:
+        specifier: 'catalog:'
+        version: 0.38.39
+      discord-hono:
+        specifier: ^0.20.3
+        version: 0.20.3
+    devDependencies:
+      '@ota/discord':
+        specifier: workspace:*
+        version: link:../../packages/discord
+      '@ota/env':
+        specifier: workspace:*
+        version: link:../../packages/env
+      '@ota/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint
+      '@ota/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier
+      '@ota/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.18.12
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.8.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   apps/web:
     dependencies:
       '@orpc/client':
@@ -3962,6 +3999,10 @@ packages:
 
   discord-api-types@0.38.39:
     resolution: {integrity: sha512-XRdDQvZvID1XvcFftjSmd4dcmMi/RL/jSy5sduBDAvCGFcNFHThdIQXCEBDZFe52lCNEzuIL0QJoKYAmRmxLUA==}
+
+  discord-hono@0.20.3:
+    resolution: {integrity: sha512-ze/r3GqirT8kKUub7TamtrM/UFLPgEDc2286eKsdlXdeQQ6xvk1fWlDQBeQa0qirk4yj9H3xYx5/AooTROXn4w==}
+    engines: {node: '>=18.4.0'}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -9912,6 +9953,8 @@ snapshots:
       path-type: 4.0.0
 
   discord-api-types@0.38.39: {}
+
+  discord-hono@0.20.3: {}
 
   doctrine@2.1.0:
     dependencies:
