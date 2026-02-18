@@ -18,7 +18,7 @@
    <ModeWatcher />
 
    <Sidebar.Provider>
-      <AppSidebar user={data.user ?? undefined} />
+      <AppSidebar user={data.user} />
       <Sidebar.Inset>
          <header
             class="border-border/40 flex h-12 items-center gap-3 border-b px-4"

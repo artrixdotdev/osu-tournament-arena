@@ -24,9 +24,11 @@
    import * as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
 
+   import type { IconSvgElement } from "@hugeicons/svelte";
+
    let {
       user,
-   }: { user?: Omit<typeof User.$inferSelect, "osuId" | "discordId"> } =
+   }: { user: Omit<typeof User.$inferSelect, "osuId" | "discordId"> | null } =
       $props();
 
    const sidebar = Sidebar.useSidebar();
@@ -86,6 +88,29 @@
    ];
 </script>
 
+{#snippet menuItem({
+   url,
+   icon,
+   title,
+   strokeWidth = 1.5,
+}: {
+   url: string;
+   icon: IconSvgElement;
+   title: string;
+   strokeWidth?: number;
+})}
+   <Sidebar.MenuItem>
+      <Sidebar.MenuButton tooltipContent={title}>
+         {#snippet child({ props })}
+            <a href={url} {...props}>
+               <HugeiconsIcon {icon} size={18} {strokeWidth} />
+               <span>{title}</span>
+            </a>
+         {/snippet}
+      </Sidebar.MenuButton>
+   </Sidebar.MenuItem>
+{/snippet}
+
 <Sidebar.Root collapsible="icon">
    <!-- Sidebar trigger at top — hamburger when expanded, sidebar icon when collapsed -->
    <Sidebar.Header class="p-2">
@@ -120,20 +145,11 @@
          <Sidebar.GroupContent>
             <Sidebar.Menu>
                {#each mainItems as item (item.title)}
-                  <Sidebar.MenuItem>
-                     <Sidebar.MenuButton tooltipContent={item.title}>
-                        {#snippet child({ props })}
-                           <a href={item.url} {...props}>
-                              <HugeiconsIcon
-                                 icon={item.icon}
-                                 size={18}
-                                 strokeWidth={1.5}
-                              />
-                              <span>{item.title}</span>
-                           </a>
-                        {/snippet}
-                     </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  {@render menuItem({
+                     url: item.url,
+                     icon: item.icon,
+                     title: item.title,
+                  })}
                {/each}
             </Sidebar.Menu>
          </Sidebar.GroupContent>
@@ -149,20 +165,11 @@
          <Sidebar.GroupContent>
             <Sidebar.Menu>
                {#each contentItems as item (item.title)}
-                  <Sidebar.MenuItem>
-                     <Sidebar.MenuButton tooltipContent={item.title}>
-                        {#snippet child({ props })}
-                           <a href={item.url} {...props}>
-                              <HugeiconsIcon
-                                 icon={item.icon}
-                                 size={18}
-                                 strokeWidth={1.5}
-                              />
-                              <span>{item.title}</span>
-                           </a>
-                        {/snippet}
-                     </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  {@render menuItem({
+                     url: item.url,
+                     icon: item.icon,
+                     title: item.title,
+                  })}
                {/each}
             </Sidebar.Menu>
          </Sidebar.GroupContent>
@@ -178,20 +185,11 @@
          <Sidebar.GroupContent>
             <Sidebar.Menu>
                {#each activityItems as item (item.title)}
-                  <Sidebar.MenuItem>
-                     <Sidebar.MenuButton tooltipContent={item.title}>
-                        {#snippet child({ props })}
-                           <a href={item.url} {...props}>
-                              <HugeiconsIcon
-                                 icon={item.icon}
-                                 size={18}
-                                 strokeWidth={1.5}
-                              />
-                              <span>{item.title}</span>
-                           </a>
-                        {/snippet}
-                     </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  {@render menuItem({
+                     url: item.url,
+                     icon: item.icon,
+                     title: item.title,
+                  })}
                {/each}
             </Sidebar.Menu>
          </Sidebar.GroupContent>
@@ -200,20 +198,11 @@
 
    <Sidebar.Footer>
       <Sidebar.Menu>
-         <Sidebar.MenuItem>
-            <Sidebar.MenuButton tooltipContent="Settings">
-               {#snippet child({ props })}
-                  <a href="/settings" {...props}>
-                     <HugeiconsIcon
-                        icon={Settings01Icon}
-                        size={18}
-                        strokeWidth={1.5}
-                     />
-                     <span>Settings</span>
-                  </a>
-               {/snippet}
-            </Sidebar.MenuButton>
-         </Sidebar.MenuItem>
+         {@render menuItem({
+            url: "/settings",
+            icon: Settings01Icon,
+            title: "Settings",
+         })}
       </Sidebar.Menu>
 
       {#if user}
@@ -229,15 +218,15 @@
                         >
                            <Avatar.Root>
                               <Avatar.Image src={user.image} alt={user.name} />
-                              <Avatar.Fallback
-                                 >{user.name.charAt(0)}</Avatar.Fallback
-                              >
+                              <Avatar.Fallback>
+                                 {user.name.charAt(0)}
+                              </Avatar.Fallback>
                            </Avatar.Root>
                            {#if sidebar.state === "expanded"}
                               <div class="flex flex-col gap-0.5 leading-none">
-                                 <span class="text-sm font-medium"
-                                    >{user.name}</span
-                                 >
+                                 <span class="text-sm font-medium">
+                                    {user.name}
+                                 </span>
                               </div>
                            {/if}
                            <HugeiconsIcon
@@ -252,15 +241,13 @@
                      side="top"
                      class="w-(--bits-dropdown-menu-anchor-width)"
                   >
-                     <DropdownMenu.Item>
-                        <button
-                           onclick={async () => {
-                              await authClient.signOut();
-                              await invalidateAll();
-                           }}
-                        >
-                           Sign out
-                        </button>
+                     <DropdownMenu.Item
+                        onSelect={async () => {
+                           await authClient.signOut();
+                           await invalidateAll();
+                        }}
+                     >
+                        Sign out
                      </DropdownMenu.Item>
                   </DropdownMenu.Content>
                </DropdownMenu.Root>
@@ -268,16 +255,12 @@
          </Sidebar.Menu>
       {:else}
          <Sidebar.Menu>
-            <Sidebar.MenuItem>
-               <Sidebar.MenuButton tooltipContent="Sign up">
-                  {#snippet child({ props })}
-                     <a href="/signup" {...props}>
-                        <HugeiconsIcon size={18} icon={LoginIcon} />
-                        <span>Sign up</span>
-                     </a>
-                  {/snippet}
-               </Sidebar.MenuButton>
-            </Sidebar.MenuItem>
+            {@render menuItem({
+               url: "/signup",
+               icon: LoginIcon,
+               title: "Sign up",
+               strokeWidth: 1,
+            })}
          </Sidebar.Menu>
       {/if}
    </Sidebar.Footer>
