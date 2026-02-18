@@ -11,7 +11,7 @@ import type { RouterClient } from "@orpc/server";
 /**
  * We only import the `AppRouter` type from the server - this is not available at runtime
  */
-import type { AppRouter } from "../server";
+import type { AppRouter } from "./server";
 
 type FunctionOrType<T> = (() => T | undefined | null) | T | undefined | null;
 
