@@ -3,11 +3,11 @@ import { onError } from "@orpc/server";
 import { RequestHeadersPlugin } from "@orpc/server/plugins";
 import { error } from "@sveltejs/kit";
 
-import { appRouter } from "@ota/api/server";
+import { apiRouter } from "@ota/api/server";
 
 import type { RequestHandler } from "./$types";
 
-const handler = new OpenAPIHandler(appRouter, {
+const handler = new OpenAPIHandler(apiRouter, {
    interceptors: [onError(console.error)],
    plugins: [new RequestHeadersPlugin()],
 });
