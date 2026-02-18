@@ -13,10 +13,12 @@ import { authorized } from "../orpc";
 const timezoneSchema = z.number().min(-12).max(14);
 
 /**
- * User procedures accessible via both RPC and OpenAPI.
- * These have explicit route metadata for REST endpoints.
+ * User procedures.
+ *
+ * Procedures with `.route()` metadata are accessible via both OpenAPI and RPC.
+ * Procedures without route metadata are only accessible via RPC.
  */
-export const publicUserProcedures = {
+export const userProcedures = {
    /**
     * Returns the currently authenticated user.
     *
@@ -69,16 +71,12 @@ export const publicUserProcedures = {
             .where(eq(user.id, context.user.id));
          return { success: true };
       }),
-};
 
-/**
- * User procedures only accessible via RPC (internal use).
- * These are not exposed through the OpenAPI endpoint.
- */
-export const internalUserProcedures = {
    /**
     * Marks the user's signup process as complete.
     * Sets signupCompletedAt to the current timestamp.
+    *
+    * RPC only - not exposed via OpenAPI.
     *
     * @returns Object indicating success
     * @throws {ORPCError} UNAUTHORIZED if no valid session exists
@@ -96,6 +94,8 @@ export const internalUserProcedures = {
 
    /**
     * Retrieves the user's signup status including Discord link and timezone.
+    *
+    * RPC only - not exposed via OpenAPI.
     *
     * @returns Object with discordId, timezone, and signupCompletedAt fields
     * @throws {ORPCError} UNAUTHORIZED if no valid session exists
