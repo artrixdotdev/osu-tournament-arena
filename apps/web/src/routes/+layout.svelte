@@ -32,7 +32,7 @@
                osu! tournament arena
             </span>
          </header>
-         <main class="w-full">
+         <main class="size-full">
             {@render children?.()}
          </main>
       </Sidebar.Inset>
