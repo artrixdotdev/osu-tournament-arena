@@ -1,5 +1,6 @@
 <script lang="ts">
    import { invalidateAll } from "$app/navigation";
+   import { page } from "$app/stores";
    import {
       ArrowUp01Icon,
       Award01Icon,
@@ -30,6 +31,11 @@
       $props();
 
    const sidebar = Sidebar.useSidebar();
+
+   const isActive = (url: string) =>
+      $page.url.pathname === "/"
+         ? url === "/"
+         : url.startsWith($page.url.pathname);
 
    const mainItems = [
       {
@@ -98,7 +104,7 @@
    strokeWidth?: number;
 })}
    <Sidebar.MenuItem>
-      <Sidebar.MenuButton tooltipContent={title}>
+      <Sidebar.MenuButton isActive={isActive(url)} tooltipContent={title}>
          {#snippet child({ props })}
             <a href={url} {...props}>
                <HugeiconsIcon {icon} size={20} {strokeWidth} />
