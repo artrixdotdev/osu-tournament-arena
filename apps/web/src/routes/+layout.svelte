@@ -6,6 +6,7 @@
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
 
    import "@ota/tailwind-config/theme";
+   import "@ota/tailwind-config/fonts";
 
    let { children, data } = $props();
 </script>
