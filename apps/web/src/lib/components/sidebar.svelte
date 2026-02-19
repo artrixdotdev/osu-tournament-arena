@@ -48,7 +48,7 @@
          url: "/browse",
          icon: Compass01Icon,
       },
-   ];
+   ] as const;
 
    const contentItems = [
       {
@@ -66,7 +66,7 @@
          url: "/players",
          icon: Search01Icon,
       },
-   ];
+   ] as const;
 
    const activityItems = [
       {
@@ -84,7 +84,7 @@
          url: "/forums",
          icon: Message01Icon,
       },
-   ];
+   ] as const;
 </script>
 
 {#snippet menuItem({
@@ -105,7 +105,7 @@
 
    <Sidebar.MenuItem>
       <Sidebar.MenuButton {isActive} tooltipContent={title}>
-         {#snippet child({ props })}
+         {#snippet child({ props }: { props?: Record<string, unknown> })}
             <a href={url} {...props}>
                <HugeiconsIcon {icon} size={20} {strokeWidth} />
                <span>{title}</span>
@@ -187,7 +187,11 @@
             <Sidebar.MenuItem>
                <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
-                     {#snippet child({ props })}
+                     {#snippet child({
+                        props,
+                     }: {
+                        props?: Record<string, unknown>;
+                     })}
                         <Sidebar.MenuButton
                            {...props}
                            size="lg"

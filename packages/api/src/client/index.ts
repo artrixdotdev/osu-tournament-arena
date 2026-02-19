@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 /**
  * This is the client-side code that uses the inferred types from the server
  */
