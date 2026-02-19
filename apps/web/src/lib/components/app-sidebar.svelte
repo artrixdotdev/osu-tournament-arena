@@ -9,11 +9,9 @@
       Compass01Icon,
       Home01Icon,
       LoginIcon,
-      Menu01Icon,
       Message01Icon,
       Search01Icon,
       Settings01Icon,
-      SidebarLeft01Icon,
       UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
@@ -92,7 +90,7 @@
    url,
    icon,
    title,
-   strokeWidth = 1.5,
+   strokeWidth = 2,
 }: {
    url: string;
    icon: IconSvgElement;
@@ -103,7 +101,7 @@
       <Sidebar.MenuButton tooltipContent={title}>
          {#snippet child({ props })}
             <a href={url} {...props}>
-               <HugeiconsIcon {icon} size={18} {strokeWidth} />
+               <HugeiconsIcon {icon} size={24} {strokeWidth} />
                <span>{title}</span>
             </a>
          {/snippet}
@@ -112,33 +110,6 @@
 {/snippet}
 
 <Sidebar.Root collapsible="icon">
-   <!-- Sidebar trigger at top — hamburger when expanded, sidebar icon when collapsed -->
-   <Sidebar.Header class="p-2">
-      <Sidebar.Menu>
-         <Sidebar.MenuItem>
-            <Sidebar.MenuButton
-               onclick={() => sidebar.toggle()}
-               tooltipContent="Toggle sidebar"
-            >
-               {#if sidebar.state === "expanded"}
-                  <HugeiconsIcon
-                     icon={Menu01Icon}
-                     size={18}
-                     strokeWidth={1.5}
-                  />
-               {:else}
-                  <HugeiconsIcon
-                     icon={SidebarLeft01Icon}
-                     size={18}
-                     strokeWidth={1.5}
-                  />
-               {/if}
-               <span>Menu</span>
-            </Sidebar.MenuButton>
-         </Sidebar.MenuItem>
-      </Sidebar.Menu>
-   </Sidebar.Header>
-
    <Sidebar.Content>
       <!-- Main navigation -->
       <Sidebar.Group>

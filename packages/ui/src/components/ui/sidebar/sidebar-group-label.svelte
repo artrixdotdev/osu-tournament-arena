@@ -17,8 +17,8 @@
 
    const mergedProps = $derived({
       class: cn(
-         "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+         "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-all duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+         "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:my-2 group-data-[collapsible=icon]:h-auto group-data-[collapsible=icon]:w-5 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0",
          className,
       ),
       "data-slot": "sidebar-group-label",
@@ -31,6 +31,11 @@
    {@render child({ props: mergedProps })}
 {:else}
    <div bind:this={ref} {...mergedProps}>
-      {@render children?.()}
+      <span class="group-data-[collapsible=icon]:hidden"
+         >{@render children?.()}</span
+      >
+      <div
+         class="bg-sidebar-foreground/50 hidden h-px w-full group-data-[collapsible=icon]:block"
+      ></div>
    </div>
 {/if}
