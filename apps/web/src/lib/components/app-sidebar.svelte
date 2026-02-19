@@ -90,7 +90,7 @@
    url,
    icon,
    title,
-   strokeWidth = 2,
+   strokeWidth = 1.5,
 }: {
    url: string;
    icon: IconSvgElement;
@@ -101,7 +101,7 @@
       <Sidebar.MenuButton tooltipContent={title}>
          {#snippet child({ props })}
             <a href={url} {...props}>
-               <HugeiconsIcon {icon} size={24} {strokeWidth} />
+               <HugeiconsIcon {icon} size={20} {strokeWidth} />
                <span>{title}</span>
             </a>
          {/snippet}
@@ -203,7 +203,7 @@
                            <HugeiconsIcon
                               icon={ArrowUp01Icon}
                               class="ms-auto"
-                              size={16}
+                              size={20}
                            />
                         </Sidebar.MenuButton>
                      {/snippet}
@@ -230,7 +230,7 @@
                url: "/signup",
                icon: LoginIcon,
                title: "Sign up",
-               strokeWidth: 1,
+               strokeWidth: 1.5,
             })}
          </Sidebar.Menu>
       {/if}

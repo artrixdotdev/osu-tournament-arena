@@ -1,7 +1,7 @@
 <script lang="ts">
    import {
-      SidebarLeftIcon,
-      SidebarRightIcon,
+      PanelLeftCloseIcon,
+      PanelLeftOpenIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
 
@@ -12,12 +12,12 @@
 
 <button
    type="button"
-   class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex size-8 items-center justify-center rounded-md transition-colors"
+   class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ml-[1.5px] flex size-8 items-center justify-center rounded-md transition-colors"
    onclick={() => sidebar.toggle()}
 >
    {#if sidebar.state === "expanded"}
-      <HugeiconsIcon icon={SidebarLeftIcon} size={16} strokeWidth={2} />
+      <HugeiconsIcon icon={PanelLeftCloseIcon} size={20} strokeWidth={1.5} />
    {:else}
-      <HugeiconsIcon icon={SidebarRightIcon} size={16} strokeWidth={2} />
+      <HugeiconsIcon icon={PanelLeftOpenIcon} size={20} strokeWidth={1.5} />
    {/if}
 </button>
