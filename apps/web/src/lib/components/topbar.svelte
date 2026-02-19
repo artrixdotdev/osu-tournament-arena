@@ -22,13 +22,13 @@
       >
          {#if sidebar.state === "expanded"}
             <HugeiconsIcon
-               icon={PanelLeftCloseIcon}
+               icon={PanelLeftOpenIcon}
                size={20}
                strokeWidth={1.5}
             />
          {:else}
             <HugeiconsIcon
-               icon={PanelLeftOpenIcon}
+               icon={PanelLeftCloseIcon}
                size={20}
                strokeWidth={1.5}
             />
