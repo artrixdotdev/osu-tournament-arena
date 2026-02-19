@@ -2,6 +2,7 @@
    import favicon from "$lib/assets/favicon.svg";
 
    import "@ota/tailwind-config/theme";
+   import "@ota/tailwind-config/fonts";
 
    let { children } = $props();
 </script>
