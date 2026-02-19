@@ -42,11 +42,7 @@
          </InputGroup.Addon>
       </InputGroup.Root>
    {:else}
-      <Button
-         onclick={async () => {
-            await goto("/signup");
-         }}
-      >
+      <Button onclick={async () => await goto("/signup")}>
          Create an account
       </Button>
    {/if}
