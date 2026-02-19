@@ -177,7 +177,7 @@
       </Sidebar.Menu>
 
       {#if user}
-         <Sidebar.Menu>
+         <Sidebar.Menu class="mb-1">
             <Sidebar.MenuItem>
                <DropdownMenu.Root>
                   <DropdownMenu.Trigger>

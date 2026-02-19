@@ -4,6 +4,7 @@
    import SidebarHeader from "$lib/components/sidebar-header.svelte";
    import { ModeWatcher } from "mode-watcher";
 
+   import { Separator } from "@ota/ui/components/separator/index.ts";
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
 
    import "@ota/tailwind-config/theme";
@@ -25,7 +26,7 @@
       >
          <div class="flex items-center gap-2">
             <SidebarHeader />
-            <span class="bg-muted-foreground/50 h-4 w-px shrink-0"></span>
+            <Separator orientation="vertical" class="mr-2 h-4" />
             <a class="flex items-center gap-2" href="/">
                <div
                   class="bg-primary flex size-7 items-center justify-center rounded-md text-xs font-bold text-white"
