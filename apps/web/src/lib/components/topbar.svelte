@@ -11,9 +11,7 @@
    const sidebar = Sidebar.useSidebar();
 </script>
 
-<header
-   class="bg-sidebar relative z-20 flex w-full items-center py-2 pr-4 pl-2"
->
+<header class="bg-sidebar fixed z-20 flex w-full items-center py-2 pr-4 pl-2">
    <div class="flex items-center gap-2">
       <button
          type="button"

@@ -19,11 +19,13 @@
 <svelte:boundary>
    <ModeWatcher />
 
-   <Sidebar.Provider class="bg-sidebar flex flex-col">
+   <Sidebar.Provider class="bg-sidebar flex h-screen flex-col overflow-hidden">
       <Topbar />
-      <div class="flex flex-1 pr-2 pb-2">
+      <div class="flex min-h-0 flex-1 pr-2 pb-2">
          <AppSidebar user={data.user} />
-         <main class="bg-background flex-1 rounded-xl">
+         <main
+            class="bg-background relative mt-14 flex-1 overflow-auto rounded-xl"
+         >
             {@render children?.()}
          </main>
       </div>
