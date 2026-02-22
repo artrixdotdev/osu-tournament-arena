@@ -15,14 +15,18 @@
    "dependencies": {
       "@orpc/client": "catalog:",
       "@orpc/contract": "catalog:",
+      "@orpc/openapi": "^1.13.5",
       "@orpc/server": "catalog:",
       "@ota/api": "workspace:*",
       "@ota/auth": "workspace:*",
       "@ota/db": "workspace:*",
       "@ota/ui": "workspace:*",
-      "better-auth": "catalog:"
+      "better-auth": "catalog:",
+      "mode-watcher": "^1.1.0"
    },
    "devDependencies": {
+      "@hugeicons/core-free-icons": "catalog:",
+      "@hugeicons/svelte": "catalog:",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",

@@ -13,6 +13,7 @@
       "./attachments/*": "./src/attachments/ui",
       "./icons/*": "./src/components/icons/*",
       "./components/*": "./src/components/ui/*",
+      "./components/ui/*": "./src/components/ui/*",
       "./styles/*": "./src/styles/*",
       "./transitions/*": "./src/transitions/*",
       "./hooks/*": "./src/hooks/*"
@@ -38,7 +39,9 @@
       "sonner": "^2.0.7"
    },
    "devDependencies": {
-      "@lucide/svelte": "catalog:",
+      "@hugeicons/core-free-icons": "catalog:",
+      "@hugeicons/svelte": "catalog:",
+      "@internationalized/date": "^3.11.0",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
@@ -46,6 +49,7 @@
       "@sveltejs/kit": "catalog:",
       "@sveltejs/package": "^2.5.0",
       "@sveltejs/vite-plugin-svelte": "catalog:",
+      "bits-ui": "^2.15.5",
       "eslint": "catalog:",
       "prettier": "catalog:",
       "svelte": "catalog:",

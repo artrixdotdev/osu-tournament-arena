@@ -18,7 +18,8 @@ src/
 ├── routes/
 │   ├── +page.svelte          # Home page
 │   ├── +layout.svelte        # Root layout
-│   └── api/rpc/[...rest]/    # oRPC API endpoint
+│   ├── api/[...rest]/        # OpenAPI REST endpoint
+│   └── rpc/[...rest]/        # oRPC RPC endpoint
 └── static/           # Static assets
 ```
 
@@ -40,7 +41,30 @@ pnpm --filter @ota/web build
 
 ## API Routes
 
-The `/api/rpc/[...rest]` route handles all oRPC procedure calls. Procedures are defined in `@ota/api/server`.
+### RPC Endpoint (`/rpc`)
+
+The `/rpc/[...rest]` route handles all oRPC procedure calls using oRPC's proprietary RPC protocol. This endpoint has access to all procedures (both public and internal).
+
+```typescript
+// Client usage
+import { orpc } from "@ota/api/client";
+
+const client = orpc({});
+const user = await client.user.me();
+await client.user.updateTimezone({ timezone: -5 });
+await client.user.completeSignup(); // Internal procedure - RPC only
+```
+
+### OpenAPI Endpoint (`/api`)
+
+The `/api/[...rest]` route provides a RESTful OpenAPI-compliant API. Only procedures with explicit route metadata are exposed here.
+
+| Method | Path                 | Description              |
+| ------ | -------------------- | ------------------------ |
+| GET    | `/api/user/me`       | Get current user profile |
+| PATCH  | `/api/user/timezone` | Update user timezone     |
+
+All OpenAPI endpoints require authentication.
 
 ## Authentication
 

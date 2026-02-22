@@ -7,7 +7,7 @@ Shared UI component library built with shadcn-svelte and Tailwind CSS.
 - **[shadcn-svelte](https://www.shadcn-svelte.com/)** - Re-usable components built with Radix UI and Tailwind
 - **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[Radix UI](https://www.radix-ui.com/)** - Unstyled, accessible UI primitives
-- **[Lucide Svelte](https://lucide.dev/)** - Icon library
+- **[Hugeicons](https://hugeicons.com/)** - Icon library (free tier with 4,600+ icons)
 - **[tailwind-variants](https://www.tailwind-variants.com/)** - Component styling variants
 
 ## Folder Structure

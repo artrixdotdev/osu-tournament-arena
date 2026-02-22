@@ -11,16 +11,29 @@ End-to-end typesafe API layer using oRPC.
 
 ```
 src/
-├── client/           # Client-side API client
-│   └── index.ts      # oRPC client factory
-├── server/           # Server-side router
-│   └── index.ts      # App router definition
+├── client.ts         # oRPC client factory for RPC calls
+├── server.ts         # App router definition
+├── orpc.ts           # Base oRPC configuration
 ├── middleware/       # oRPC middleware
 │   └── auth.ts       # Authentication middleware
-└── orpc.ts           # Base oRPC configuration
+└── procedures/       # Procedure definitions
+    └── user.ts       # User procedures
 ```
 
+## Route Visibility
+
+Procedures with `.route()` metadata are exposed via both OpenAPI (`/api`) and RPC (`/rpc`). Procedures without route metadata are only accessible via RPC.
+
+| Procedure              | OpenAPI | RPC | OpenAPI Path               |
+| ---------------------- | ------- | --- | -------------------------- |
+| `user.me`              | ✓       | ✓   | GET `/api/user/me`         |
+| `user.updateTimezone`  | ✓       | ✓   | PATCH `/api/user/timezone` |
+| `user.completeSignup`  | ✗       | ✓   | —                          |
+| `user.getSignupStatus` | ✗       | ✓   | —                          |
+
 ## Usage
+
+### RPC Client (All Procedures)
 
 ```ts
 import { orpc } from "@ota/api/client";
@@ -31,19 +44,33 @@ const client = orpc({
    env: "production",
 });
 
-// Fully typed!
-const result = await client.user.me();
+// All procedures accessible
+const user = await client.user.me();
+await client.user.updateTimezone({ timezone: -5 });
+await client.user.completeSignup(); // RPC only
+```
+
+### OpenAPI (Public Procedures Only)
+
+```bash
+# Get current user
+curl https://your-domain.com/api/user/me
+
+# Update timezone
+curl -X PATCH https://your-domain.com/api/user/timezone \
+  -H "Content-Type: application/json" \
+  -d '{"timezone": -5}'
 ```
 
 ## Exports
 
-| Export            | Description                     |
-| ----------------- | ------------------------------- |
-| `@ota/api/server` | Server-side router and handlers |
-| `@ota/api/client` | Client-side API client factory  |
+| Export            | Description                    |
+| ----------------- | ------------------------------ |
+| `@ota/api/server` | App router definition          |
+| `@ota/api/client` | Client-side API client factory |
 
 ## Adding New Procedures
 
-1. Define your procedure in the router at `src/server/index.ts`
-2. Add any required middleware in `src/middleware/`
-3. The client automatically receives types for new procedures
+1. Add procedures to `src/procedures/` (create new files as needed)
+2. Add `.route()` metadata for procedures that should be exposed via OpenAPI
+3. Import and add to `appRouter` in `server.ts`
