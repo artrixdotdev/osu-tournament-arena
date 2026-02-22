@@ -36,7 +36,11 @@ export const handle: Handle = async ({ event, resolve }) => {
          signupCompletedAt,
       } as typeof event.locals.user;
 
-      if (!signupCompletedAt && path !== "/signup" && !path.includes("/api")) {
+      if (
+         !signupCompletedAt &&
+         path !== "/signup" &&
+         (!path.includes("/api") || !path.includes("/rpc"))
+      ) {
          redirect(302, "/signup");
       }
    }
