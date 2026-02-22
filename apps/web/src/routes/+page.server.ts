@@ -1,8 +1,10 @@
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = ({ locals }) => {
+export const load: PageServerLoad = async ({ parent }) => {
+   const { user } = await parent();
+
    return {
-      user: locals.user ?? null,
-      signupCompleted: locals.user?.signupCompletedAt ?? null,
+      user: user,
+      signupCompleted: user?.signupCompletedAt ?? null,
    };
 };
