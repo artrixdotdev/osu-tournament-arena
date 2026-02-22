@@ -9,7 +9,7 @@ import type { RouterClient } from "@orpc/server";
 /**
  * We only import the `AppRouter` type from the server - this is not available at runtime
  */
-import type { AppRouter } from "../server";
+import type { AppRouter } from "./server";
 
 type FunctionOrType<T> = (() => T | undefined | null) | T | undefined | null;
 
@@ -54,12 +54,12 @@ export function orpc({
                if (!resolvedBaseUrl) {
                   throw new Error("baseUrl is required on server-side");
                }
-               return `${resolvedBaseUrl}/api/rpc`;
+               return `${resolvedBaseUrl}/rpc`;
             }
 
             const resolvedBaseUrl =
                resolve(baseUrl) ?? globalThis.window.location.origin;
-            return `${resolvedBaseUrl}/api/rpc`;
+            return `${resolvedBaseUrl}/rpc`;
          },
          headers() {
             const headers = new Map<string, string>();
