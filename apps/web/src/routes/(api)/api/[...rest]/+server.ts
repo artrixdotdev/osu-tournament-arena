@@ -13,16 +13,12 @@ const handler = new OpenAPIHandler(appRouter, {
 });
 
 const handle: RequestHandler = async ({ request }) => {
-   const { matched, response } = await handler.handle(request, {
+   const { response } = await handler.handle(request, {
       prefix: "/api",
       context: {},
    });
 
-   if (matched) {
-      return response;
-   }
-
-   return error(404, "Not Found");
+   return response ?? error(404, "Not Found");
 };
 
 export const GET = handle;
