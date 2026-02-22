@@ -44,7 +44,7 @@
       "tw-animate-css": "catalog:",
       "typescript": "catalog:",
       "vite": "catalog:",
-      "wrangler": "4.53.0"
+      "wrangler": "catalog:"
    },
    "prettier": "@ota/prettier-config"
 }

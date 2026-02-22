@@ -1,0 +1,9 @@
+{
+   "$schema": "node_modules/wrangler/config-schema.json",
+   "compatibility_date": "2026-02-04",
+   "name": "osu-tournament-arena-bot",
+   "main": "src/index.ts",
+   "observability": {
+      "enabled": true,
+   },
+}
