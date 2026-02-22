@@ -1,0 +1,19 @@
+{
+   "name": "@ota/i18n",
+   "private": true,
+   "type": "module",
+   "license": "MIT",
+   "scripts": {
+      "format": "prettier --check . --ignore-path ../../.gitignore",
+      "lint": "eslint"
+   },
+   "devDependencies": {
+      "@ota/eslint-config": "workspace:*",
+      "@ota/prettier-config": "workspace:*",
+      "@ota/tsconfig": "workspace:*",
+      "eslint": "catalog:",
+      "prettier": "catalog:",
+      "typescript": "catalog:"
+   },
+   "prettier": "@ota/prettier-config"
+}

@@ -12,6 +12,9 @@ export default {
       experimental: {
          remoteFunctions: true,
       },
+      alias: {
+         $paraglide: "./src/lib/paraglide",
+      },
    },
 
    compilerOptions: {

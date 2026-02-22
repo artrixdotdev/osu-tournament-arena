@@ -16,6 +16,7 @@
       UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
+   import { m } from "$lib/paraglide/messages.js";
 
    import type { user as User } from "@ota/db/schema";
    import { authClient } from "@ota/auth/client";
@@ -34,17 +35,17 @@
 
    const mainItems = [
       {
-         title: "Home",
+         title: m["navigation.home"](),
          url: "/",
          icon: Home01Icon,
       },
       {
-         title: "Schedule",
+         title: m["navigation.schedule"](),
          url: "/schedule",
          icon: Calendar01Icon,
       },
       {
-         title: "Browse",
+         title: m["navigation.browse"](),
          url: "/browse",
          icon: Compass01Icon,
       },
@@ -52,17 +53,17 @@
 
    const contentItems = [
       {
-         title: "Tournaments",
+         title: m["navigation.tournaments"](),
          url: "/tournaments",
          icon: Award01Icon,
       },
       {
-         title: "Teams",
+         title: m["navigation.teams"](),
          url: "/teams",
          icon: UserGroupIcon,
       },
       {
-         title: "Players",
+         title: m["navigation.players"](),
          url: "/players",
          icon: Search01Icon,
       },
@@ -70,17 +71,17 @@
 
    const activityItems = [
       {
-         title: "My Library",
+         title: m["navigation.myLibrary"](),
          url: "/library",
          icon: BookOpen01Icon,
       },
       {
-         title: "History",
+         title: m["navigation.history"](),
          url: "/history",
          icon: Clock01Icon,
       },
       {
-         title: "Forums",
+         title: m["navigation.forums"](),
          url: "/forums",
          icon: Message01Icon,
       },
@@ -137,7 +138,7 @@
          <Sidebar.GroupLabel
             class="text-[10px] tracking-widest uppercase opacity-50"
          >
-            Content
+            {m["labels.content"]()}
          </Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
@@ -157,7 +158,7 @@
          <Sidebar.GroupLabel
             class="text-[10px] tracking-widest uppercase opacity-50"
          >
-            My Activity
+            {m["labels.myActivity"]()}
          </Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
@@ -178,7 +179,7 @@
          {@render menuItem({
             url: "/settings",
             icon: Settings01Icon,
-            title: "Settings",
+            title: m["navigation.settings"](),
          })}
       </Sidebar.Menu>
 
@@ -228,7 +229,7 @@
                            await invalidateAll();
                         }}
                      >
-                        Sign out
+                        {m["navigation.signOut"]()}
                      </DropdownMenu.Item>
                   </DropdownMenu.Content>
                </DropdownMenu.Root>
@@ -239,7 +240,7 @@
             {@render menuItem({
                url: "/signup",
                icon: LoginIcon,
-               title: "Sign up",
+               title: m["navigation.signUp"](),
                strokeWidth: 1.5,
             })}
          </Sidebar.Menu>
