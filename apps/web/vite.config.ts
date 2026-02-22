@@ -9,6 +9,7 @@ export default defineConfig({
          project: "../../packages/i18n/project.inlang",
          outdir: "./src/lib/paraglide",
          strategy: ["url", "cookie", "preferredLanguage", "baseLocale"],
+         emitTsDeclarations: true,
       }),
    ],
    ssr: {
