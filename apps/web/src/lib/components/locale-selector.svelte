@@ -1,5 +1,6 @@
 <script lang="ts">
    import { LanguageCircleIcon } from "@hugeicons/core-free-icons";
+   import type { Locale } from "$lib/paraglide/runtime.js";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { locales, setLocale } from "$lib/paraglide/runtime.js";
 
@@ -10,8 +11,8 @@
       en: { name: "English", flag: "🇺🇸" },
    };
 
-   function handleLocaleChange(locale: "en") {
-      setLocale(locale);
+   async function handleLocaleChange(locale: Locale) {
+      await setLocale(locale);
    }
 </script>
 
@@ -24,7 +25,7 @@
       {/snippet}
    </DropdownMenu.Trigger>
    <DropdownMenu.Content align="end">
-      {#each locales as locale}
+      {#each locales as locale (locale)}
          {@const config = localeConfig[locale]}
          <DropdownMenu.Item onSelect={() => handleLocaleChange(locale)}>
             <span class="mr-2">{config?.flag ?? "🌐"}</span>
