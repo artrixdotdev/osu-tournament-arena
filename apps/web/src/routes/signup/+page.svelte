@@ -48,7 +48,7 @@
             callbackURL: "/signup",
          });
       } catch (e) {
-         error = m["signup.errors.discordLinkFailed"]();
+         error = m["signup_errors_discordLinkFailed"]();
          console.error(e);
       } finally {
          loading = false;
@@ -69,7 +69,7 @@
          signupStore.completeStep("timezone");
          void goto("/");
       } catch (e) {
-         error = m["signup.errors.timezoneSaveFailed"]();
+         error = m["signup_errors_timezoneSaveFailed"]();
          console.error(e);
       } finally {
          loading = false;
@@ -89,16 +89,16 @@
 </script>
 
 <svelte:head>
-   <title>{m["signup.pageTitle"]()}</title>
+   <title>{m["signup_pageTitle"]()}</title>
 </svelte:head>
 
 <div class="flex min-h-screen items-center justify-center p-4">
    <div class="w-full max-w-md space-y-6">
       {#if $signupStore.currentStep === "osu"}
          <div class="text-center">
-            <h1 class="text-2xl font-bold">{m["signup.connectOsu.title"]()}</h1>
+            <h1 class="text-2xl font-bold">{m["signup_connectOsu_title"]()}</h1>
             <p class="text-muted-foreground mt-2">
-               {m["signup.connectOsu.description"]()}
+               {m["signup_connectOsu_description"]()}
             </p>
             <Button
                class="mt-4"
@@ -109,7 +109,7 @@
                   });
                }}
             >
-               {m["signup.connectOsu.button"]()}
+               {m["signup_connectOsu_button"]()}
             </Button>
          </div>
       {:else}
@@ -121,10 +121,10 @@
             {#if $signupStore.currentStep === "discord"}
                <div class="space-y-4">
                   <h2 class="text-xl font-semibold">
-                     {m["signup.discord.title"]()}
+                     {m.signup_discord_title()}
                   </h2>
                   <p class="text-muted-foreground">
-                     {m["signup.discord.description"]()}
+                     {m.signup_discord_description()}
                   </p>
 
                   {#if error}
@@ -134,9 +134,9 @@
                   <div class="flex flex-col gap-3">
                      <Button onclick={handleDiscordLink} disabled={loading}>
                         {#if loading}
-                           {m["signup.discord.linking"]()}
+                           {m.signup_discord_linking()}
                         {:else}
-                           {m["signup.discord.linkButton"]()}
+                           {m["signup_discord_linkButton"]()}
                         {/if}
                      </Button>
 
@@ -145,17 +145,17 @@
                         onclick={handleSkipDiscord}
                         disabled={loading}
                      >
-                        {m["signup.discord.skipButton"]()}
+                        {m["signup_discord_skipButton"]()}
                      </Button>
                   </div>
                </div>
             {:else if $signupStore.currentStep === "timezone"}
                <div class="space-y-4">
                   <h2 class="text-xl font-semibold">
-                     {m["signup.timezone.title"]()}
+                     {m.signup_timezone_title()}
                   </h2>
                   <p class="text-muted-foreground">
-                     {m["signup.timezone.description"]()}
+                     {m.signup_timezone_description()}
                   </p>
 
                   {#if error}
@@ -175,9 +175,9 @@
 
                      <Button onclick={handleTimezoneSubmit} disabled={loading}>
                         {#if loading}
-                           {m["signup.timezone.saving"]()}
+                           {m.signup_timezone_saving()}
                         {:else}
-                           {m["signup.timezone.completeButton"]()}
+                           {m["signup_timezone_completeButton"]()}
                         {/if}
                      </Button>
                   </div>

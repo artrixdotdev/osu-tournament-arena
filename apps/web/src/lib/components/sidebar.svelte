@@ -16,7 +16,7 @@
       UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import { m } from "$lib/paraglide/messages.js";
+   import * as m from "$lib/paraglide/messages.js";
 
    import type { user as User } from "@ota/db/schema";
    import { authClient } from "@ota/auth/client";
@@ -35,17 +35,17 @@
 
    const mainItems = [
       {
-         title: m["navigation.home"](),
+         title: m.navigation_home(),
          url: "/",
          icon: Home01Icon,
       },
       {
-         title: m["navigation.schedule"](),
+         title: m.navigation_schedule(),
          url: "/schedule",
          icon: Calendar01Icon,
       },
       {
-         title: m["navigation.browse"](),
+         title: m.navigation_browse(),
          url: "/browse",
          icon: Compass01Icon,
       },
@@ -53,17 +53,17 @@
 
    const contentItems = [
       {
-         title: m["navigation.tournaments"](),
+         title: m.navigation_tournaments(),
          url: "/tournaments",
          icon: Award01Icon,
       },
       {
-         title: m["navigation.teams"](),
+         title: m.navigation_teams(),
          url: "/teams",
          icon: UserGroupIcon,
       },
       {
-         title: m["navigation.players"](),
+         title: m.navigation_players(),
          url: "/players",
          icon: Search01Icon,
       },
@@ -71,17 +71,17 @@
 
    const activityItems = [
       {
-         title: m["navigation.myLibrary"](),
+         title: m["navigation_myLibrary"](),
          url: "/library",
          icon: BookOpen01Icon,
       },
       {
-         title: m["navigation.history"](),
+         title: m.navigation_history(),
          url: "/history",
          icon: Clock01Icon,
       },
       {
-         title: m["navigation.forums"](),
+         title: m.navigation_forums(),
          url: "/forums",
          icon: Message01Icon,
       },
@@ -138,7 +138,7 @@
          <Sidebar.GroupLabel
             class="text-[10px] tracking-widest uppercase opacity-50"
          >
-            {m["labels.content"]()}
+            {m.labels_content()}
          </Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
@@ -158,7 +158,7 @@
          <Sidebar.GroupLabel
             class="text-[10px] tracking-widest uppercase opacity-50"
          >
-            {m["labels.myActivity"]()}
+            {m["labels_myActivity"]()}
          </Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
@@ -179,7 +179,7 @@
          {@render menuItem({
             url: "/settings",
             icon: Settings01Icon,
-            title: m["navigation.settings"](),
+            title: m.navigation_settings(),
          })}
       </Sidebar.Menu>
 
@@ -229,7 +229,7 @@
                            await invalidateAll();
                         }}
                      >
-                        {m["navigation.signOut"]()}
+                        {m["navigation_signOut"]()}
                      </DropdownMenu.Item>
                   </DropdownMenu.Content>
                </DropdownMenu.Root>
@@ -240,7 +240,7 @@
             {@render menuItem({
                url: "/signup",
                icon: LoginIcon,
-               title: m["navigation.signUp"](),
+               title: m["navigation_signUp"](),
                strokeWidth: 1.5,
             })}
          </Sidebar.Menu>

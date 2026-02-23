@@ -17,28 +17,28 @@
    {#if data.user}
       <div class="text-center">
          <h1 class="text-2xl font-bold">
-            {m["home.welcome"]({ name: data.user.name })}
+            {m.home_welcome({ name: data.user.name })}
          </h1>
-         <p class="text-muted-foreground mt-2">{m["home.allSet"]()}</p>
+         <p class="text-muted-foreground mt-2">{m["home_allSet"]()}</p>
       </div>
 
       <InputGroup.Root inputmode="search">
          <InputGroup.Addon align="block-start">
             <Label for="search" class="text-foreground">
-               {m["home.searchTournaments"]()}
+               {m["home_searchTournaments"]()}
             </Label>
             <InputGroup.Button
                variant="default"
                class="ms-auto"
                onclick={async () => await goto("/search")}
             >
-               {m["home.advancedSearch"]()}
+               {m["home_advancedSearch"]()}
             </InputGroup.Button>
          </InputGroup.Addon>
          <InputGroup.Addon class="w-full">
             <HugeiconsIcon icon={Search01Icon} size={20} strokeWidth={1.5} />
             <InputGroup.Input
-               placeholder={m["home.searchPlaceholder"]()}
+               placeholder={m["home_searchPlaceholder"]()}
                name="search"
                id="search"
             />
@@ -46,7 +46,7 @@
       </InputGroup.Root>
    {:else}
       <Button onclick={async () => await goto("/signup")}>
-         {m["home.createAccount"]()}
+         {m["home_createAccount"]()}
       </Button>
    {/if}
 </div>

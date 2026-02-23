@@ -1,36 +1,46 @@
 <script lang="ts">
-   import { LanguageCircleIcon } from "@hugeicons/core-free-icons";
+   import type { Locale } from "$lib/paraglide/runtime.js";
+   import { LanguageSquareIcon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import { locales, setLocale } from "$lib/paraglide/runtime.js";
+   import { m } from "$lib/paraglide/messages";
+   import { getLocale, locales, setLocale } from "$lib/paraglide/runtime.js";
 
-   import {   import { Button } from "@ota/ui/components/button/index.ts";
-   import * as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";
-as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";
+   import { Button } from "@ota/ui/components/button/index.ts";
+   import * as Select from "@ota/ui/components/select/index.ts";
 
-   const localeConfig: Record<string, { name: string; flag: string }> = {
-      en: { name: "English", flag: "🇺🇸" },
+   const localeNames: Record<Locale, string> = {
+      en: m.locale_en(),
    };
 
-   function handleLocaleChange(locale: "en") {
-      setLocale(locale);
+   const localeFlags: Record<Locale, string> = {
+      en: "🇺🇸",
+   };
+
+   let value = $state(getLocale());
+
+   async function handleLocaleChange(locale: Locale) {
+      await setLocale(locale);
    }
 </script>
 
-<DropdownMenu.Root>
-   <DropdownMenu.Trigger>
-      {#snippet child({ props })}
-         <Button variant="ghost" size="icon" {...props}>
-            <HugeiconsIcon icon={LanguageCircleIcon} size={20} />
-         </Button>
-      {/snippet}
-   </DropdownMenu.Trigger>
-   <DropdownMenu.Content align="end">
-      {#each locales as locale}
-         {@const config = localeConfig[locale]}
-         <DropdownMenu.Item onSelect={() => handleLocaleChange(locale)}>
-            <span class="mr-2">{config?.flag ?? "🌐"}</span>
-            {config?.name ?? locale}
-         </DropdownMenu.Item>
+<Select.Root
+   type="single"
+   bind:value
+   onValueChange={(v) => handleLocaleChange(v as Locale)}
+>
+   <Select.Trigger class="h-8 w-fit gap-1.5 px-2">
+      <HugeiconsIcon
+         icon={LanguageSquareIcon}
+         size={18}
+         class="h-4.5! w-4.5!"
+      />
+      <span class="text-sm">{localeFlags[value] ?? "🌐"}</span>
+   </Select.Trigger>
+   <Select.Content class="mr-4">
+      {#each locales as locale (locale)}
+         <Select.Item value={locale} label={localeNames[locale] ?? locale}>
+            {localeNames[locale] ?? locale}
+         </Select.Item>
       {/each}
-   </DropdownMenu.Content>
-</DropdownMenu.Root>
+   </Select.Content>
+</Select.Root>
