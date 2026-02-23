@@ -4,14 +4,11 @@
    "type": "module",
    "license": "MIT",
    "scripts": {
-      "format": "prettier --check . --ignore-path ../../.gitignore",
-      "lint": "eslint"
+      "format": "prettier --check . --ignore-path ../../.gitignore"
    },
    "devDependencies": {
-      "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/tsconfig": "workspace:*",
-      "eslint": "catalog:",
       "prettier": "catalog:",
       "typescript": "catalog:"
    },
