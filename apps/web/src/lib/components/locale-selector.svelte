@@ -24,12 +24,8 @@
    bind:value
    onValueChange={(v) => handleLocaleChange(v as Locale)}
 >
-   <Select.Trigger class="h-8 w-fit gap-1.5 px-2">
-      <HugeiconsIcon
-         icon={LanguageSquareIcon}
-         size={18}
-         class="h-4.5! w-4.5!"
-      />
+   <Select.Trigger class="m-0 h-5! w-fit gap-1.5 border-none p-0 ">
+      <HugeiconsIcon icon={LanguageSquareIcon} size={18} class="h-5! w-5!" />
    </Select.Trigger>
    <Select.Content class="mr-4">
       {#each locales as locale (locale)}
