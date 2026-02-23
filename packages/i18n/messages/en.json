@@ -1,63 +1,43 @@
 {
    "$schema": "https://inlang.com/schema/inlang-message-format",
-   "common": {
-      "appName": "osu! tournament arena",
-      "appNameShort": "OTA"
-   },
-   "navigation": {
-      "home": "Home",
-      "schedule": "Schedule",
-      "browse": "Browse",
-      "tournaments": "Tournaments",
-      "teams": "Teams",
-      "players": "Players",
-      "myLibrary": "My Library",
-      "history": "History",
-      "forums": "Forums",
-      "settings": "Settings",
-      "signUp": "Sign up",
-      "signOut": "Sign out"
-   },
-   "labels": {
-      "content": "Content",
-      "myActivity": "My Activity"
-   },
-   "home": {
-      "welcome": "Welcome, {name}!",
-      "allSet": "You're all set up.",
-      "searchTournaments": "Search Tournaments",
-      "advancedSearch": "Advanced Search",
-      "searchPlaceholder": "Search...",
-      "createAccount": "Create an account"
-   },
-   "signup": {
-      "pageTitle": "Complete Signup",
-      "connectOsu": {
-         "title": "Connect osu!",
-         "description": "Click below to sign in with your osu! account",
-         "button": "Sign in with osu!"
-      },
-      "discord": {
-         "title": "Link Discord Account",
-         "description": "Linking your Discord account allows you to receive tournament notifications and communicate with other players.",
-         "linkButton": "Link Discord Account",
-         "linking": "Linking...",
-         "skipButton": "Skip for now"
-      },
-      "timezone": {
-         "title": "Set Your Timezone",
-         "description": "Select your timezone to help schedule tournament matches at convenient times.",
-         "saving": "Saving...",
-         "completeButton": "Complete Signup"
-      },
-      "errors": {
-         "discordLinkFailed": "Failed to link Discord. Please try again.",
-         "timezoneSaveFailed": "Failed to save timezone. Please try again."
-      }
-   },
-   "locale": {
-      "selectLanguage": "Select Language",
-      "en": "English",
-      "system": "System"
-   }
+   "common_appName": "osu! tournament arena",
+   "common_appNameShort": "OTA",
+   "navigation_home": "Home",
+   "navigation_schedule": "Schedule",
+   "navigation_browse": "Browse",
+   "navigation_tournaments": "Tournaments",
+   "navigation_teams": "Teams",
+   "navigation_players": "Players",
+   "navigation_myLibrary": "My Library",
+   "navigation_history": "History",
+   "navigation_forums": "Forums",
+   "navigation_settings": "Settings",
+   "navigation_signUp": "Sign up",
+   "navigation_signOut": "Sign out",
+   "labels_content": "Content",
+   "labels_myActivity": "My Activity",
+   "home_welcome": "Welcome, {name}!",
+   "home_allSet": "You're all set up.",
+   "home_searchTournaments": "Search Tournaments",
+   "home_advancedSearch": "Advanced Search",
+   "home_searchPlaceholder": "Search...",
+   "home_createAccount": "Create an account",
+   "signup_pageTitle": "Complete Signup",
+   "signup_connectOsu_title": "Connect osu!",
+   "signup_connectOsu_description": "Click below to sign in with your osu! account",
+   "signup_connectOsu_button": "Sign in with osu!",
+   "signup_discord_title": "Link Discord Account",
+   "signup_discord_description": "Linking your Discord account allows you to receive tournament notifications and communicate with other players.",
+   "signup_discord_linkButton": "Link Discord Account",
+   "signup_discord_linking": "Linking...",
+   "signup_discord_skipButton": "Skip for now",
+   "signup_timezone_title": "Set Your Timezone",
+   "signup_timezone_description": "Select your timezone to help schedule tournament matches at convenient times.",
+   "signup_timezone_saving": "Saving...",
+   "signup_timezone_completeButton": "Complete Signup",
+   "signup_errors_discordLinkFailed": "Failed to link Discord. Please try again.",
+   "signup_errors_timezoneSaveFailed": "Failed to save timezone. Please try again.",
+   "locale_selectLanguage": "Select Language",
+   "locale_en": "English",
+   "locale_system": "System"
 }
