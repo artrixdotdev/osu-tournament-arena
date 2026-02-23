@@ -12,10 +12,6 @@
       en: m.locale_en(),
    };
 
-   const localeFlags: Record<Locale, string> = {
-      en: "🇺🇸",
-   };
-
    let value = $state(getLocale());
 
    async function handleLocaleChange(locale: Locale) {
@@ -34,7 +30,6 @@
          size={18}
          class="h-4.5! w-4.5!"
       />
-      <span class="text-sm">{localeFlags[value] ?? "🌐"}</span>
    </Select.Trigger>
    <Select.Content class="mr-4">
       {#each locales as locale (locale)}
