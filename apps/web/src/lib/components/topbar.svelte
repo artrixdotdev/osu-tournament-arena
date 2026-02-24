@@ -43,7 +43,7 @@
             O
          </div>
          <span class="text-sm font-semibold tracking-wide">
-            {m["common_appName"]()}
+            {m.common_appName()}
          </span>
       </a>
    </div>

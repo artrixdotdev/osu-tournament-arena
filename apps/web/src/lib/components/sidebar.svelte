@@ -71,7 +71,7 @@
 
    const activityItems = [
       {
-         title: m["navigation_myLibrary"](),
+         title: m.navigation_myLibrary(),
          url: "/library",
          icon: BookOpen01Icon,
       },
@@ -158,7 +158,7 @@
          <Sidebar.GroupLabel
             class="text-[10px] tracking-widest uppercase opacity-50"
          >
-            {m["labels_myActivity"]()}
+            {m.labels_myActivity()}
          </Sidebar.GroupLabel>
          <Sidebar.GroupContent>
             <Sidebar.Menu>
@@ -229,7 +229,7 @@
                            await invalidateAll();
                         }}
                      >
-                        {m["navigation_signOut"]()}
+                        {m.navigation_signOut()}
                      </DropdownMenu.Item>
                   </DropdownMenu.Content>
                </DropdownMenu.Root>
@@ -240,7 +240,7 @@
             {@render menuItem({
                url: "/signup",
                icon: LoginIcon,
-               title: m["navigation_signUp"](),
+               title: m.navigation_signUp(),
                strokeWidth: 1.5,
             })}
          </Sidebar.Menu>

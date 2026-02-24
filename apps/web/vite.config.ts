@@ -1,3 +1,4 @@
+import type { PluginOption } from "vite";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
@@ -10,7 +11,7 @@ export default defineConfig({
          outdir: "./src/lib/paraglide",
          strategy: ["url", "cookie", "preferredLanguage", "baseLocale"],
          emitTsDeclarations: true,
-      }),
+      }) as PluginOption,
    ],
    ssr: {
       noExternal: [/^bits-ui/, /^svelte-toolbelt/, /^runed/, /^@ota\/ui/],
