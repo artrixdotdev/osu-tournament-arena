@@ -5,12 +5,7 @@
    import { m } from "$lib/paraglide/messages";
    import { getLocale, locales, setLocale } from "$lib/paraglide/runtime.js";
 
-   import { Button } from "@ota/ui/components/button/index.ts";
    import * as Select from "@ota/ui/components/select/index.ts";
-
-   const localeNames: Record<Locale, string> = {
-      en: m.locale_en(),
-   };
 
    let value = $state(getLocale());
 
@@ -29,8 +24,10 @@
    </Select.Trigger>
    <Select.Content class="mr-4">
       {#each locales as locale (locale)}
-         <Select.Item value={locale} label={localeNames[locale] ?? locale}>
-            {localeNames[locale] ?? locale}
+         <!-- Gets the locale name in its native language -->
+         {@const localeName = m[`locale_${locale}`]({}, { locale })}
+         <Select.Item value={locale} label={localeName}>
+            {localeName}
          </Select.Item>
       {/each}
    </Select.Content>
