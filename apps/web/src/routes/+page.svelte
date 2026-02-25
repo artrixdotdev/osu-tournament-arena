@@ -2,7 +2,7 @@
    import { goto } from "$app/navigation";
    import { Search01Icon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import { m } from "$lib/paraglide/messages.js";
+   import { m } from "$paraglide/messages.js";
 
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as InputGroup from "@ota/ui/components/input-group/index.ts";
