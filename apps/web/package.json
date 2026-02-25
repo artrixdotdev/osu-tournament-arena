@@ -4,11 +4,11 @@
    "version": "0.0.1",
    "type": "module",
    "scripts": {
-      "postinstall": "pnpx @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --outdir ./src/paraglide",
+      "localize": "npx @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --emit-ts-declarations --silent --outdir ./src/paraglide",
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
-      "prepare": "svelte-kit sync || echo ''",
+      "prepare": "svelte-kit sync && pnpm localize",
       "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
