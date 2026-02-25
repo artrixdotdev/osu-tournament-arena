@@ -1,5 +1,6 @@
 <script lang="ts">
    import { goto } from "$app/navigation";
+   import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
    import { signupStore } from "$lib/stores/signup-store.svelte";
    import { SIGNUP_STEPS, TIMEZONE_OPTIONS } from "$lib/stores/signup-types";
@@ -47,7 +48,7 @@
             callbackURL: "/signup",
          });
       } catch (e) {
-         error = "Failed to link Discord. Please try again.";
+         error = m.signup_errors_discordLinkFailed();
          console.error(e);
       } finally {
          loading = false;
@@ -68,7 +69,7 @@
          signupStore.completeStep("timezone");
          void goto("/");
       } catch (e) {
-         error = "Failed to save timezone. Please try again.";
+         error = m.signup_errors_timezoneSaveFailed();
          console.error(e);
       } finally {
          loading = false;
@@ -88,16 +89,16 @@
 </script>
 
 <svelte:head>
-   <title>Complete Signup</title>
+   <title>{m.signup_pageTitle()}</title>
 </svelte:head>
 
 <div class="flex min-h-screen items-center justify-center p-4">
    <div class="w-full max-w-md space-y-6">
       {#if $signupStore.currentStep === "osu"}
          <div class="text-center">
-            <h1 class="text-2xl font-bold">Connect osu!</h1>
+            <h1 class="text-2xl font-bold">{m.signup_connectOsu_title()}</h1>
             <p class="text-muted-foreground mt-2">
-               Click below to sign in with your osu! account
+               {m.signup_connectOsu_description()}
             </p>
             <Button
                class="mt-4"
@@ -108,7 +109,7 @@
                   });
                }}
             >
-               Sign in with osu!
+               {m.signup_connectOsu_button()}
             </Button>
          </div>
       {:else}
@@ -119,11 +120,11 @@
          >
             {#if $signupStore.currentStep === "discord"}
                <div class="space-y-4">
-                  <h2 class="text-xl font-semibold">Link Discord Account</h2>
+                  <h2 class="text-xl font-semibold">
+                     {m.signup_discord_title()}
+                  </h2>
                   <p class="text-muted-foreground">
-                     Linking your Discord account allows you to receive
-                     tournament notifications and communicate with other
-                     players.
+                     {m.signup_discord_description()}
                   </p>
 
                   {#if error}
@@ -133,9 +134,9 @@
                   <div class="flex flex-col gap-3">
                      <Button onclick={handleDiscordLink} disabled={loading}>
                         {#if loading}
-                           Linking...
+                           {m.signup_discord_linking()}
                         {:else}
-                           Link Discord Account
+                           {m.signup_discord_linkButton()}
                         {/if}
                      </Button>
 
@@ -144,16 +145,17 @@
                         onclick={handleSkipDiscord}
                         disabled={loading}
                      >
-                        Skip for now
+                        {m.signup_discord_skipButton()}
                      </Button>
                   </div>
                </div>
             {:else if $signupStore.currentStep === "timezone"}
                <div class="space-y-4">
-                  <h2 class="text-xl font-semibold">Set Your Timezone</h2>
+                  <h2 class="text-xl font-semibold">
+                     {m.signup_timezone_title()}
+                  </h2>
                   <p class="text-muted-foreground">
-                     Select your timezone to help schedule tournament matches at
-                     convenient times.
+                     {m.signup_timezone_description()}
                   </p>
 
                   {#if error}
@@ -173,9 +175,9 @@
 
                      <Button onclick={handleTimezoneSubmit} disabled={loading}>
                         {#if loading}
-                           Saving...
+                           {m.signup_timezone_saving()}
                         {:else}
-                           Complete Signup
+                           {m.signup_timezone_completeButton()}
                         {/if}
                      </Button>
                   </div>

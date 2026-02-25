@@ -5,7 +5,7 @@ import svelteConfig from "@ota/eslint-config/svelte";
 
 export default defineConfig(
    {
-      ignores: ["dist/**"],
+      ignores: ["dist/**", "src/lib/paraglide/**"],
    },
    baseConfig,
    svelteConfig,

@@ -4,9 +4,12 @@
       PanelLeftOpenIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
+   import { m } from "$i18n/messages";
 
    import { Separator } from "@ota/ui/components/separator/index.ts";
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";
+
+   import LocaleSelector from "./locale-selector.svelte";
 
    const sidebar = Sidebar.useSidebar();
 </script>
@@ -40,8 +43,12 @@
             O
          </div>
          <span class="text-sm font-semibold tracking-wide">
-            osu! tournament arena
+            {m.common_appName()}
          </span>
       </a>
+   </div>
+
+   <div class="ml-auto flex items-center gap-2">
+      <LocaleSelector />
    </div>
 </header>

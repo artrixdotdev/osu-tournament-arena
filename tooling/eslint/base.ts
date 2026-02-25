@@ -40,7 +40,7 @@ export const baseConfig = defineConfig(
    // Ignore files not tracked by VCS and any config files
    // @ts-ignore An annoying error that I have no idea how to fix
    includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
-   { ignores: ["**/*.config.*"] },
+   { ignores: ["**/*.config.*", "**/paraglide/**"] },
    {
       files: ["**/*.js", "**/*.ts", "**/*.svelte", "**/*.svx"],
       plugins: {

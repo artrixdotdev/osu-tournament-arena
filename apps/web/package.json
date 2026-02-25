@@ -4,10 +4,11 @@
    "version": "0.0.1",
    "type": "module",
    "scripts": {
+      "localize": "npx @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --emit-ts-declarations --silent --outdir ./src/lib/paraglide",
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
-      "prepare": "svelte-kit sync || echo ''",
+      "prepare": "pnpm localize && svelte-kit sync",
       "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
@@ -27,6 +28,7 @@
    "devDependencies": {
       "@hugeicons/core-free-icons": "catalog:",
       "@hugeicons/svelte": "catalog:",
+      "@inlang/paraglide-js": "^2.12.0",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
@@ -39,6 +41,7 @@
       "prettier": "catalog:",
       "svelte": "catalog:",
       "svelte-check": "catalog:",
+      "svelte-flag-icons": "^3.0.1",
       "tailwind-variants": "^3.2.2",
       "tailwindcss": "catalog:",
       "tw-animate-css": "catalog:",
