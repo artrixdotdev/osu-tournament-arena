@@ -4,6 +4,7 @@
    "version": "0.0.1",
    "type": "module",
    "scripts": {
+      "postinstall": "pnpx @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --outdir ./src/paraglide",
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
