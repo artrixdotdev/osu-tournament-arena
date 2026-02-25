@@ -1,4 +1,4 @@
-import { deLocalizeUrl } from "$paraglide/runtime";
+import { deLocalizeUrl } from "$lib/paraglide/runtime";
 
 import type { Reroute } from "@sveltejs/kit";
 

@@ -1,9 +1,9 @@
 <script lang="ts">
    import { goto } from "$app/navigation";
    import { client } from "$lib/orpc";
+   import { m } from "$lib/paraglide/messages.js";
    import { signupStore } from "$lib/stores/signup-store.svelte";
    import { SIGNUP_STEPS, TIMEZONE_OPTIONS } from "$lib/stores/signup-types";
-   import { m } from "$paraglide/messages.js";
 
    import { authClient } from "@ota/auth/client";
    import { Button } from "@ota/ui/components/button/index.ts";
