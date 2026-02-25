@@ -16,7 +16,7 @@
       UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import * as m from "$lib/paraglide/messages.js";
+   import * as m from "$i18n/messages";
 
    import type { user as User } from "@ota/db/schema";
    import { authClient } from "@ota/auth/client";

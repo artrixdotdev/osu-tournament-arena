@@ -4,7 +4,7 @@
       PanelLeftOpenIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import { m } from "$lib/paraglide/messages.js";
+   import { m } from "$i18n/messages";
 
    import { Separator } from "@ota/ui/components/separator/index.ts";
    import * as Sidebar from "@ota/ui/components/sidebar/index.ts";

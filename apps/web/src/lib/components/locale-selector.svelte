@@ -1,9 +1,9 @@
 <script lang="ts">
-   import type { Locale } from "$lib/paraglide/runtime.js";
+   import type { Locale } from "$i18n/runtime";
    import { LanguageSquareIcon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
-   import { m } from "$lib/paraglide/messages";
-   import { getLocale, locales, setLocale } from "$lib/paraglide/runtime.js";
+   import { m } from "$i18n/messages";
+   import { getLocale, locales, setLocale } from "$i18n/runtime";
 
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";

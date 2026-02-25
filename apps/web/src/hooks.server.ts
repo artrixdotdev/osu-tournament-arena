@@ -1,6 +1,6 @@
 import { building } from "$app/environment";
 import { redirect } from "@sveltejs/kit";
-import { paraglideMiddleware } from "$lib/paraglide/server";
+import { paraglideMiddleware } from "$i18n/server";
 import { auth } from "$lib/server/auth";
 import { svelteKitHandler } from "better-auth/svelte-kit";
 

@@ -1,7 +1,7 @@
 <script lang="ts">
    import { goto } from "$app/navigation";
+   import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
-   import { m } from "$lib/paraglide/messages.js";
    import { signupStore } from "$lib/stores/signup-store.svelte";
    import { SIGNUP_STEPS, TIMEZONE_OPTIONS } from "$lib/stores/signup-types";
 

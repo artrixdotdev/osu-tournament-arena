@@ -13,7 +13,7 @@ export default {
          remoteFunctions: true,
       },
       alias: {
-         $paraglide: "./src/lib/paraglide",
+         $i18n: "./src/lib/paraglide",
       },
    },
 

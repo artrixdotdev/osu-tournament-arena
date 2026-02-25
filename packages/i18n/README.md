@@ -60,7 +60,7 @@ Usage in components:
 
 ```svelte
 <script>
-   import { m } from "$lib/paraglide/messages.js";
+   import { m } from "$i18n/messages";
 </script>
 
 <!-- Direct access for lowercase+underscore keys -->

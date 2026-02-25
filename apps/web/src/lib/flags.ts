@@ -1,4 +1,4 @@
-import type { Locale } from "$paraglide/runtime";
+import type { Locale } from "$i18n/runtime";
 import type { Component } from "svelte";
 import * as Flags from "svelte-flag-icons";
 
