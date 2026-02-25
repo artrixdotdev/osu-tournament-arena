@@ -5,7 +5,8 @@
    import { m } from "$lib/paraglide/messages";
    import { getLocale, locales, setLocale } from "$lib/paraglide/runtime.js";
 
-   import * as Select from "@ota/ui/components/select/index.ts";
+   import { Button } from "@ota/ui/components/button/index.ts";
+   import * as DropdownMenu from "@ota/ui/components/dropdown-menu/index.ts";
 
    let value = $state(getLocale());
 
@@ -14,21 +15,43 @@
    }
 </script>
 
-<Select.Root
-   type="single"
-   bind:value
-   onValueChange={(v) => handleLocaleChange(v as Locale)}
->
-   <Select.Trigger class="m-0 h-5! w-fit gap-1.5 border-none p-0 ">
-      <HugeiconsIcon icon={LanguageSquareIcon} size={18} class="h-5! w-5!" />
-   </Select.Trigger>
-   <Select.Content class="mr-4">
-      {#each locales as locale (locale)}
-         <!-- Gets the locale name in its native language -->
-         {@const localeName = m[`locale_${locale}`]({}, { locale })}
-         <Select.Item value={locale} label={localeName}>
-            {localeName}
-         </Select.Item>
-      {/each}
-   </Select.Content>
-</Select.Root>
+<DropdownMenu.Root>
+   <DropdownMenu.Trigger>
+      {#snippet child({ props })}
+         <Button {...props} variant="ghost" size="icon-sm">
+            <HugeiconsIcon icon={LanguageSquareIcon} class="size-5" />
+         </Button>
+      {/snippet}
+   </DropdownMenu.Trigger>
+   {#await import("$lib/flags").then(({ localeFlags }) => localeFlags) then localeFlags}
+      <DropdownMenu.Content align="end" class="mt-4 min-w-60">
+         <DropdownMenu.Label>{m.locale_selectLanguage()}</DropdownMenu.Label>
+         <DropdownMenu.Separator />
+         <DropdownMenu.RadioGroup bind:value>
+            {#each locales as locale (locale)}
+               {@const localeName = m[`locale_${locale}`]({}, { locale })}
+               {@const FlagComponent = localeFlags[locale]}
+               <DropdownMenu.RadioItem
+                  value={locale}
+                  onSelect={() => handleLocaleChange(locale)}
+                  class="w-full"
+               >
+                  <div class="flex w-full items-center gap-2">
+                     {#if FlagComponent}
+                        <div
+                           class="flex size-4.5 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-sm"
+                        >
+                           <FlagComponent class="size-6" />
+                        </div>
+                     {/if}
+                     <span>{localeName}</span>
+                     <DropdownMenu.Shortcut class="ml-auto font-mono uppercase">
+                        {locale}
+                     </DropdownMenu.Shortcut>
+                  </div>
+               </DropdownMenu.RadioItem>
+            {/each}
+         </DropdownMenu.RadioGroup>
+      </DropdownMenu.Content>
+   {/await}
+</DropdownMenu.Root>
