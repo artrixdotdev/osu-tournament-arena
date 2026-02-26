@@ -3,14 +3,14 @@
    "private": true,
    "engines": {
       "node": "^25.2.1",
-      "pnpm": "^10.28.0"
+      "bun": "^1.1.0"
    },
-   "packageManager": "pnpm@10.28.0",
+   "packageManager": "bun@1.1.0",
    "scripts": {
       "build": "dotenv -c -- turbo run build",
       "clean": "git clean -xdf node_modules",
       "clean:workspaces": "turbo run clean",
-      "auth:generate": "pnpm -F @ota/auth generate",
+      "auth:generate": "bun -F @ota/auth generate",
       "db:push": "turbo -F @ota/db push",
       "db:studio": "turbo -F @ota/db studio",
       "dev": "dotenv -c -- turbo watch dev --continue",
@@ -19,8 +19,8 @@
       "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
       "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
       "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-      "lint:ws": "pnpm dlx sherif@latest",
-      "postinstall": "pnpm lint:ws",
+      "lint:ws": "bunx sherif@latest",
+      "postinstall": "bunx sherif@latest",
       "typecheck": "turbo run typecheck",
       "ui-add": "turbo run ui-add",
       "start-db": "turbo watch start-db"
@@ -34,5 +34,46 @@
       "turbo": "^2.8.10",
       "typescript": "catalog:"
    },
-   "prettier": "@ota/prettier-config"
+   "prettier": "@ota/prettier-config",
+   "workspaces": {
+      "packages": [
+         "apps/*",
+         "packages/*",
+         "tooling/*"
+      ],
+      "catalog": {
+         "prettier": "^3.8.1",
+         "typescript": "^5.9.3",
+         "@types/node": "22.18.12",
+         "eslint": "^9.39.2",
+         "@eslint/js": "^9.39.2",
+         "zod": "^4.1.13",
+         "svelte": "^5.48",
+         "svelte-check": "^4.3",
+         "vite": "^7.3",
+         "@sveltejs/kit": "^2.52.0",
+         "@sveltejs/vite-plugin-svelte": "5.1.0",
+         "tailwindcss": "^4.1.17",
+         "@tailwindcss/postcss": "^4.1.16",
+         "@tailwindcss/vite": "^4.1.16",
+         "tw-animate-css": "^1.4.0",
+         "better-auth": "^1.4.17",
+         "@better-auth/cli": "^1.4.6",
+         "@orpc/client": "^1.13.5",
+         "@orpc/contract": "^1.13.5",
+         "@orpc/server": "^1.13.5",
+         "@orpc/zod": "^1.13.5",
+         "@trpc/client": "^11.8.1",
+         "@trpc/server": "^11.8.1",
+         "shadcn-svelte": "^2.0.0",
+         "@hugeicons/core-free-icons": "^3.1.1",
+         "@hugeicons/svelte": "^1.1.1"
+      }
+   },
+   "overrides": {
+      "@types/minimatch": "5.1.2",
+      "kysely": "0.28.5",
+      "lightningcss": "1.30.1",
+      "vite": "7.3.1"
+   }
 }

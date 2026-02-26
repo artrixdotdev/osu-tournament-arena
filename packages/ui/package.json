@@ -28,8 +28,8 @@
       "lint": "eslint .",
       "format": "prettier --write .",
       "check-types": "svelte-check --tsconfig ./tsconfig.json",
-      "ui:add": "pnpm dlx shadcn-svelte@latest add",
-      "ui:update": "pnpm dlx shadcn-svelte@latest update"
+      "ui:add": "bunx shadcn-svelte@latest add",
+      "ui:update": "bunx shadcn-svelte@latest update"
    },
    "dependencies": {
       "class-variance-authority": "^0.7.1",

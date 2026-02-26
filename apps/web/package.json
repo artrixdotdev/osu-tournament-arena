@@ -8,7 +8,7 @@
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
-      "prepare": "pnpm localize && svelte-kit sync",
+      "prepare": "bun run localize && svelte-kit sync",
       "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
       "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"

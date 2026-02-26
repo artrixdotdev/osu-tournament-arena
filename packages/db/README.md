@@ -28,11 +28,11 @@ src/
 1. Install the [Turso CLI](https://docs.turso.tech/cli/installation)
 2. Push the schema:
    ```bash
-   pnpm db:push
+   bun run db:push
    ```
 3. Start local database:
    ```bash
-   pnpm --filter @ota/db dev
+   bun --filter @ota/db run dev
    ```
 
 ### Option B: Cloud Deployment
@@ -45,7 +45,7 @@ src/
    ```
 3. Push the schema:
    ```bash
-   pnpm db:push
+   bun run db:push
    ```
 
 ## Usage
@@ -64,10 +64,10 @@ const users = await db.select().from(user).where(eq(user.id, "123"));
 
 ```bash
 # Push schema changes
-pnpm db:push
+bun run db:push
 
 # Open Drizzle Studio
-pnpm db:studio
+bun run db:studio
 ```
 
 ## Exports

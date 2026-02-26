@@ -41,10 +41,10 @@ Run the shadcn-svelte CLI to add new components:
 
 ```bash
 # From project root
-pnpm ui-add
+bun run ui-add
 
 # Or specify component
-pnpm ui-add button
+bun run ui-add button
 ```
 
 ## Exports
