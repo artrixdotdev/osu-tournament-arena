@@ -5,9 +5,9 @@
    "type": "module",
    "scripts": {
       "localize": "bunx --bun @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --emit-ts-declarations --silent --outdir ./src/lib/paraglide",
-      "dev": "vite dev",
-      "build": "vite build",
-      "preview": "vite preview",
+      "dev": "bunx --bun vite dev",
+      "build": "bunx --bun vite build",
+      "preview": "bunx --bun vite preview",
       "prepare": "bun run localize && bunx --bun svelte-kit sync",
       "lint": "bunx --bun svelte-kit sync && bunx --bun svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
