@@ -27,5 +27,12 @@
       "moduleResolution": "bundler",
       "noEmit": true
    },
-   "exclude": ["node_modules", "build", "dist", ".svelte", ".svelte-kit"]
+   "exclude": [
+      "node_modules",
+      "build",
+      "dist",
+      ".svelte",
+      ".svelte-kit",
+      "eslint.config.ts"
+   ]
 }
