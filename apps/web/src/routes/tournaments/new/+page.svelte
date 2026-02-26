@@ -1,4 +1,5 @@
 <script lang="ts">
+   import { goto } from "$app/navigation";
    import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
 
@@ -244,6 +245,15 @@
       } finally {
          settingsSubmitting = false;
       }
+   }
+
+   async function handleFinish() {
+      if (!createdTournamentId) {
+         await goto("/tournaments");
+         return;
+      }
+
+      await goto(`/tournaments/${createdTournamentId}`);
    }
 </script>
 
@@ -615,6 +625,9 @@
                <p class="text-muted-foreground text-sm">
                   {m.tournamentCreate_discord_description()}
                </p>
+               <p class="text-muted-foreground text-sm">
+                  {m.tournamentCreate_discord_optional()}
+               </p>
             </div>
 
             <div class="flex items-center justify-between">
@@ -622,7 +635,14 @@
                   {m.tournamentCreate_back()}
                </Button>
 
-               <Button disabled>{m.tournamentCreate_finish()}</Button>
+               <div class="flex items-center gap-2">
+                  <Button variant="outline" onclick={handleFinish}>
+                     {m.tournamentCreate_discord_skip()}
+                  </Button>
+                  <Button onclick={handleFinish}>
+                     {m.tournamentCreate_finish()}
+                  </Button>
+               </div>
             </div>
          {/if}
       </div>
