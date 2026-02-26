@@ -2,7 +2,10 @@ import { ORPCError } from "@orpc/server";
 import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
-import { tournament as tournamentTable } from "@ota/db/schema";
+import {
+   screeningRequirements as screeningRequirementsTable,
+   tournament as tournamentTable,
+} from "@ota/db/schema";
 import {
    createTournamentSchema,
    tournamentIdSchema,
@@ -10,6 +13,7 @@ import {
    updateTournamentDetailsSchema,
    updateTournamentDiscordSchema,
    updateTournamentScheduleSchema,
+   updateTournamentScreeningRequirementsSchema,
    updateTournamentSettingsSchema,
    updateTournamentVisibilitySchema,
 } from "@ota/validators/tournament";
@@ -432,6 +436,70 @@ export const tournamentProcedures = {
       .handler(async ({ input }) => {
          const { id, ...fields } = input;
          return applyUpdate(id, fields);
+      }),
+
+   /**
+    * Updates tournament screening requirements.
+    *
+    * **Access:** Protected (requires authentication + HOST role)
+    * **OpenAPI:** Not exposed
+    * **RPC:** Yes (only)
+    *
+    * Updates (or creates) the tournament-level screening requirements record.
+    * All fields are optional.
+    *
+    * @param input.id - Tournament ID to update
+    * @param input.minimumRank - Minimum allowed rank (inclusive)
+    * @param input.maximumRank - Maximum allowed rank (inclusive)
+    * @param input.minimumRating - Minimum allowed OTR rating (inclusive)
+    * @param input.maximumRating - Maximum allowed OTR rating (inclusive)
+    * @param input.allowedCountries - Allowed ISO country codes (null = unrestricted)
+    * @returns `{ updated: false }` if no fields provided, or `{ updated: true, screeningRequirements }` on success
+    */
+   updateScreeningRequirements: authorized
+      .input(updateTournamentScreeningRequirementsSchema)
+      .use(requireHost())
+      .handler(async ({ input }) => {
+         const { id, ...fields } = input;
+
+         const hasUpdates = Object.values(fields).some((v) => v !== undefined);
+         if (!hasUpdates) {
+            return { updated: false as const };
+         }
+
+         const [existing] = await db
+            .select({
+               id: screeningRequirementsTable.id,
+            })
+            .from(screeningRequirementsTable)
+            .where(eq(screeningRequirementsTable.tournamentId, id))
+            .limit(1);
+
+         if (existing) {
+            const [updated] = await db
+               .update(screeningRequirementsTable)
+               .set(fields)
+               .where(eq(screeningRequirementsTable.id, existing.id))
+               .returning();
+
+            return {
+               updated: true as const,
+               screeningRequirements: updated,
+            };
+         }
+
+         const [created] = await db
+            .insert(screeningRequirementsTable)
+            .values({
+               tournamentId: id,
+               ...fields,
+            })
+            .returning();
+
+         return {
+            updated: true as const,
+            screeningRequirements: created,
+         };
       }),
 
    /**

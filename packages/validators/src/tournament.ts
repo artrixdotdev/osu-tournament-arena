@@ -116,6 +116,58 @@ export const updateTournamentDiscordSchema = updateTournamentSchema
    .pick({ id: true, discord: true })
    .required({ id: true });
 
+export const updateTournamentScreeningRequirementsSchema = z
+   .object({
+      id: z.string().min(1).describe("Tournament ID to update"),
+      minimumRank: z
+         .number()
+         .int()
+         .positive()
+         .optional()
+         .describe("Minimum osu! rank allowed (inclusive)"),
+      maximumRank: z
+         .number()
+         .int()
+         .positive()
+         .optional()
+         .describe("Maximum osu! rank allowed (inclusive)"),
+      minimumRating: z
+         .number()
+         .int()
+         .optional()
+         .describe("Minimum OTR (osu! Tournament Rating) allowed (inclusive)"),
+      maximumRating: z
+         .number()
+         .int()
+         .optional()
+         .describe("Maximum OTR (osu! Tournament Rating) allowed (inclusive)"),
+      allowedCountries: z
+         .array(z.string().length(2))
+         .nullable()
+         .optional()
+         .describe("Allowed country codes (null = no restriction)"),
+   })
+   .refine(
+      (data) =>
+         data.minimumRank === undefined ||
+         data.maximumRank === undefined ||
+         data.minimumRank <= data.maximumRank,
+      {
+         message: "minimumRank must be less than or equal to maximumRank",
+         path: ["minimumRank"],
+      },
+   )
+   .refine(
+      (data) =>
+         data.minimumRating === undefined ||
+         data.maximumRating === undefined ||
+         data.minimumRating <= data.maximumRating,
+      {
+         message: "minimumRating must be less than or equal to maximumRating",
+         path: ["minimumRating"],
+      },
+   );
+
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;
 export type UpdateTournamentInput = z.infer<typeof updateTournamentSchema>;
 export type TournamentIdInput = z.infer<typeof tournamentIdSchema>;
@@ -134,4 +186,7 @@ export type UpdateTournamentVisibilityInput = z.infer<
 >;
 export type UpdateTournamentDiscordInput = z.infer<
    typeof updateTournamentDiscordSchema
+>;
+export type UpdateTournamentScreeningRequirementsInput = z.infer<
+   typeof updateTournamentScreeningRequirementsSchema
 >;

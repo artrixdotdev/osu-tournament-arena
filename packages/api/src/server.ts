@@ -45,6 +45,7 @@ import { userProcedures } from "./procedures/user";
  * - `tournament.updateDetails` - Update display info (requires ADMIN)
  * - `tournament.updateSchedule` - Update dates (requires ADMIN)
  * - `tournament.updateSettings` - Update gameplay settings (requires HOST)
+ * - `tournament.updateScreeningRequirements` - Update screening requirements (requires HOST)
  * - `tournament.updateVisibility` - Update visibility (requires HOST)
  * - `tournament.updateDiscord` - Update Discord integration (requires ADMIN)
  * - `tournament.archive` - Archive tournament (requires ADMIN)
