@@ -30,6 +30,7 @@
       "@orpc/zod": "catalog:",
       "@ota/auth": "workspace:*",
       "@ota/db": "workspace:*",
+      "@ota/validators": "workspace:*",
       "superjson": "^2.2.6",
       "zod": "catalog:"
    }
