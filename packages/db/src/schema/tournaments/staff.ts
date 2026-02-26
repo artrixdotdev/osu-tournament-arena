@@ -44,10 +44,7 @@ import { tournament } from "./tournament";
 export const staff = sqliteTable(
    "staff",
    {
-      id: text().primaryKey(),
-
-      /** Display name for tournament */
-      name: text().notNull(),
+      id: integer().primaryKey(),
 
       tournamentId: text().notNull(),
       userId: text().notNull(),
@@ -112,11 +109,11 @@ export const staffRelations = relations(staff, ({ one, many }) => ({
 export const refereeAvailability = sqliteTable(
    "referee_availability",
    {
-      id: text().primaryKey(),
-      refereeId: text().notNull(),
+      id: integer().primaryKey(),
+      refereeId: integer().notNull(),
 
       /** Specific round (optional) */
-      roundId: text(),
+      roundId: integer(),
 
       /** Week start for recurring availability (optional) */
       weekStart: timestamp(),

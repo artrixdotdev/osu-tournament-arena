@@ -5,7 +5,13 @@
  */
 
 import { relations } from "drizzle-orm";
-import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+   index,
+   integer,
+   sqliteTable,
+   text,
+   unique,
+} from "drizzle-orm/sqlite-core";
 
 import type { TimeSlot } from "./types";
 import { auditTimestamps, boolean, json } from "../../util";
@@ -41,15 +47,12 @@ import { tournament } from "./tournament";
 export const player = sqliteTable(
    "player",
    {
-      id: text().primaryKey(),
-
-      /** Display name for the tournament */
-      name: text().notNull(),
+      id: integer().primaryKey(),
 
       tournamentId: text().notNull(),
 
       /** NULL if player is a free agent */
-      teamId: text(),
+      teamId: integer(),
 
       /** Reference to authenticated user */
       userId: text().notNull(),
@@ -117,9 +120,9 @@ export const playerRelations = relations(player, ({ one, many }) => ({
 export const playerAvailability = sqliteTable(
    "player_availability",
    {
-      id: text().primaryKey(),
-      playerId: text().notNull(),
-      roundId: text().notNull(),
+      id: integer().primaryKey(),
+      playerId: integer().notNull(),
+      roundId: integer().notNull(),
 
       /** Array of available time windows */
       timeSlots: json<TimeSlot[]>().notNull().default([]),

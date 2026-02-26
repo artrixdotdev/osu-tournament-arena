@@ -49,7 +49,7 @@ import {
 export const bracket = sqliteTable(
    "bracket",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
       tournamentId: text().notNull(),
 
       /** Display name */
@@ -113,11 +113,11 @@ export const bracketRelations = relations(bracket, ({ one, many }) => ({
 export const round = sqliteTable(
    "round",
    {
-      id: text().primaryKey(),
-      bracketId: text().notNull(),
+      id: integer().primaryKey(),
+      bracketId: integer().notNull(),
 
       /** Mappool used for this round */
-      mappoolId: text(),
+      mappoolId: integer(),
 
       /** Display name (e.g., "Quarterfinals") */
       name: text().notNull(),
@@ -202,12 +202,12 @@ export const roundRelations = relations(round, ({ one, many }) => ({
 export const match = sqliteTable(
    "match",
    {
-      id: text().primaryKey(),
-      bracketId: text().notNull(),
+      id: integer().primaryKey(),
+      bracketId: integer().notNull(),
       tournamentId: text().notNull(),
 
       /** Round this match belongs to */
-      roundId: text(),
+      roundId: integer(),
 
       /** Round number in bracket */
       roundNumber: integer().notNull(),
@@ -219,25 +219,25 @@ export const match = sqliteTable(
       bracketSide: enumurate(BracketSide).notNull(),
 
       // Team Assignment
-      teamRedId: text(),
-      teamBlueId: text(),
+      teamRedId: integer(),
+      teamBlueId: integer(),
 
       /** Current score */
       teamRedScore: integer().default(0),
       teamBlueScore: integer().default(0),
 
       /** Winning team */
-      winnerId: text(),
+      winnerId: integer(),
 
       /** Current match status */
       status: enumurate(MatchStatus).notNull().default(MatchStatus.PENDING),
 
       // Match Dependencies
       /** Red team comes from this match */
-      teamRedFromMatchId: text(),
+      teamRedFromMatchId: integer(),
 
       /** Blue team comes from this match */
-      teamBlueFromMatchId: text(),
+      teamBlueFromMatchId: integer(),
 
       /** True if red team is winner of previous match */
       teamRedFromMatchIsWinner: boolean(),
@@ -246,14 +246,14 @@ export const match = sqliteTable(
       teamBlueFromMatchIsWinner: boolean(),
 
       /** Winner advances to this match */
-      winnerToMatchId: text(),
+      winnerToMatchId: integer(),
 
       /** Loser advances to this match (double elim) */
-      loserToMatchId: text(),
+      loserToMatchId: integer(),
 
       // Match Logistics
       /** Assigned referee */
-      refereeId: text(),
+      refereeId: integer(),
 
       /** Twitch/YouTube stream URL */
       streamUrl: text(),
@@ -355,9 +355,9 @@ export const matchRelations = relations(match, ({ one, many }) => ({
 export const matchPickBan = sqliteTable(
    "match_pick_ban",
    {
-      id: text().primaryKey(),
-      matchId: text().notNull(),
-      mapId: text().notNull(),
+      id: integer().primaryKey(),
+      matchId: integer().notNull(),
+      mapId: integer().notNull(),
 
       /** Which team performed action */
       team: enumurate(TeamColor).notNull(),
@@ -426,9 +426,9 @@ export const matchPickBanRelations = relations(matchPickBan, ({ one }) => ({
 export const matchMapResult = sqliteTable(
    "match_map_result",
    {
-      id: text().primaryKey(),
-      matchId: text().notNull(),
-      mapId: text().notNull(),
+      id: integer().primaryKey(),
+      matchId: integer().notNull(),
+      mapId: integer().notNull(),
 
       /** Play order within match */
       order: integer().notNull(),
@@ -438,7 +438,7 @@ export const matchMapResult = sqliteTable(
       teamBlueScore: integer().notNull().default(0),
 
       /** Team that won this map */
-      winnerId: text(),
+      winnerId: integer(),
 
       /** Which team picked this map */
       pickedByTeam: enumurate(TeamColor),

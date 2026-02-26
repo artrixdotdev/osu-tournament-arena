@@ -38,7 +38,7 @@ import { Mods } from "./types";
 export const mappool = sqliteTable(
    "mappool",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
       tournamentId: text().notNull(),
       ...auditTimestamps,
    },
@@ -94,14 +94,14 @@ export const mappoolRelations = relations(mappool, ({ one, many }) => ({
 export const map = sqliteTable(
    "map",
    {
-      id: text().primaryKey(),
-      mappoolId: text().notNull(),
+      id: integer().primaryKey(),
+      mappoolId: integer().notNull(),
 
       /** osu! beatmap ID */
       mapId: integer().notNull(),
 
       /** Staff member who selected this map */
-      poolerId: text(),
+      poolerId: integer(),
 
       /** Pool slot identifier (e.g., "NM1", "HD2") */
       slot: text(),

@@ -5,7 +5,7 @@
  */
 
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import type { TournamentDiscord } from "./types";
 import { auditTimestamps, boolean, json, timestamp } from "../../util";
@@ -40,46 +40,55 @@ import { team } from "./team";
  * };
  * ```
  */
-export const tournament = sqliteTable("tournament", {
-   id: text().primaryKey(),
-   name: text().notNull(),
+export const tournament = sqliteTable(
+   "tournament",
+   {
+      id: text().primaryKey(),
+      name: text().notNull(),
 
-   /** Short identifier (max 4 chars) */
-   acronym: text({ length: 4 }),
+      /** Short identifier (max 4 chars) */
+      acronym: text({ length: 4 }),
 
-   /** Edition number (e.g., 16 for OWC 2026) */
-   rendition: integer(),
+      /** Edition number (e.g., 16 for OWC 2026) */
+      rendition: integer(),
 
-   /** Brief description shown on tournament page */
-   description: text({ length: 255 }).notNull(),
+      /** Brief description shown on tournament page */
+      description: text({ length: 255 }).notNull(),
 
-   /** Tournament start date */
-   startDate: timestamp().notNull(),
+      /** Tournament start date */
+      startDate: timestamp().notNull(),
 
-   /** Tournament end date */
-   endDate: timestamp().notNull(),
+      /** Tournament end date */
+      endDate: timestamp().notNull(),
 
-   /** Whether tournament is visible to public */
-   isPublic: boolean().notNull(),
+      /** Whether tournament is visible to public */
+      isPublic: boolean().notNull(),
 
-   /** Whether tournament is archived (read-only) */
-   isArchived: boolean().notNull(),
+      /** Whether tournament is archived (read-only) */
+      isArchived: boolean().notNull(),
 
-   /** Soft deletion flag */
-   isDeleted: boolean().notNull().default(false),
+      /** Soft deletion flag */
+      isDeleted: boolean().notNull().default(false),
 
-   // Tournament Settings
-   /** Maximum players per lobby */
-   lobbySize: integer().notNull(),
+      // Tournament Settings
+      /** Maximum players per lobby */
+      lobbySize: integer().notNull(),
 
-   /** Maximum players per team */
-   teamSize: integer().notNull(),
+      /** Maximum players per team */
+      teamSize: integer().notNull(),
 
-   /** Discord bot integration settings */
-   discord: json<TournamentDiscord>(),
+      /** Discord bot integration settings */
+      discord: json<TournamentDiscord>(),
 
-   ...auditTimestamps,
-});
+      ...auditTimestamps,
+   },
+   (table) => [
+      index("tournament_archived_idx").on(table.isArchived),
+      index("tournament_deleted_idx").on(table.isDeleted),
+      index("tournament_public_idx").on(table.isPublic),
+      index("tournament_dates_idx").on(table.startDate, table.endDate),
+   ],
+);
 
 /**
  * Tournament relationships.

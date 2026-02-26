@@ -46,7 +46,7 @@ import { tournament } from "./tournament";
 export const team = sqliteTable(
    "team",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
       name: text().notNull(),
 
       /** Ranking position after qualifiers (1 = highest seed) */

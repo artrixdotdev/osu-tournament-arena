@@ -5,7 +5,13 @@
  */
 
 import { relations } from "drizzle-orm";
-import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+   index,
+   integer,
+   sqliteTable,
+   text,
+   unique,
+} from "drizzle-orm/sqlite-core";
 
 import { auditTimestamps, boolean, enumurate } from "../../util";
 import { player } from "./player";
@@ -48,8 +54,8 @@ import { ScreeningStatus } from "./types";
 export const screening = sqliteTable(
    "screening",
    {
-      id: text().primaryKey(),
-      playerId: text().notNull(),
+      id: integer().primaryKey(),
+      playerId: integer().notNull(),
       tournamentId: text().notNull(),
 
       /** Current screening status */
@@ -64,7 +70,7 @@ export const screening = sqliteTable(
       isAppealable: boolean().notNull().default(false),
 
       /** Staff member who reviewed */
-      reviewedBy: text(),
+      reviewedBy: integer(),
 
       ...auditTimestamps,
    },
@@ -100,10 +106,10 @@ export const screeningRelations = relations(screening, ({ one }) => ({
 export const screeningAppeal = sqliteTable(
    "screening_appeal",
    {
-      id: text().primaryKey(),
-      screeningId: text().notNull(),
+      id: integer().primaryKey(),
+      screeningId: integer().notNull(),
       tournamentId: text().notNull(),
-      playerId: text().notNull(),
+      playerId: integer().notNull(),
 
       /** Current appeal status */
       status: enumurate(ScreeningStatus)
@@ -117,7 +123,7 @@ export const screeningAppeal = sqliteTable(
       rejectionReason: text(),
 
       /** Staff member who reviewed */
-      reviewedBy: text(),
+      reviewedBy: integer(),
 
       ...auditTimestamps,
    },

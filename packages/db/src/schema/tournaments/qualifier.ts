@@ -56,9 +56,9 @@ import { QualifierLobbyStatus } from "./types";
 export const qualifierLobby = sqliteTable(
    "qualifier_lobby",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
       tournamentId: text().notNull(),
-      mappoolId: text().notNull(),
+      mappoolId: integer().notNull(),
 
       /** Display name for lobby */
       name: text().notNull(),
@@ -72,7 +72,7 @@ export const qualifierLobby = sqliteTable(
          .default(QualifierLobbyStatus.SCHEDULED),
 
       /** Assigned referee */
-      refereeId: text(),
+      refereeId: integer(),
 
       /** osu! multiplayer lobby ID */
       osuMatchId: integer(),
@@ -145,9 +145,9 @@ export const qualifierLobbyRelations = relations(
 export const qualifierParticipant = sqliteTable(
    "qualifier_participant",
    {
-      id: text().primaryKey(),
-      lobbyId: text().notNull(),
-      teamId: text().notNull(),
+      id: integer().primaryKey(),
+      lobbyId: integer().notNull(),
+      teamId: integer().notNull(),
 
       /** Whether team showed up and played */
       attended: boolean().notNull().default(false),
