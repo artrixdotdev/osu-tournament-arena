@@ -232,7 +232,7 @@ export const tournamentProcedures = {
    /**
     * Creates a new tournament.
     *
-    * **Access:** Protected (requires authentication + HOST role)
+    * **Access:** Protected (requires authentication)
     * **OpenAPI:** Not exposed
     * **RPC:** Yes (only)
     *
@@ -270,7 +270,8 @@ export const tournamentProcedures = {
             .returning();
 
          return created;
-      }),
+      })
+      .callable(),
 
    /**
     * Updates tournament display information.

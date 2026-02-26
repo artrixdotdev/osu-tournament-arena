@@ -26,7 +26,8 @@ const baseDiscordSchema = z.object({
 });
 
 export const createTournamentSchema = createInsertSchema(tournamentTable, {
-   id: (schema) => schema.min(1).describe("Unique tournament identifier"),
+   id: (schema) =>
+      schema.slugify().min(1).describe("Unique tournament identifier"),
    name: (schema) => schema.min(1).describe("Full tournament name"),
    acronym: (schema) =>
       schema.length(4).describe("Short acronym (exactly 4 characters)"),
