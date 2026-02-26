@@ -62,8 +62,7 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 
 ### Prerequisites
 
-- Node.js `^25.2.1`
-- bun `^1.1.0`
+- bun `^1.3.9`
 
 ### Setup
 
