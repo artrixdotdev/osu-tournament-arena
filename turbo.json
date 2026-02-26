@@ -39,9 +39,13 @@
          "cache": false,
          "persistent": true
       },
-      "ui-add": {
+      "ui:add": {
          "cache": false,
          "interactive": true
+      },
+      "db:clean": {
+         "cache": false,
+         "outputs": ["db.sqlite"]
       }
    },
    "globalEnv": [

@@ -1,9 +1,8 @@
 {
-   "name": "create-t3-turbo",
+   "name": "osu-tournament-rating",
    "private": true,
    "engines": {
-      "node": "^25.2.1",
-      "bun": "^1.1.0"
+      "bun": "^1.3.9"
    },
    "packageManager": "bun@1.3.9",
    "scripts": {
@@ -22,8 +21,9 @@
       "lint:ws": "bunx sherif@latest",
       "postinstall": "bunx sherif@latest",
       "typecheck": "turbo run typecheck",
-      "ui-add": "turbo run ui-add",
-      "start-db": "turbo watch start-db"
+      "ui:add": "turbo run ui:add",
+      "db:start": "turbo watch start-db",
+      "db:init": "./scripts/clean-db.ts"
    },
    "devDependencies": {
       "@ota/prettier-config": "workspace:*",
