@@ -22,7 +22,7 @@
       "clean": "git clean -xdf .cache .turbo dist node_modules",
       "dev": "turso dev --db-file ./db.sqlite -p 7270",
       "format": "prettier --check . --ignore-path ../../.gitignore",
-      "lint": "eslint --flag unstable_native_nodejs_ts_config",
+      "lint": "eslint .",
       "push": "bun run with-env drizzle-kit push",
       "studio": "bun run with-env drizzle-kit studio",
       "start": "turso dev --db-file ./db.sqlite",
