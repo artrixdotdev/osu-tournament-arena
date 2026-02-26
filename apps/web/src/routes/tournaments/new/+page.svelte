@@ -32,6 +32,8 @@
 
    let detailsSubmitting = $state(false);
    let detailsError = $state<string | null>(null);
+   let settingsSubmitting = $state(false);
+   let settingsError = $state<string | null>(null);
 
    let idLocked = $state(true);
    let id = $state("");
@@ -41,6 +43,12 @@
    let description = $state("");
    let startDate = $state("");
    let endDate = $state("");
+   let teamSize = $state("8");
+   let minimumRank = $state("");
+   let maximumRank = $state("");
+   let minimumRating = $state("");
+   let maximumRating = $state("");
+   let allowedCountries = $state("");
 
    let toasts = $state<Toast[]>([]);
 
@@ -50,7 +58,6 @@
    );
 
    const isFirstStep = $derived(currentStepIndex === 0);
-   const isLastStep = $derived(currentStepIndex === steps.length - 1);
 
    $effect(() => {
       if (idLocked) {
@@ -91,15 +98,17 @@
       }
    }
 
-   function handleStepNavigation() {
-      if (currentStep === "details") {
-         void handleDetailsSubmit();
-         return;
+   function parseOptionalInt(value: string) {
+      if (!value.trim()) {
+         return undefined;
       }
 
-      if (!isLastStep) {
-         currentStepIndex += 1;
+      const parsed = Number.parseInt(value, 10);
+      if (Number.isNaN(parsed)) {
+         return undefined;
       }
+
+      return parsed;
    }
 
    function toggleIdLock() {
@@ -163,6 +172,77 @@
          showToast(m.tournamentCreate_errors_createFailed(), "error");
       } finally {
          detailsSubmitting = false;
+      }
+   }
+
+   async function handleSettingsSubmit() {
+      if (!createdTournamentId) {
+         settingsError = m.tournamentCreate_errors_settingsFailed();
+         return;
+      }
+
+      settingsError = null;
+
+      const parsedTeamSize = parseOptionalInt(teamSize);
+      const parsedMinimumRank = parseOptionalInt(minimumRank);
+      const parsedMaximumRank = parseOptionalInt(maximumRank);
+      const parsedMinimumRating = parseOptionalInt(minimumRating);
+      const parsedMaximumRating = parseOptionalInt(maximumRating);
+      const parsedAllowedCountries = allowedCountries
+         .split(",")
+         .map((country) => country.trim().toUpperCase())
+         .filter(Boolean);
+
+      if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
+         settingsError = m.tournamentCreate_errors_settingsFailed();
+         return;
+      }
+
+      if (
+         parsedMinimumRank !== undefined &&
+         parsedMaximumRank !== undefined &&
+         parsedMinimumRank > parsedMaximumRank
+      ) {
+         settingsError = m.tournamentCreate_errors_settingsFailed();
+         return;
+      }
+
+      if (
+         parsedMinimumRating !== undefined &&
+         parsedMaximumRating !== undefined &&
+         parsedMinimumRating > parsedMaximumRating
+      ) {
+         settingsError = m.tournamentCreate_errors_settingsFailed();
+         return;
+      }
+
+      settingsSubmitting = true;
+
+      try {
+         await client.tournament.updateSettings({
+            id: createdTournamentId,
+            teamSize: parsedTeamSize,
+         });
+
+         await client.tournament.updateScreeningRequirements({
+            id: createdTournamentId,
+            minimumRank: parsedMinimumRank,
+            maximumRank: parsedMaximumRank,
+            minimumRating: parsedMinimumRating,
+            maximumRating: parsedMaximumRating,
+            allowedCountries: parsedAllowedCountries.length
+               ? parsedAllowedCountries
+               : null,
+         });
+
+         currentStepIndex = 2;
+         showToast(m.tournamentCreate_success_settingsSaved(), "success");
+      } catch (error) {
+         console.error("Failed to save tournament settings:", error);
+         settingsError = m.tournamentCreate_errors_settingsFailed();
+         showToast(m.tournamentCreate_errors_settingsFailed(), "error");
+      } finally {
+         settingsSubmitting = false;
       }
    }
 </script>
@@ -396,15 +476,137 @@
                </p>
             </div>
 
-            <div class="flex items-center justify-between">
-               <Button variant="outline" onclick={handleBack}>
-                  {m.tournamentCreate_back()}
-               </Button>
+            <form
+               class="space-y-4"
+               onsubmit={(event) => {
+                  event.preventDefault();
+                  void handleSettingsSubmit();
+               }}
+            >
+               <div class="space-y-2">
+                  <Label for="tournament-team-size">
+                     {m.tournamentCreate_fields_teamSize()}
+                  </Label>
+                  <Input
+                     id="tournament-team-size"
+                     type="number"
+                     min={1}
+                     value={teamSize}
+                     placeholder={m.tournamentCreate_placeholders_teamSize()}
+                     oninput={(event) => {
+                        const target = event.currentTarget as HTMLInputElement;
+                        teamSize = target.value;
+                     }}
+                  />
+               </div>
 
-               <Button onclick={handleStepNavigation}>
-                  {m.tournamentCreate_next()}
-               </Button>
-            </div>
+               <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="space-y-2">
+                     <Label for="tournament-minimum-rank">
+                        {m.tournamentCreate_fields_minimumRank()}
+                     </Label>
+                     <Input
+                        id="tournament-minimum-rank"
+                        type="number"
+                        min={1}
+                        value={minimumRank}
+                        placeholder={m.tournamentCreate_placeholders_minimumRank()}
+                        oninput={(event) => {
+                           const target =
+                              event.currentTarget as HTMLInputElement;
+                           minimumRank = target.value;
+                        }}
+                     />
+                  </div>
+
+                  <div class="space-y-2">
+                     <Label for="tournament-maximum-rank">
+                        {m.tournamentCreate_fields_maximumRank()}
+                     </Label>
+                     <Input
+                        id="tournament-maximum-rank"
+                        type="number"
+                        min={1}
+                        value={maximumRank}
+                        placeholder={m.tournamentCreate_placeholders_maximumRank()}
+                        oninput={(event) => {
+                           const target =
+                              event.currentTarget as HTMLInputElement;
+                           maximumRank = target.value;
+                        }}
+                     />
+                  </div>
+               </div>
+
+               <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="space-y-2">
+                     <Label for="tournament-minimum-rating">
+                        {m.tournamentCreate_fields_minimumRating()}
+                     </Label>
+                     <Input
+                        id="tournament-minimum-rating"
+                        type="number"
+                        value={minimumRating}
+                        placeholder={m.tournamentCreate_placeholders_minimumRating()}
+                        oninput={(event) => {
+                           const target =
+                              event.currentTarget as HTMLInputElement;
+                           minimumRating = target.value;
+                        }}
+                     />
+                  </div>
+
+                  <div class="space-y-2">
+                     <Label for="tournament-maximum-rating">
+                        {m.tournamentCreate_fields_maximumRating()}
+                     </Label>
+                     <Input
+                        id="tournament-maximum-rating"
+                        type="number"
+                        value={maximumRating}
+                        placeholder={m.tournamentCreate_placeholders_maximumRating()}
+                        oninput={(event) => {
+                           const target =
+                              event.currentTarget as HTMLInputElement;
+                           maximumRating = target.value;
+                        }}
+                     />
+                  </div>
+               </div>
+
+               <div class="space-y-2">
+                  <Label for="tournament-allowed-countries">
+                     {m.tournamentCreate_fields_allowedCountries()}
+                  </Label>
+                  <Input
+                     id="tournament-allowed-countries"
+                     value={allowedCountries}
+                     placeholder={m.tournamentCreate_placeholders_allowedCountries()}
+                     oninput={(event) => {
+                        const target = event.currentTarget as HTMLInputElement;
+                        allowedCountries = target.value;
+                     }}
+                  />
+               </div>
+
+               {#if settingsError}
+                  <p class="text-destructive text-sm">{settingsError}</p>
+               {/if}
+
+               <div class="flex items-center justify-between">
+                  <Button variant="outline" onclick={handleBack}>
+                     {m.tournamentCreate_back()}
+                  </Button>
+
+                  <Button type="submit" disabled={settingsSubmitting}>
+                     {#if settingsSubmitting}
+                        {m.tournamentCreate_loading()}
+                     {:else}
+                        {m.tournamentCreate_next()}
+                     {/if}
+                  </Button>
+               </div>
+            </form>
          {:else}
             <div class="space-y-2">
                <h2 class="text-xl font-semibold">
