@@ -8,10 +8,10 @@
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
-      "prepare": "bun run localize && svelte-kit sync",
-      "lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && eslint .",
+      "prepare": "bun run localize && bunx --bun svelte-kit sync",
+      "lint": "bunx --bun svelte-kit sync && bunx --bun svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
-      "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+      "check:watch": "bunx --bun svelte-kit sync && bunx --bun svelte-check --tsconfig ./tsconfig.json --watch"
    },
    "dependencies": {
       "@orpc/client": "catalog:",
