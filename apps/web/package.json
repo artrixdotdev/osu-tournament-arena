@@ -4,7 +4,7 @@
    "version": "0.0.1",
    "type": "module",
    "scripts": {
-      "localize": "npx @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --emit-ts-declarations --silent --outdir ./src/lib/paraglide",
+      "localize": "bunx --bun @inlang/paraglide-js compile --project ../../packages/i18n/project.inlang --emit-ts-declarations --silent --outdir ./src/lib/paraglide",
       "dev": "vite dev",
       "build": "vite build",
       "preview": "vite preview",
