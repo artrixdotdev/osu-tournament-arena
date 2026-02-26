@@ -32,7 +32,8 @@
       "prettier": "catalog:",
       "shadcn": "^3.8.5",
       "turbo": "^2.8.11",
-      "typescript": "catalog:"
+      "typescript": "catalog:",
+      "@types/bun": "1.3.9"
    },
    "prettier": "@ota/prettier-config",
    "workspaces": {
