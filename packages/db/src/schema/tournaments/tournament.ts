@@ -66,7 +66,7 @@ export const tournament = sqliteTable("tournament", {
    isArchived: boolean().notNull(),
 
    /** Soft deletion flag */
-   isDeleted: boolean().notNull(),
+   isDeleted: boolean().notNull().default(false),
 
    // Tournament Settings
    /** Maximum players per lobby */
