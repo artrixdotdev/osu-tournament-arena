@@ -13,7 +13,7 @@ import {
    unique,
 } from "drizzle-orm/sqlite-core";
 
-import { auditTimestamps, boolean, enumurate } from "../../util";
+import { array, auditTimestamps, boolean, enumurate } from "../../util";
 import { player } from "./player";
 import { staff } from "./staff";
 import { tournament } from "./tournament";
@@ -159,6 +159,72 @@ export const screeningAppealRelations = relations(
       reviewer: one(staff, {
          fields: [screeningAppeal.reviewedBy],
          references: [staff.id],
+      }),
+   }),
+);
+
+/**
+ * Screening requirements table - tournament eligibility criteria.
+ *
+ * Defines the automated criteria used to evaluate player eligibility
+ * for a specific tournament during the screening process.
+ *
+ * **Fields:**
+ * - `minimumRank` / `maximumRank`: Allowed osu! rank range (inclusive)
+ * - `minimumRating` / `maximumRating`: Allowed OTR (osu! Tournament Rating) range (inclusive)
+ * - `allowedCountries`: Restrict to specific country codes (null = all allowed)
+ *
+ * **Constraints:**
+ * - One requirements entry per tournament
+ *
+ * @example
+ * ```ts
+ * const requirements = {
+ *   tournamentId: "owc2026",
+ *   minimumRank: 1,
+ *   maximumRank: 10000,
+ *   minimumRating: 0,
+ *   maximumRating: 5000,
+ *   allowedCountries: ["US", "CA", "GB"],
+ * };
+ * ```
+ */
+export const screeningRequirements = sqliteTable(
+   "screening_requirements",
+   {
+      id: integer().primaryKey(),
+      tournamentId: text().notNull(),
+
+      /** Minimum osu! rank allowed (inclusive) */
+      minimumRank: integer(),
+
+      /** Maximum osu! rank allowed (inclusive) */
+      maximumRank: integer(),
+
+      /** Maximum OTR (osu! Tournament Rating) allowed (inclusive) */
+      maximumRating: integer(),
+
+      /** Minimum OTR (osu! Tournament Rating) allowed (inclusive) */
+      minimumRating: integer(),
+
+      /** Allowed country codes (null = no restriction) */
+      allowedCountries: array<string>(),
+   },
+   (table) => [
+      index("screening_requirements_tournament_idx").on(table.tournamentId),
+      unique("screening_requirements_tournament_unique").on(table.tournamentId),
+   ],
+);
+
+/**
+ * Screening requirements relationships.
+ */
+export const screeningRequirementsRelations = relations(
+   screeningRequirements,
+   ({ one }) => ({
+      tournament: one(tournament, {
+         fields: [screeningRequirements.tournamentId],
+         references: [tournament.id],
       }),
    }),
 );
