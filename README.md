@@ -62,8 +62,7 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 
 ### Prerequisites
 
-- Node.js `^25.2.1`
-- pnpm `^10.28.0`
+- bun `^1.3.9`
 
 ### Setup
 
@@ -75,31 +74,31 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 3. Configure your OAuth providers (osu!, Discord) in the `.env` file
 4. Push the database schema:
    ```bash
-   pnpm db:push
+   bun run db:push
    ```
 5. Start the development server:
    ```bash
-   pnpm dev
+   bun run dev
    ```
 
 ## Useful Scripts
 
-| Command          | Description                     |
-| ---------------- | ------------------------------- |
-| `pnpm dev`       | Start development server        |
-| `pnpm build`     | Build all packages and apps     |
-| `pnpm lint`      | Run ESLint across the monorepo  |
-| `pnpm format`    | Check code formatting           |
-| `pnpm typecheck` | Run TypeScript type checking    |
-| `pnpm db:push`   | Push Drizzle schema to database |
-| `pnpm db:studio` | Open Drizzle Studio             |
-| `pnpm ui-add`    | Add shadcn-svelte components    |
+| Command             | Description                     |
+| ------------------- | ------------------------------- |
+| `bun run dev`       | Start development server        |
+| `bun run build`     | Build all packages and apps     |
+| `bun run lint`      | Run ESLint across the monorepo  |
+| `bun run format`    | Check code formatting           |
+| `bun run typecheck` | Run TypeScript type checking    |
+| `bun run db:push`   | Push Drizzle schema to database |
+| `bun run db:studio` | Open Drizzle Studio             |
+| `bun run ui-add`    | Add shadcn-svelte components    |
 
 ## Contributing
 
 1. Create a feature branch from `main`
 2. Make your changes
-3. Run `pnpm lint` and `pnpm typecheck` before committing
+3. Run `bun run lint` and `bun run typecheck` before committing
 4. Open a pull request
 
 ## License

@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+
 import type { PlopTypes } from "@turbo/gen";
 
 interface PackageJson {
@@ -82,9 +83,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
                // execSync("pnpm dlx sherif@latest --fix", {
                //   stdio: "inherit",
                // });
-               execSync("pnpm i", { stdio: "inherit" });
+               execSync("bun install", { stdio: "inherit" });
                execSync(
-                  `pnpm prettier --write packages/${answers.name}/** --list-different`,
+                  `bun prettier --write packages/${answers.name}/** --list-different`,
                );
                return "Package scaffolded";
             }

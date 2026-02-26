@@ -27,16 +27,16 @@ src/
 
 ```bash
 # From project root
-pnpm dev
+bun run dev
 
 # Or filter to web only
-pnpm dev:next
+bun run dev:next
 ```
 
 ## Building
 
 ```bash
-pnpm --filter @ota/web build
+bun --filter @ota/web run build
 ```
 
 ## API Routes
