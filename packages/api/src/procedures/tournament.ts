@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+
 import { ORPCError } from "@orpc/server";
 import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
    screeningRequirements as screeningRequirementsTable,
+   staff,
+   StaffRole,
    tournament as tournamentTable,
 } from "@ota/db/schema";
 import {
@@ -265,15 +269,25 @@ export const tournamentProcedures = {
     */
    create: authorized
       .input(createTournamentSchema)
-      .handler(async ({ input }) => {
-         const [created] = await db
+      .handler(async ({ input, context }) => {
+         const [tourny] = await db
             .insert(tournamentTable)
             .values({
                ...input,
             })
             .returning();
+         if (!tourny)
+            throw new ORPCError("INTERNAL_SERVER_ERROR", {
+               message: "Failed to create tournament",
+            });
 
-         return created;
+         await db.insert(staff).values({
+            tournamentId: tourny.id,
+            userId: context.user.id,
+            roles: [StaffRole.HOST],
+         });
+
+         return tourny;
       })
       .callable(),
 
@@ -370,7 +384,6 @@ export const tournamentProcedures = {
       .handler(async ({ input }) => {
          const { id, ...fields } = input;
 
-         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
          const hasUpdates = Object.values(fields).some((v) => v !== undefined);
 
          if (!hasUpdates) {

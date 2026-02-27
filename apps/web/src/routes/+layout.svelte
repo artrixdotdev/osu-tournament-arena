@@ -9,6 +9,8 @@
    import "@ota/tailwind-config/theme";
    import "@ota/tailwind-config/fonts";
 
+   import { Toaster } from "@ota/ui/components/sonner/index.ts";
+
    let { children, data } = $props();
 </script>
 
@@ -17,6 +19,7 @@
 </svelte:head>
 
 <svelte:boundary>
+   <Toaster />
    <ModeWatcher />
 
    <Sidebar.Provider class="bg-sidebar flex h-screen flex-col overflow-hidden">

@@ -53,7 +53,7 @@ export const tournament = sqliteTable(
       rendition: integer(),
 
       /** Brief description shown on tournament page */
-      description: text({ length: 255 }).notNull(),
+      description: text({ length: 255 }),
 
       /** Tournament start date */
       startDate: timestamp().notNull(),
@@ -62,10 +62,10 @@ export const tournament = sqliteTable(
       endDate: timestamp().notNull(),
 
       /** Whether tournament is visible to public */
-      isPublic: boolean().notNull(),
+      isPublic: boolean().notNull().default(false),
 
       /** Whether tournament is archived (read-only) */
-      isArchived: boolean().notNull(),
+      isArchived: boolean().notNull().default(false),
 
       /** Soft deletion flag */
       isDeleted: boolean().notNull().default(false),

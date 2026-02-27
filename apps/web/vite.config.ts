@@ -14,6 +14,12 @@ export default defineConfig({
       }) as PluginOption,
    ],
    ssr: {
-      noExternal: [/^bits-ui/, /^svelte-toolbelt/, /^runed/, /^@ota\/ui/],
+      noExternal: [
+         /^bits-ui/,
+         /^svelte-toolbelt/,
+         /^runed/,
+         /^@ota\/ui/,
+         "svelte-sonner",
+      ],
    },
 });

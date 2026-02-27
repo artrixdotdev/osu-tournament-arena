@@ -46,13 +46,13 @@ export const handle: Handle = async ({ event, resolve }) => {
                   signupCompletedAt,
                } as typeof evt.locals.user;
 
-               if (
-                  !signupCompletedAt &&
-                  path !== "/signup" &&
-                  (!path.includes("/api") || !path.includes("/rpc"))
-               ) {
-                  redirect(302, "/signup");
-               }
+               // if (
+               //    !signupCompletedAt &&
+               //    path !== "/signup" &&
+               //    (!path.includes("/api") || !path.includes("/rpc"))
+               // ) {
+               //    redirect(302, "/signup");
+               // }
             }
 
             return resolve(evt, {
