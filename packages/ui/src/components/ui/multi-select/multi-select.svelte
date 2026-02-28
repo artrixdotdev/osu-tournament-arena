@@ -20,6 +20,7 @@
       items?: MultiSelectItem[];
       onchange?: (value: string[]) => void;
       placeholder?: string;
+      noResultsMessage?: string;
    };
 
    let {
@@ -27,6 +28,7 @@
       items = [],
       onchange,
       placeholder = "Search...",
+      noResultsMessage = "No results found.",
    }: Props = $props();
 
    let searchValue = $state("");
@@ -139,7 +141,7 @@
                </ComboboxPrimitive.Item>
             {:else}
                <span class="text-muted-foreground block px-5 py-2 text-sm">
-                  No results found.
+                  {noResultsMessage}
                </span>
             {/each}
          </ComboboxPrimitive.Viewport>

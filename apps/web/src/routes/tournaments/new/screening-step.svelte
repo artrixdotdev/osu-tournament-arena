@@ -379,10 +379,7 @@
                </Tooltip.Root>
             </div>
             <div class="space-y-2">
-               <CountryMultiSelect
-                  placeholder={m.tournamentCreate_placeholders_allowedCountries()}
-                  bind:value={$formData.allowedCountries}
-               />
+               <CountryMultiSelect bind:value={$formData.allowedCountries} />
             </div>
             <Form.FieldErrors />
          </div>

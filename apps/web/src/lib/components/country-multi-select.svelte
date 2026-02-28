@@ -1,5 +1,6 @@
 <script lang="ts">
    import type { Component } from "svelte";
+   import { m } from "$i18n/messages";
    import { countries } from "$lib/countries";
    import * as Flags from "svelte-flag-icons";
 
@@ -10,12 +11,14 @@
       value?: string[];
       onchange?: (value: string[]) => void;
       placeholder?: string;
+      noResultsMessage?: string;
    }
 
    let {
       value = $bindable([]),
       onchange,
-      placeholder = "Search countries...",
+      placeholder = m.tournamentCreate_placeholders_searchCountries(),
+      noResultsMessage = m.common_noResults(),
    }: Props = $props();
 
    function getFlagComponent(code: string): Component | undefined {
@@ -37,4 +40,4 @@
    );
 </script>
 
-<MultiSelect bind:value {items} {onchange} {placeholder} />
+<MultiSelect bind:value {items} {onchange} {placeholder} {noResultsMessage} />

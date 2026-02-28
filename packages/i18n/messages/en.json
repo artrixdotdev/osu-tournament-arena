@@ -112,7 +112,9 @@
    "tournamentCreate_help_minimumRating": "Lowest allowed OTR rating (inclusive).",
    "tournamentCreate_help_maximumRating": "Highest allowed OTR rating (inclusive).",
    "tournamentCreate_help_allowedCountries": "Optional comma-separated 2-letter country codes (for example: US, CA, GB). Leave empty to allow all countries.",
+   "tournamentCreate_placeholders_searchCountries": "Search countries...",
    "locale_selectLanguage": "Select Language",
    "locale_en": "English",
-   "locale_system": "System"
+   "locale_system": "System",
+   "common_noResults": "No results found."
 }
