@@ -1,21 +1,15 @@
 <script lang="ts">
    import { goto } from "$app/navigation";
-   import {
-      HelpCircleIcon,
-      SquareLock01Icon,
-      SquareUnlock01Icon,
-   } from "@hugeicons/core-free-icons";
-   import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
    import { toast } from "svelte-sonner";
 
-   import { Button } from "@ota/ui/components/button/index.ts";
-   import { Input } from "@ota/ui/components/input/index.ts";
-   import { Label } from "@ota/ui/components/label/index.ts";
    import { Stepper } from "@ota/ui/components/stepper/index.ts";
-   import { Textarea } from "@ota/ui/components/textarea/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
+
+   import DetailsStep from "./details-step.svelte";
+   import DiscordStep from "./discord-step.svelte";
+   import ScreeningStep from "./screening-step.svelte";
 
    const steps = [
       { id: "details", label: m.tournamentCreate_step_details() },
@@ -39,22 +33,7 @@
    let detailsSubmitting = $state(false);
    let detailsError = $state<string | null>(null);
    let settingsSubmitting = $state(false);
-   let settingsError = $state<string | null>(null);
-
-   let idLocked = $state(true);
-   let id = $state("");
-   let name = $state("");
-   let acronym = $state("");
-   let rendition = $state("");
-   let description = $state("");
-   let startDate = $state("");
-   let endDate = $state("");
-   let teamSize = $state("8");
-   let minimumRank = $state("");
-   let maximumRank = $state("");
-   let minimumRating = $state("");
-   let maximumRating = $state("");
-   let allowedCountries = $state("");
+   let settingsError = $state(false);
 
    const currentStep = $derived(steps[currentStepIndex]?.id ?? "details");
    const completedSteps = $derived(
@@ -63,94 +42,39 @@
 
    const isFirstStep = $derived(currentStepIndex === 0);
 
-   $effect(() => {
-      if (idLocked) {
-         id = slugify(name);
-      }
-   });
-
-   function slugify(value: string) {
-      return value
-         .toLowerCase()
-         .trim()
-         .replace(/[^a-z0-9\s-]/g, "")
-         .replace(/\s+/g, "-")
-         .replace(/-+/g, "-")
-         .replace(/^-|-$/g, "");
-   }
-
    function handleBack() {
       if (!isFirstStep) {
          currentStepIndex -= 1;
       }
    }
 
-   function parseOptionalInt(value: string) {
-      if (!value.trim()) {
-         return undefined;
-      }
-
-      const parsed = Number.parseInt(value, 10);
-      if (Number.isNaN(parsed)) {
-         return undefined;
-      }
-
-      return parsed;
-   }
-
-   function toggleIdLock() {
-      idLocked = !idLocked;
-      if (idLocked) {
-         id = slugify(name);
-      }
-   }
-
-   async function handleDetailsSubmit() {
-      detailsError = null;
-
-      if (!name.trim()) {
-         detailsError = m.tournamentCreate_errors_requiredName();
-         return;
-      }
-
-      if (!id.trim()) {
-         detailsError = m.tournamentCreate_errors_requiredId();
-         return;
-      }
-
-      if (!startDate) {
-         detailsError = m.tournamentCreate_errors_requiredStartDate();
-         return;
-      }
-
-      if (!endDate) {
-         detailsError = m.tournamentCreate_errors_requiredEndDate();
-         return;
-      }
-
-      if (new Date(endDate) < new Date(startDate)) {
-         detailsError = m.tournamentCreate_errors_invalidDateRange();
-         return;
-      }
-
+   async function handleDetailsSubmit(data: {
+      id: string;
+      name: string;
+      acronym: string | null;
+      rendition: number | null;
+      description: string | null;
+      startDate: string;
+      endDate: string;
+   }) {
       detailsSubmitting = true;
 
       try {
          await client.tournament.create({
-            id,
-            name,
-            acronym: acronym.trim() ? acronym.trim() : null,
-            rendition: rendition.trim() ? Number.parseInt(rendition, 10) : null,
-            description: description.trim() ? description.trim() : null,
-            startDate: new Date(`${startDate}T00:00:00`),
-            endDate: new Date(`${endDate}T00:00:00`),
+            id: data.id,
+            name: data.name,
+            acronym: data.acronym,
+            rendition: data.rendition,
+            description: data.description,
+            startDate: new Date(`${data.startDate}T00:00:00`),
+            endDate: new Date(`${data.endDate}T00:00:00`),
             isPublic: false,
             isArchived: false,
             lobbySize: DEFAULT_LOBBY_SIZE,
             teamSize: DEFAULT_TEAM_SIZE,
          });
 
-         createdTournamentId = id;
+         createdTournamentId = data.id;
          currentStepIndex = 1;
          toast.success(m.tournamentCreate_success_created());
       } catch (error) {
@@ -162,44 +86,16 @@
       }
    }
 
-   async function handleSettingsSubmit() {
+   async function handleSettingsSubmit(data: {
+      teamSize: number;
+      minimumRank?: number;
+      maximumRank?: number;
+      minimumRating?: number;
+      maximumRating?: number;
+      allowedCountries: string[];
+   }) {
       if (!createdTournamentId) {
-         settingsError = m.tournamentCreate_errors_settingsFailed();
-         return;
-      }
-
-      settingsError = null;
-
-      const parsedTeamSize = parseOptionalInt(teamSize);
-      const parsedMinimumRank = parseOptionalInt(minimumRank);
-      const parsedMaximumRank = parseOptionalInt(maximumRank);
-      const parsedMinimumRating = parseOptionalInt(minimumRating);
-      const parsedMaximumRating = parseOptionalInt(maximumRating);
-      const parsedAllowedCountries = allowedCountries
-         .split(",")
-         .map((country) => country.trim().toUpperCase())
-         .filter(Boolean);
-
-      if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
-         settingsError = m.tournamentCreate_errors_settingsFailed();
-         return;
-      }
-
-      if (
-         parsedMinimumRank !== undefined &&
-         parsedMaximumRank !== undefined &&
-         parsedMinimumRank > parsedMaximumRank
-      ) {
-         settingsError = m.tournamentCreate_errors_settingsFailed();
-         return;
-      }
-
-      if (
-         parsedMinimumRating !== undefined &&
-         parsedMaximumRating !== undefined &&
-         parsedMinimumRating > parsedMaximumRating
-      ) {
-         settingsError = m.tournamentCreate_errors_settingsFailed();
+         settingsError = true;
          return;
       }
 
@@ -208,17 +104,17 @@
       try {
          await client.tournament.updateSettings({
             id: createdTournamentId,
-            teamSize: parsedTeamSize,
+            teamSize: data.teamSize,
          });
 
          await client.tournament.updateScreeningRequirements({
             id: createdTournamentId,
-            minimumRank: parsedMinimumRank,
-            maximumRank: parsedMaximumRank,
-            minimumRating: parsedMinimumRating,
-            maximumRating: parsedMaximumRating,
-            allowedCountries: parsedAllowedCountries.length
-               ? parsedAllowedCountries
+            minimumRank: data.minimumRank,
+            maximumRank: data.maximumRank,
+            minimumRating: data.minimumRating,
+            maximumRating: data.maximumRating,
+            allowedCountries: data.allowedCountries.length
+               ? data.allowedCountries
                : null,
          });
 
@@ -226,7 +122,7 @@
          toast.success(m.tournamentCreate_success_settingsSaved());
       } catch (error) {
          console.error("Failed to save tournament settings:", error);
-         settingsError = m.tournamentCreate_errors_settingsFailed();
+         settingsError = true;
          toast.error(m.tournamentCreate_errors_settingsFailed());
       } finally {
          settingsSubmitting = false;
@@ -266,561 +162,22 @@
                   </p>
                </div>
 
-               <form
-                  class="space-y-4"
-                  onsubmit={(event) => {
-                     event.preventDefault();
-                     void handleDetailsSubmit();
-                  }}
-               >
-                  <div class="space-y-2">
-                     <div class="flex items-center gap-2">
-                        <Label for="tournament-id"
-                           >{m.tournamentCreate_fields_id()}</Label
-                        >
-                        <Tooltip.Root>
-                           <Tooltip.Trigger>
-                              <HugeiconsIcon icon={HelpCircleIcon} size={14} />
-                           </Tooltip.Trigger>
-                           <Tooltip.Content
-                              >{m.tournamentCreate_help_id()}</Tooltip.Content
-                           >
-                        </Tooltip.Root>
-                     </div>
-                     <div class="relative">
-                        <Input
-                           id="tournament-id"
-                           value={id}
-                           placeholder={m.tournamentCreate_placeholders_id()}
-                           readonly={idLocked}
-                           disabled={idLocked}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              id = target.value;
-                           }}
-                        />
-                        <button
-                           type="button"
-                           class="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1"
-                           onclick={toggleIdLock}
-                           aria-label={idLocked
-                              ? m.tournamentCreate_actions_unlockId()
-                              : m.tournamentCreate_actions_lockId()}
-                           title={idLocked
-                              ? m.tournamentCreate_actions_unlockId()
-                              : m.tournamentCreate_actions_lockId()}
-                        >
-                           {#if idLocked}
-                              <HugeiconsIcon
-                                 icon={SquareLock01Icon}
-                                 size={16}
-                              />
-                           {:else}
-                              <HugeiconsIcon
-                                 icon={SquareUnlock01Icon}
-                                 size={16}
-                              />
-                           {/if}
-                        </button>
-                     </div>
-                     <p class="text-muted-foreground text-xs">
-                        {#if idLocked}
-                           {m.tournamentCreate_hints_idLocked()}
-                        {:else}
-                           {m.tournamentCreate_hints_idUnlocked()}
-                        {/if}
-                     </p>
-                  </div>
-
-                  <div class="space-y-2">
-                     <div class="flex items-center gap-2">
-                        <Label for="tournament-name"
-                           >{m.tournamentCreate_fields_name()}</Label
-                        >
-                        <Tooltip.Root>
-                           <Tooltip.Trigger>
-                              <HugeiconsIcon
-                                 icon={HelpCircleIcon}
-                                 size={14}
-                                 strokeWidth={1.7}
-                              />
-                           </Tooltip.Trigger>
-                           <Tooltip.Content
-                              >{m.tournamentCreate_help_name()}</Tooltip.Content
-                           >
-                        </Tooltip.Root>
-                     </div>
-                     <Input
-                        id="tournament-name"
-                        value={name}
-                        placeholder={m.tournamentCreate_placeholders_name()}
-                        oninput={(event) => {
-                           const target =
-                              event.currentTarget as HTMLInputElement;
-                           name = target.value;
-                        }}
-                     />
-                  </div>
-
-                  <div class="grid gap-4 sm:grid-cols-2">
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-acronym"
-                              >{m.tournamentCreate_fields_acronym()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_acronym()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-acronym"
-                           value={acronym}
-                           maxlength={4}
-                           placeholder={m.tournamentCreate_placeholders_acronym()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              acronym = target.value;
-                           }}
-                        />
-                     </div>
-
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-rendition"
-                              >{m.tournamentCreate_fields_rendition()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_rendition()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-rendition"
-                           type="number"
-                           min={1}
-                           value={rendition}
-                           placeholder={m.tournamentCreate_placeholders_rendition()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              rendition = target.value;
-                           }}
-                        />
-                     </div>
-                  </div>
-
-                  <div class="space-y-2">
-                     <div class="flex items-center gap-2">
-                        <Label for="tournament-description"
-                           >{m.tournamentCreate_fields_description()}</Label
-                        >
-                        <span class="text-muted-foreground text-xs">
-                           ({m.tournamentCreate_meta_optional()})
-                        </span>
-                        <Tooltip.Root>
-                           <Tooltip.Trigger>
-                              <HugeiconsIcon
-                                 icon={HelpCircleIcon}
-                                 size={14}
-                                 strokeWidth={1.7}
-                              />
-                           </Tooltip.Trigger>
-                           <Tooltip.Content
-                              >{m.tournamentCreate_help_description()}</Tooltip.Content
-                           >
-                        </Tooltip.Root>
-                     </div>
-                     <Textarea
-                        id="tournament-description"
-                        value={description}
-                        placeholder={m.tournamentCreate_placeholders_description()}
-                        oninput={(event) => {
-                           const target =
-                              event.currentTarget as HTMLTextAreaElement;
-                           description = target.value;
-                        }}
-                     />
-                  </div>
-
-                  <div class="grid gap-4 sm:grid-cols-2">
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-start-date"
-                              >{m.tournamentCreate_fields_startDate()}</Label
-                           >
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_startDate()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-start-date"
-                           type="date"
-                           value={startDate}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              startDate = target.value;
-                           }}
-                        />
-                     </div>
-
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-end-date"
-                              >{m.tournamentCreate_fields_endDate()}</Label
-                           >
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_endDate()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-end-date"
-                           type="date"
-                           value={endDate}
-                           min={startDate || undefined}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              endDate = target.value;
-                           }}
-                        />
-                     </div>
-                  </div>
-
-                  {#if detailsError}
-                     <p class="text-destructive text-sm">{detailsError}</p>
-                  {/if}
-
-                  <div class="flex items-center justify-between">
-                     <Button
-                        variant="outline"
-                        onclick={handleBack}
-                        disabled={isFirstStep}
-                     >
-                        {m.tournamentCreate_back()}
-                     </Button>
-
-                     <Button type="submit" disabled={detailsSubmitting}>
-                        {#if detailsSubmitting}
-                           {m.tournamentCreate_loading()}
-                        {:else}
-                           {m.tournamentCreate_next()}
-                        {/if}
-                     </Button>
-                  </div>
-               </form>
+               <DetailsStep
+                  onSubmit={handleDetailsSubmit}
+                  bind:submitting={detailsSubmitting}
+                  bind:error={detailsError}
+                  {isFirstStep}
+                  onBack={handleBack}
+               />
             {:else if currentStep === "rankAndScreening"}
-               <div class="space-y-2">
-                  <h2 class="text-xl font-semibold">
-                     {m.tournamentCreate_rankAndScreening_title()}
-                  </h2>
-                  <p class="text-muted-foreground text-sm">
-                     {m.tournamentCreate_rankAndScreening_description()}
-                  </p>
-               </div>
-
-               <form
-                  class="space-y-4"
-                  onsubmit={(event) => {
-                     event.preventDefault();
-                     void handleSettingsSubmit();
-                  }}
-               >
-                  <div class="space-y-2">
-                     <div class="flex items-center gap-2">
-                        <Label for="tournament-team-size"
-                           >{m.tournamentCreate_fields_teamSize()}</Label
-                        >
-                        <Tooltip.Root>
-                           <Tooltip.Trigger>
-                              <HugeiconsIcon
-                                 icon={HelpCircleIcon}
-                                 size={14}
-                                 strokeWidth={1.7}
-                              />
-                           </Tooltip.Trigger>
-                           <Tooltip.Content
-                              >{m.tournamentCreate_help_teamSize()}</Tooltip.Content
-                           >
-                        </Tooltip.Root>
-                     </div>
-                     <Input
-                        id="tournament-team-size"
-                        type="number"
-                        min={1}
-                        value={teamSize}
-                        placeholder={m.tournamentCreate_placeholders_teamSize()}
-                        oninput={(event) => {
-                           const target =
-                              event.currentTarget as HTMLInputElement;
-                           teamSize = target.value;
-                        }}
-                     />
-                  </div>
-
-                  <div class="grid gap-4 sm:grid-cols-2">
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-minimum-rank"
-                              >{m.tournamentCreate_fields_minimumRank()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_minimumRank()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-minimum-rank"
-                           type="number"
-                           min={1}
-                           value={minimumRank}
-                           placeholder={m.tournamentCreate_placeholders_minimumRank()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              minimumRank = target.value;
-                           }}
-                        />
-                     </div>
-
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-maximum-rank"
-                              >{m.tournamentCreate_fields_maximumRank()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_maximumRank()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-maximum-rank"
-                           type="number"
-                           min={1}
-                           value={maximumRank}
-                           placeholder={m.tournamentCreate_placeholders_maximumRank()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              maximumRank = target.value;
-                           }}
-                        />
-                     </div>
-                  </div>
-
-                  <div class="grid gap-4 sm:grid-cols-2">
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-minimum-rating"
-                              >{m.tournamentCreate_fields_minimumRating()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_minimumRating()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-minimum-rating"
-                           type="number"
-                           value={minimumRating}
-                           placeholder={m.tournamentCreate_placeholders_minimumRating()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              minimumRating = target.value;
-                           }}
-                        />
-                     </div>
-
-                     <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                           <Label for="tournament-maximum-rating"
-                              >{m.tournamentCreate_fields_maximumRating()}</Label
-                           >
-                           <span class="text-muted-foreground text-xs">
-                              ({m.tournamentCreate_meta_optional()})
-                           </span>
-                           <Tooltip.Root>
-                              <Tooltip.Trigger>
-                                 <HugeiconsIcon
-                                    icon={HelpCircleIcon}
-                                    size={14}
-                                    strokeWidth={1.7}
-                                 />
-                              </Tooltip.Trigger>
-                              <Tooltip.Content
-                                 >{m.tournamentCreate_help_maximumRating()}</Tooltip.Content
-                              >
-                           </Tooltip.Root>
-                        </div>
-                        <Input
-                           id="tournament-maximum-rating"
-                           type="number"
-                           value={maximumRating}
-                           placeholder={m.tournamentCreate_placeholders_maximumRating()}
-                           oninput={(event) => {
-                              const target =
-                                 event.currentTarget as HTMLInputElement;
-                              maximumRating = target.value;
-                           }}
-                        />
-                     </div>
-                  </div>
-
-                  <div class="space-y-2">
-                     <div class="flex items-center gap-2">
-                        <Label for="tournament-allowed-countries"
-                           >{m.tournamentCreate_fields_allowedCountries()}</Label
-                        >
-                        <span class="text-muted-foreground text-xs">
-                           ({m.tournamentCreate_meta_optional()})
-                        </span>
-                        <Tooltip.Root>
-                           <Tooltip.Trigger>
-                              <HugeiconsIcon
-                                 icon={HelpCircleIcon}
-                                 size={14}
-                                 strokeWidth={1.7}
-                              />
-                           </Tooltip.Trigger>
-                           <Tooltip.Content
-                              >{m.tournamentCreate_help_allowedCountries()}</Tooltip.Content
-                           >
-                        </Tooltip.Root>
-                     </div>
-                     <Input
-                        id="tournament-allowed-countries"
-                        value={allowedCountries}
-                        placeholder={m.tournamentCreate_placeholders_allowedCountries()}
-                        oninput={(event) => {
-                           const target =
-                              event.currentTarget as HTMLInputElement;
-                           allowedCountries = target.value;
-                        }}
-                     />
-                  </div>
-
-                  {#if settingsError}
-                     <p class="text-destructive text-sm">{settingsError}</p>
-                  {/if}
-
-                  <div class="flex items-center justify-between">
-                     <Button variant="outline" onclick={handleBack}>
-                        {m.tournamentCreate_back()}
-                     </Button>
-
-                     <Button type="submit" disabled={settingsSubmitting}>
-                        {#if settingsSubmitting}
-                           {m.tournamentCreate_loading()}
-                        {:else}
-                           {m.tournamentCreate_next()}
-                        {/if}
-                     </Button>
-                  </div>
-               </form>
+               <ScreeningStep
+                  onSubmit={handleSettingsSubmit}
+                  submitting={settingsSubmitting}
+                  error={settingsError}
+                  onBack={handleBack}
+               />
             {:else}
-               <div class="space-y-2">
-                  <h2 class="text-xl font-semibold">
-                     {m.tournamentCreate_discord_title()}
-                  </h2>
-                  <p class="text-muted-foreground text-sm">
-                     {m.tournamentCreate_discord_description()}
-                  </p>
-                  <p class="text-muted-foreground text-sm">
-                     {m.tournamentCreate_discord_optional()}
-                  </p>
-               </div>
-
-               <div class="flex items-center justify-between">
-                  <Button variant="outline" onclick={handleBack}>
-                     {m.tournamentCreate_back()}
-                  </Button>
-
-                  <div class="flex items-center gap-2">
-                     <Button variant="outline" onclick={handleFinish}>
-                        {m.tournamentCreate_discord_skip()}
-                     </Button>
-                     <Button onclick={handleFinish}>
-                        {m.tournamentCreate_finish()}
-                     </Button>
-                  </div>
-               </div>
+               <DiscordStep onFinish={handleFinish} onBack={handleBack} />
             {/if}
          </div>
       </Stepper>
