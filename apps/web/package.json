@@ -23,7 +23,11 @@
       "@ota/db": "workspace:*",
       "@ota/ui": "workspace:*",
       "better-auth": "catalog:",
-      "mode-watcher": "^1.1.0"
+      "bits-ui": "catalog:",
+      "formsnap": "^2.0.1",
+      "mode-watcher": "^1.1.0",
+      "sveltekit-superforms": "^2.30.0",
+      "zod": "catalog:"
    },
    "devDependencies": {
       "@hugeicons/core-free-icons": "catalog:",
