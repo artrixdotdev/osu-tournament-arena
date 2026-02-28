@@ -1,5 +1,4 @@
 import { building } from "$app/environment";
-import { redirect } from "@sveltejs/kit";
 import { paraglideMiddleware } from "$i18n/server";
 import { auth } from "$lib/server/auth";
 import { svelteKitHandler } from "better-auth/svelte-kit";
@@ -31,8 +30,6 @@ export const handle: Handle = async ({ event, resolve }) => {
                evt.locals.user = session.user as typeof evt.locals.user;
             }
 
-            const path = evt.url.pathname;
-
             if (session?.user) {
                const [userData] = await db
                   .select({ signupCompletedAt: user.signupCompletedAt })
@@ -45,14 +42,6 @@ export const handle: Handle = async ({ event, resolve }) => {
                   ...session.user,
                   signupCompletedAt,
                } as typeof evt.locals.user;
-
-               // if (
-               //    !signupCompletedAt &&
-               //    path !== "/signup" &&
-               //    (!path.includes("/api") || !path.includes("/rpc"))
-               // ) {
-               //    redirect(302, "/signup");
-               // }
             }
 
             return resolve(evt, {
