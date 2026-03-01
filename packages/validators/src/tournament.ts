@@ -1,7 +1,11 @@
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { StaffRole, tournament as tournamentTable } from "@ota/db/schema";
+import {
+   StaffRole,
+   TournamentDiscord,
+   tournament as tournamentTable,
+} from "@ota/db/schema";
 
 const staffRoleLiteral = z.union([
    z.literal(StaffRole.ADMIN),
@@ -10,9 +14,12 @@ const staffRoleLiteral = z.union([
    z.literal(StaffRole.POOLER),
    z.literal(StaffRole.REFEREE),
    z.literal(StaffRole.PLAYTESTER),
+   z.literal("SPECTATOR"),
+   z.literal("PLAYER"),
+   z.literal("CAPTAIN"),
 ]);
 
-const baseDiscordSchema = z.object({
+const baseDiscordSchema: z.ZodType<TournamentDiscord> = z.object({
    serverId: z.string(),
    channels: z.object({
       matchResults: z.string(),
