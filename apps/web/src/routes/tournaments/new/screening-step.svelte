@@ -8,6 +8,7 @@
    import { z } from "zod/v4";
 
    import { Button } from "@ota/ui/components/button/index.ts";
+   import { Checkbox } from "@ota/ui/components/checkbox/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
@@ -20,6 +21,9 @@
          minimumRating: z.string(),
          maximumRating: z.string(),
          allowedCountries: z.array(z.string()),
+         useBws: z.boolean(),
+         minimumBadges: z.string(),
+         bwsExponent: z.string(),
       })
       .superRefine((data, ctx) => {
          const settingsError = m.tournamentCreate_errors_settingsFailed();
@@ -28,6 +32,8 @@
          const parsedMaximumRank = parseOptionalInt(data.maximumRank);
          const parsedMinimumRating = parseOptionalInt(data.minimumRating);
          const parsedMaximumRating = parseOptionalInt(data.maximumRating);
+         const parsedMinimumBadges = parseOptionalInt(data.minimumBadges);
+         const parsedBwsExponent = parseOptionalFloat(data.bwsExponent);
 
          if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
             ctx.addIssue({
@@ -60,6 +66,27 @@
                message: settingsError,
             });
          }
+
+         if (data.useBws) {
+            if (parsedMinimumBadges !== undefined && parsedMinimumBadges < 0) {
+               ctx.addIssue({
+                  code: "custom",
+                  path: ["minimumBadges"],
+                  message: settingsError,
+               });
+            }
+
+            if (
+               parsedBwsExponent !== undefined &&
+               (parsedBwsExponent <= 0 || parsedBwsExponent >= 1)
+            ) {
+               ctx.addIssue({
+                  code: "custom",
+                  path: ["bwsExponent"],
+                  message: settingsError,
+               });
+            }
+         }
       });
 
    const settingsForm = $state(
@@ -72,6 +99,9 @@
                minimumRating: "",
                maximumRating: "",
                allowedCountries: [] as string[],
+               useBws: false,
+               minimumBadges: "",
+               bwsExponent: "0.9937",
             },
             zod4(settingsSchema),
          ),
@@ -99,6 +129,19 @@
       return parsed;
    }
 
+   function parseOptionalFloat(value: string) {
+      if (!value.trim()) {
+         return undefined;
+      }
+
+      const parsed = Number.parseFloat(value);
+      if (Number.isNaN(parsed)) {
+         return undefined;
+      }
+
+      return parsed;
+   }
+
    interface Props {
       onSubmit: (data: {
          teamSize: number;
@@ -107,6 +150,9 @@
          minimumRating?: number;
          maximumRating?: number;
          allowedCountries: string[];
+         useBws?: boolean;
+         minimumBadges?: number;
+         bwsExponent?: number;
       }) => Promise<void>;
       submitting?: boolean;
       error?: boolean;
@@ -161,6 +207,25 @@
          return;
       }
 
+      const parsedMinimumBadges = parseOptionalInt(
+         validation.data.minimumBadges,
+      );
+      const parsedBwsExponent = parseOptionalFloat(validation.data.bwsExponent);
+      const useBws = validation.data.useBws ?? false;
+
+      if (useBws) {
+         if (parsedMinimumBadges !== undefined && parsedMinimumBadges < 0) {
+            return;
+         }
+
+         if (
+            parsedBwsExponent !== undefined &&
+            (parsedBwsExponent <= 0 || parsedBwsExponent > 1)
+         ) {
+            return;
+         }
+      }
+
       await onSubmit({
          teamSize: parsedTeamSize,
          minimumRank: parsedMinimumRank,
@@ -168,6 +233,9 @@
          minimumRating: parsedMinimumRating,
          maximumRating: parsedMaximumRating,
          allowedCountries: parsedAllowedCountries,
+         useBws,
+         minimumBadges: parsedMinimumBadges,
+         bwsExponent: parsedBwsExponent,
       });
    }
 </script>
@@ -385,6 +453,97 @@
          </div>
       </Form.Control>
    </Form.Field>
+
+   <Form.Field
+      form={settingsForm}
+      name="useBws"
+      class="flex flex-row items-center gap-2 space-y-0"
+   >
+      <Form.Control>
+         <Checkbox bind:checked={$formData.useBws} class="h-4 w-4" />
+         <Form.Label class="font-normal">
+            {m.tournamentCreate_fields_useBws()}
+         </Form.Label>
+      </Form.Control>
+      <Tooltip.Root>
+         <Tooltip.Trigger>
+            <HugeiconsIcon icon={HelpCircleIcon} size={14} strokeWidth={1.7} />
+         </Tooltip.Trigger>
+         <Tooltip.Content>{m.tournamentCreate_help_useBws()}</Tooltip.Content>
+      </Tooltip.Root>
+   </Form.Field>
+
+   {#if $formData.useBws}
+      <Form.Field form={settingsForm} name="minimumBadges">
+         <Form.Control>
+            <div class="space-y-2">
+               <div class="flex items-center gap-2">
+                  <Form.Label
+                     >{m.tournamentCreate_fields_minimumBadges()}</Form.Label
+                  >
+                  <span class="text-muted-foreground text-xs">
+                     ({m.tournamentCreate_meta_optional()})
+                  </span>
+                  <Tooltip.Root>
+                     <Tooltip.Trigger>
+                        <HugeiconsIcon
+                           icon={HelpCircleIcon}
+                           size={14}
+                           strokeWidth={1.7}
+                        />
+                     </Tooltip.Trigger>
+                     <Tooltip.Content
+                        >{m.tournamentCreate_help_minimumBadges()}</Tooltip.Content
+                     >
+                  </Tooltip.Root>
+               </div>
+               <Input
+                  type="number"
+                  min={0}
+                  placeholder={m.tournamentCreate_placeholders_minimumBadges()}
+                  bind:value={$formData.minimumBadges}
+               />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={settingsForm} name="bwsExponent">
+         <Form.Control>
+            <div class="space-y-2">
+               <div class="flex items-center gap-2">
+                  <Form.Label
+                     >{m.tournamentCreate_fields_bwsExponent()}</Form.Label
+                  >
+                  <span class="text-muted-foreground text-xs">
+                     ({m.tournamentCreate_meta_optional()})
+                  </span>
+                  <Tooltip.Root>
+                     <Tooltip.Trigger>
+                        <HugeiconsIcon
+                           icon={HelpCircleIcon}
+                           size={14}
+                           strokeWidth={1.7}
+                        />
+                     </Tooltip.Trigger>
+                     <Tooltip.Content
+                        >{m.tournamentCreate_help_bwsExponent()}</Tooltip.Content
+                     >
+                  </Tooltip.Root>
+               </div>
+               <Input
+                  type="number"
+                  min={0.1}
+                  max={1}
+                  step={0.0001}
+                  placeholder={m.tournamentCreate_placeholders_bwsExponent()}
+                  bind:value={$formData.bwsExponent}
+               />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+   {/if}
 
    {#if error}
       <p class="text-destructive text-sm">

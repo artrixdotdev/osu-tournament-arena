@@ -93,6 +93,9 @@
       minimumRating?: number;
       maximumRating?: number;
       allowedCountries: string[];
+      useBws?: boolean;
+      minimumBadges?: number;
+      bwsExponent?: number;
    }) {
       if (!createdTournamentId) {
          settingsError = true;
@@ -116,6 +119,9 @@
             allowedCountries: data.allowedCountries.length
                ? data.allowedCountries
                : null,
+            useBws: data.useBws,
+            minimumBadges: data.minimumBadges,
+            bwsExponent: data.bwsExponent,
          });
 
          currentStepIndex = 2;
