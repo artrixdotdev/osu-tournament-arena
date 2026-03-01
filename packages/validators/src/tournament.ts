@@ -3,26 +3,68 @@ import { z } from "zod";
 
 import { StaffRole, tournament as tournamentTable } from "@ota/db/schema";
 
+const staffRoleLiteral = z.union([
+   z.literal(StaffRole.ADMIN),
+   z.literal(StaffRole.COMMENTATOR),
+   z.literal(StaffRole.HOST),
+   z.literal(StaffRole.POOLER),
+   z.literal(StaffRole.REFEREE),
+   z.literal(StaffRole.PLAYTESTER),
+]);
+
 const baseDiscordSchema = z.object({
    serverId: z.string(),
    channels: z.object({
       matchResults: z.string(),
       matchPings: z.string(),
    }),
-   roles: z.record(
-      z.union([
-         z.literal(StaffRole.ADMIN),
-         z.literal(StaffRole.COMMENTATOR),
-         z.literal(StaffRole.HOST),
-         z.literal(StaffRole.PLAYTESTER),
-         z.literal(StaffRole.POOLER),
-         z.literal(StaffRole.REFEREE),
-         z.literal("SPECTATOR"),
-         z.literal("PLAYER"),
-         z.literal("CAPTAIN"),
-      ]),
-      z.string(),
-   ),
+   roles: z.record(staffRoleLiteral, z.string()),
+});
+
+const baseIdSchema = z.object({
+   id: z.string().min(1).describe("Tournament ID"),
+});
+
+const basePaginationSchema = z.object({
+   limit: z
+      .number()
+      .int()
+      .positive()
+      .max(50)
+      .default(20)
+      .describe("Maximum results to return"),
+   cursor: z
+      .string()
+      .optional()
+      .describe("Cursor for pagination (tournament ID)"),
+});
+
+const baseRankSchema = z.object({
+   minimumRank: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Minimum osu! rank allowed (inclusive)"),
+   maximumRank: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Maximum osu! rank allowed (inclusive)"),
+});
+
+const baseRatingSchema = z.object({
+   minimumRating: z
+      .number()
+      .int()
+      .optional()
+      .describe("Minimum OTR (osu! Tournament Rating) allowed (inclusive)"),
+   maximumRating: z
+      .number()
+      .int()
+      .optional()
+      .describe("Maximum OTR (osu! Tournament Rating) allowed (inclusive)"),
 });
 
 export const createTournamentSchema = createInsertSchema(tournamentTable, {
@@ -72,23 +114,9 @@ export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
       .describe("Discord bot integration settings"),
 });
 
-export const tournamentIdSchema = updateTournamentSchema
-   .pick({ id: true })
-   .required({ id: true });
+export const tournamentIdSchema = baseIdSchema;
 
-export const tournamentListSchema = z.object({
-   limit: z
-      .number()
-      .int()
-      .positive()
-      .max(50)
-      .default(20)
-      .describe("Maximum results to return"),
-   cursor: z
-      .string()
-      .optional()
-      .describe("Cursor for pagination (tournament ID)"),
-});
+export const tournamentListSchema = basePaginationSchema;
 
 export const updateTournamentDetailsSchema = updateTournamentSchema
    .pick({
@@ -116,69 +144,44 @@ export const updateTournamentDiscordSchema = updateTournamentSchema
    .pick({ id: true, discord: true })
    .required({ id: true });
 
-export const updateTournamentScreeningRequirementsSchema = z
-   .object({
-      id: z.string().min(1).describe("Tournament ID to update"),
-      minimumRank: z
-         .number()
-         .int()
-         .positive()
-         .optional()
-         .describe("Minimum osu! rank allowed (inclusive)"),
-      maximumRank: z
-         .number()
-         .int()
-         .positive()
-         .optional()
-         .describe("Maximum osu! rank allowed (inclusive)"),
-      minimumRating: z
-         .number()
-         .int()
-         .optional()
-         .describe("Minimum OTR (osu! Tournament Rating) allowed (inclusive)"),
-      maximumRating: z
-         .number()
-         .int()
-         .optional()
-         .describe("Maximum OTR (osu! Tournament Rating) allowed (inclusive)"),
-      allowedCountries: z
-         .array(z.string().length(2))
-         .nullable()
-         .optional()
-         .describe("Allowed country codes (null = no restriction)"),
-      useBws: z
-         .boolean()
-         .optional()
-         .describe("Enable Badge Weighted Seeding (BWS) for tournament"),
-      minimumBadges: z
-         .number()
-         .int()
-         .optional()
-         .describe("Minimum badge count required for BWS seeding"),
-      bwsExponent: z
-         .number()
-         .optional()
-         .describe("Exponent used in BWS calculation (typically 0.5-1.0)"),
-   })
+export const updateTournamentScreeningRequirementsSchema = baseIdSchema
+   .merge(
+      z.object({
+         allowedCountries: z
+            .array(z.string().length(2))
+            .nullable()
+            .optional()
+            .describe("Allowed country codes (null = no restriction)"),
+         useBws: z
+            .boolean()
+            .optional()
+            .describe("Enable Badge Weighted Seeding (BWS) for tournament"),
+         minimumBadges: z
+            .number()
+            .int()
+            .optional()
+            .describe("Minimum badge count required for BWS seeding"),
+         bwsExponent: z
+            .number()
+            .optional()
+            .describe("Exponent used in BWS calculation (typically 0.5-1.0)"),
+      }),
+   )
+   .merge(baseRankSchema)
+   .merge(baseRatingSchema)
    .refine(
       (data) =>
          data.minimumRank === undefined ||
          data.maximumRank === undefined ||
          data.minimumRank <= data.maximumRank,
-      {
-         message: "minimumRank must be less than or equal to maximumRank",
-         path: ["minimumRank"],
-      },
+      { message: "minimumRank must be less than or equal to maximumRank" },
    )
    .refine(
       (data) =>
          data.minimumRating === undefined ||
          data.maximumRating === undefined ||
          data.minimumRating <= data.maximumRating,
-      {
-         message: "minimumRating must be less than or equal to maximumRating",
-         path: ["minimumRating"],
-      },
+      { message: "minimumRating must be less than or equal to maximumRating" },
    );
 
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;
