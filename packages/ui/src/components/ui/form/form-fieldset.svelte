@@ -1,16 +1,26 @@
-<script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
-	import * as FormPrimitive from "formsnap";
-	import type { FormPath } from "sveltekit-superforms";
-	import { cn  } from "@ota/ui/utils.js";
-import type {WithoutChild} from "@ota/ui/utils.js";
+<script
+   lang="ts"
+   generics="T extends Record<string, unknown>, U extends FormPath<T>"
+>
+   import type { FormPath } from "sveltekit-superforms";
+   import * as FormPrimitive from "formsnap";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		form,
-		name,
-		...restProps
-	}: WithoutChild<FormPrimitive.FieldsetProps<T, U>> = $props();
+   import type { WithoutChild } from "@ota/ui/utils.js";
+   import { cn } from "@ota/ui/utils.js";
+
+   let {
+      ref = $bindable(null),
+      class: className,
+      form,
+      name,
+      ...restProps
+   }: WithoutChild<FormPrimitive.FieldsetProps<T, U>> = $props();
 </script>
 
-<FormPrimitive.Fieldset bind:ref {form} {name} class={cn("space-y-2", className)} {...restProps} />
+<FormPrimitive.Fieldset
+   bind:ref
+   {form}
+   {name}
+   class={cn("space-y-2", className)}
+   {...restProps}
+/>
