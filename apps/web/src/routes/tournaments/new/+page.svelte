@@ -79,8 +79,15 @@
          toast.success(m.tournamentCreate_success_created());
       } catch (error) {
          console.error("Failed to create tournament:", error);
-         detailsError = m.tournamentCreate_errors_createFailed();
-         toast.error(m.tournamentCreate_errors_createFailed());
+
+         const err = error as { code?: string; message?: string };
+         if (err.code === "CONFLICT") {
+            detailsError = m.tournamentCreate_errors_idInUse();
+            toast.error(m.tournamentCreate_errors_idInUse());
+         } else {
+            detailsError = m.tournamentCreate_errors_createFailed();
+            toast.error(m.tournamentCreate_errors_createFailed());
+         }
       } finally {
          detailsSubmitting = false;
       }

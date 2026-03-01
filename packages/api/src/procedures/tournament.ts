@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
 import { ORPCError } from "@orpc/server";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, DrizzleQueryError, eq } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
@@ -270,24 +270,37 @@ export const tournamentProcedures = {
    create: authorized
       .input(createTournamentSchema)
       .handler(async ({ input, context }) => {
-         const [tourny] = await db
-            .insert(tournamentTable)
-            .values({
-               ...input,
-            })
-            .returning();
-         if (!tourny)
-            throw new ORPCError("INTERNAL_SERVER_ERROR", {
-               message: "Failed to create tournament",
+         try {
+            const [tourny] = await db
+               .insert(tournamentTable)
+               .values({
+                  ...input,
+               })
+               .returning();
+            if (!tourny)
+               throw new ORPCError("INTERNAL_SERVER_ERROR", {
+                  message: "Failed to create tournament",
+               });
+
+            await db.insert(staff).values({
+               tournamentId: tourny.id,
+               userId: context.user.id,
+               roles: [StaffRole.HOST],
             });
 
-         await db.insert(staff).values({
-            tournamentId: tourny.id,
-            userId: context.user.id,
-            roles: [StaffRole.HOST],
-         });
-
-         return tourny;
+            return tourny;
+         } catch (error) {
+            if (error instanceof DrizzleQueryError) {
+               const sqlError: (Error & { code?: string }) | undefined =
+                  error.cause;
+               if (sqlError && sqlError.code === "SQLITE_CONSTRAINT") {
+                  throw new ORPCError("CONFLICT", {
+                     message: "This ID is already in use",
+                  });
+               }
+            }
+            throw error;
+         }
       })
       .callable(),
 
