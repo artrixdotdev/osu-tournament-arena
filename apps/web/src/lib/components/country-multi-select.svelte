@@ -17,7 +17,7 @@
    let {
       value = $bindable([]),
       onchange,
-      placeholder = m.tournamentCreate_placeholders_searchCountries(),
+      placeholder = m.home_searchPlaceholder(),
       noResultsMessage = m.common_noResults(),
    }: Props = $props();
 

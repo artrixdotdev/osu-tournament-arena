@@ -277,7 +277,7 @@
             <Input
                type="number"
                min={1}
-               placeholder={m.tournamentCreate_placeholders_teamSize()}
+               placeholder="8"
                bind:value={$formData.teamSize}
             />
             <Form.FieldErrors />
@@ -294,7 +294,7 @@
                      >{m.tournamentCreate_fields_minimumRank()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -312,7 +312,7 @@
                <Input
                   type="number"
                   min={1}
-                  placeholder={m.tournamentCreate_placeholders_minimumRank()}
+                  placeholder="1"
                   bind:value={$formData.minimumRank}
                />
                <Form.FieldErrors />
@@ -328,7 +328,7 @@
                      >{m.tournamentCreate_fields_maximumRank()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -346,7 +346,7 @@
                <Input
                   type="number"
                   min={1}
-                  placeholder={m.tournamentCreate_placeholders_maximumRank()}
+                  placeholder="10000"
                   bind:value={$formData.maximumRank}
                />
                <Form.FieldErrors />
@@ -364,7 +364,7 @@
                      >{m.tournamentCreate_fields_minimumRating()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -381,7 +381,7 @@
                </div>
                <Input
                   type="number"
-                  placeholder={m.tournamentCreate_placeholders_minimumRating()}
+                  placeholder="0"
                   bind:value={$formData.minimumRating}
                />
                <Form.FieldErrors />
@@ -397,7 +397,7 @@
                      >{m.tournamentCreate_fields_maximumRating()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -414,7 +414,7 @@
                </div>
                <Input
                   type="number"
-                  placeholder={m.tournamentCreate_placeholders_maximumRating()}
+                  placeholder="5000"
                   bind:value={$formData.maximumRating}
                />
                <Form.FieldErrors />
@@ -431,7 +431,7 @@
                   >{m.tournamentCreate_fields_allowedCountries()}</Form.Label
                >
                <span class="text-muted-foreground text-xs">
-                  ({m.tournamentCreate_meta_optional()})
+                  ({m.common_optional()})
                </span>
                <Tooltip.Root>
                   <Tooltip.Trigger>
@@ -482,7 +482,7 @@
                      >{m.tournamentCreate_fields_minimumBadges()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -500,7 +500,7 @@
                <Input
                   type="number"
                   min={0}
-                  placeholder={m.tournamentCreate_placeholders_minimumBadges()}
+                  placeholder="0"
                   bind:value={$formData.minimumBadges}
                />
                <Form.FieldErrors />
@@ -516,7 +516,7 @@
                      >{m.tournamentCreate_fields_bwsExponent()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -536,7 +536,7 @@
                   min={0.1}
                   max={1}
                   step={0.0001}
-                  placeholder={m.tournamentCreate_placeholders_bwsExponent()}
+                  placeholder="0.9937"
                   bind:value={$formData.bwsExponent}
                />
                <Form.FieldErrors />
@@ -553,14 +553,14 @@
 
    <div class="flex items-center justify-between">
       <Button variant="outline" onclick={onBack}>
-         {m.tournamentCreate_back()}
+         {m.common_previous()}
       </Button>
 
       <Button type="submit" disabled={submitting}>
          {#if submitting}
-            {m.tournamentCreate_loading()}
+            {m.common_loading()}
          {:else}
-            {m.tournamentCreate_next()}
+            {m.common_next()}
          {/if}
       </Button>
    </div>

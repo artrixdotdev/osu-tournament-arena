@@ -23,15 +23,15 @@
 
 <div class="flex items-center justify-between">
    <Button variant="outline" onclick={onBack}>
-      {m.tournamentCreate_back()}
+      {m.common_previous()}
    </Button>
 
    <div class="flex items-center gap-2">
       <Button variant="outline" onclick={onFinish}>
-         {m.tournamentCreate_discord_skip()}
+         {m.common_skip()}
       </Button>
       <Button onclick={onFinish}>
-         {m.tournamentCreate_finish()}
+         {m.common_finish()}
       </Button>
    </div>
 </div>

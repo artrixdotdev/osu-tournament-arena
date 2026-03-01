@@ -173,7 +173,7 @@
             </div>
             <div class="relative">
                <Input
-                  placeholder={m.tournamentCreate_placeholders_id()}
+                  placeholder="tournament-id"
                   readonly={idLocked}
                   disabled={idLocked}
                   bind:value={$detailsFormData.id}
@@ -227,7 +227,7 @@
                </Tooltip.Root>
             </div>
             <Input
-               placeholder={m.tournamentCreate_placeholders_name()}
+               placeholder="osu! Team Championship 2026"
                bind:value={$detailsFormData.name}
             />
             <Form.FieldErrors />
@@ -242,7 +242,7 @@
                <div class="flex items-center gap-2">
                   <Form.Label>{m.tournamentCreate_fields_acronym()}</Form.Label>
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -259,7 +259,7 @@
                </div>
                <Input
                   maxlength={4}
-                  placeholder={m.tournamentCreate_placeholders_acronym()}
+                  placeholder="OTC6"
                   bind:value={$detailsFormData.acronym}
                />
                <Form.FieldErrors />
@@ -275,7 +275,7 @@
                      >{m.tournamentCreate_fields_rendition()}</Form.Label
                   >
                   <span class="text-muted-foreground text-xs">
-                     ({m.tournamentCreate_meta_optional()})
+                     ({m.common_optional()})
                   </span>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -293,7 +293,7 @@
                <Input
                   type="number"
                   min={1}
-                  placeholder={m.tournamentCreate_placeholders_rendition()}
+                  placeholder="6"
                   bind:value={$detailsFormData.rendition}
                />
                <Form.FieldErrors />
@@ -309,7 +309,7 @@
                <Form.Label>{m.tournamentCreate_fields_description()}</Form.Label
                >
                <span class="text-muted-foreground text-xs">
-                  ({m.tournamentCreate_meta_optional()})
+                  ({m.common_optional()})
                </span>
                <Tooltip.Root>
                   <Tooltip.Trigger>
@@ -325,7 +325,7 @@
                </Tooltip.Root>
             </div>
             <Textarea
-               placeholder={m.tournamentCreate_placeholders_description()}
+               placeholder="A short summary of the tournament."
                bind:value={$detailsFormData.description}
             />
             <Form.FieldErrors />
@@ -395,14 +395,14 @@
 
    <div class="flex items-center justify-between">
       <Button variant="outline" onclick={onBack} disabled={isFirstStep}>
-         {m.tournamentCreate_back()}
+         {m.common_previous()}
       </Button>
 
       <Button type="submit" disabled={submitting}>
          {#if submitting}
-            {m.tournamentCreate_loading()}
+            {m.common_loading()}
          {:else}
-            {m.tournamentCreate_next()}
+            {m.common_next()}
          {/if}
       </Button>
    </div>
