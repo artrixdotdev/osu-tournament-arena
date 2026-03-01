@@ -146,6 +146,19 @@ export const updateTournamentScreeningRequirementsSchema = z
          .nullable()
          .optional()
          .describe("Allowed country codes (null = no restriction)"),
+      useBws: z
+         .boolean()
+         .optional()
+         .describe("Enable Badge Weighted Seeding (BWS) for tournament"),
+      minimumBadges: z
+         .number()
+         .int()
+         .optional()
+         .describe("Minimum badge count required for BWS seeding"),
+      bwsExponent: z
+         .number()
+         .optional()
+         .describe("Exponent used in BWS calculation (typically 0.5-1.0)"),
    })
    .refine(
       (data) =>

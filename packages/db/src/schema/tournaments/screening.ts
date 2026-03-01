@@ -8,6 +8,7 @@ import { relations } from "drizzle-orm";
 import {
    index,
    integer,
+   real,
    sqliteTable,
    text,
    unique,
@@ -173,6 +174,9 @@ export const screeningAppealRelations = relations(
  * - `minimumRank` / `maximumRank`: Allowed osu! rank range (inclusive)
  * - `minimumRating` / `maximumRating`: Allowed OTR (osu! Tournament Rating) range (inclusive)
  * - `allowedCountries`: Restrict to specific country codes (null = all allowed)
+ * - `useBws`: Enable Badge Weighted Seeding for tournament
+ * - `minimumBadges`: Minimum badge count required for BWS seeding (optional)
+ * - `bwsExponent`: Exponent used in BWS calculation (default: 0.75)
  *
  * **Constraints:**
  * - One requirements entry per tournament
@@ -186,6 +190,9 @@ export const screeningAppealRelations = relations(
  *   minimumRating: 0,
  *   maximumRating: 5000,
  *   allowedCountries: ["US", "CA", "GB"],
+ *   useBws: true,
+ *   minimumBadges: 1,
+ *   bwsExponent: 0.75,
  * };
  * ```
  */
@@ -209,6 +216,15 @@ export const screeningRequirements = sqliteTable(
 
       /** Allowed country codes (null = no restriction) */
       allowedCountries: array<string>(),
+
+      /** Enable Badge Weighted Seeding (BWS) for tournament */
+      useBws: boolean().notNull().default(false),
+
+      /** Minimum badge count required for BWS seeding */
+      minimumBadges: integer(),
+
+      /** Exponent used in BWS calculation (typically 0.9-0.9999, default 0.9937) */
+      bwsExponent: real(),
    },
    (table) => [
       index("screening_requirements_tournament_idx").on(table.tournamentId),
