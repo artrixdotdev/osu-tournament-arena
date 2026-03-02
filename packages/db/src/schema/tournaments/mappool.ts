@@ -30,7 +30,7 @@ import { Mods } from "./types";
  * @example
  * ```ts
  * const mappool = {
- *   id: "pool_ro16",
+ *   id: 101,
  *   tournamentId: "owc2026"
  * };
  * ```
@@ -78,11 +78,11 @@ export const mappoolRelations = relations(mappool, ({ one, many }) => ({
  * @example
  * ```ts
  * const map = {
- *   mappoolId: "pool_ro16",
+ *   mappoolId: 101,
  *   mapId: 3574361, // osu! beatmap ID
  *   slot: "NM1",
  *   mod: "NM",
- *   poolerId: "staff_123",
+ *   poolerId: 123,
  *   multipliers: {
  *     "NM": 1.0,
  *     "HD": 1.06,

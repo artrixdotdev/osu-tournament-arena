@@ -33,10 +33,9 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const staff = {
- *   id: "staff_123",
+ *   id: 123,
  *   userId: "user_456",
  *   tournamentId: "owc2026",
- *   name: "StaffName",
  *   roles: ["REFEREE", "ADMIN"]
  * };
  * ```
@@ -96,8 +95,8 @@ export const staffRelations = relations(staff, ({ one, many }) => ({
  * ```ts
  * // Round-specific availability
  * const availability = {
- *   refereeId: "staff_123",
- *   roundId: "round_456",
+ *   refereeId: 123,
+ *   roundId: 456,
  *   timezone: "Europe/London",
  *   maxMatches: 5,
  *   timeSlots: [

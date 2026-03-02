@@ -35,12 +35,11 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const player = {
- *   id: "player_123",
- *   userId: "user_456",
+ *   id: 123,
+ *   userId: "user_456", // auth user ID
  *   tournamentId: "owc2026",
- *   teamId: "team_789",
- *   isCaptain: true,
- *   name: "PlayerName"
+ *   teamId: 789,
+ *   isCaptain: true
  * };
  * ```
  */
@@ -108,8 +107,8 @@ export const playerRelations = relations(player, ({ one, many }) => ({
  * @example
  * ```ts
  * const availability = {
- *   playerId: "player_123",
- *   roundId: "round_456",
+ *   playerId: 123,
+ *   roundId: 456,
  *   timeSlots: [
  *     { start: "2026-02-15T14:00:00Z", end: "2026-02-15T18:00:00Z" },
  *     { start: "2026-02-16T14:00:00Z", end: "2026-02-16T18:00:00Z" }

@@ -224,7 +224,7 @@ export const screeningRequirements = sqliteTable(
       minimumBadges: integer(),
 
       /** Exponent used in BWS calculation (typically 0.9-0.9999, default 0.9937) */
-      bwsExponent: real(),
+      bwsExponent: real().notNull().default(0.9937),
    },
    (table) => [
       index("screening_requirements_tournament_idx").on(table.tournamentId),

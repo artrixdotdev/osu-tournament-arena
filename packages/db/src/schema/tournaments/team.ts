@@ -35,7 +35,7 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const team = {
- *   id: "team_123",
+ *   id: 123,
  *   name: "Team Awesome",
  *   seed: 1,
  *   tournamentId: "owc2026",
