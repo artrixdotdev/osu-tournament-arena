@@ -26,7 +26,9 @@ import { requireAdmin, requireHost } from "../middleware/staff";
 import { authorized, base } from "../orpc";
 
 const updateTournamentSettingsAndScreeningSchema =
-   updateTournamentSettingsSchema.and(updateTournamentScreeningRequirementsSchema);
+   updateTournamentSettingsSchema.and(
+      updateTournamentScreeningRequirementsSchema,
+   );
 
 /**
  * Applies a partial update to a tournament record.

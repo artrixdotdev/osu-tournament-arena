@@ -17,12 +17,6 @@
    } = $props();
 </script>
 
-<ComboboxPrimitive.Root
-   {type}
-   {open}
-   bind:value
-   {items}
-   {...restProps}
->
+<ComboboxPrimitive.Root {type} {open} bind:value {items} {...restProps}>
    {@render children?.()}
 </ComboboxPrimitive.Root>

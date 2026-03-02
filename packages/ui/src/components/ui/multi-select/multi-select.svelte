@@ -15,20 +15,20 @@
       [key: string]: unknown;
    };
 
-type Props = {
-   name?: string;
-   value?: string[];
-   items?: MultiSelectItem[];
-   onchange?: (value: string[]) => void;
+   type Props = {
+      name?: string;
+      value?: string[];
+      items?: MultiSelectItem[];
+      onchange?: (value: string[]) => void;
       placeholder?: string;
       noResultsMessage?: string;
    };
 
-let {
-   name,
-   value = $bindable([]),
-   items = [],
-   onchange,
+   let {
+      name,
+      value = $bindable([]),
+      items = [],
+      onchange,
       placeholder = "Search...",
       noResultsMessage = "No results found.",
    }: Props = $props();

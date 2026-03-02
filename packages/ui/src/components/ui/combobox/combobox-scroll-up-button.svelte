@@ -10,8 +10,9 @@
       ref = $bindable(null),
       class: className,
       ...restProps
-   }: WithElementRef<WithoutChild<ComboboxPrimitive.ScrollUpButtonProps>> =
-      $props();
+   }: WithElementRef<
+      WithoutChild<ComboboxPrimitive.ScrollUpButtonProps>
+   > = $props();
 </script>
 
 <ComboboxPrimitive.ScrollUpButton

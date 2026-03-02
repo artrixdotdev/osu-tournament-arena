@@ -10,12 +10,12 @@
    import { zod4, zod4Client } from "sveltekit-superforms/adapters";
    import { z } from "zod/v4";
 
+   import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { Textarea } from "@ota/ui/components/textarea/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
-   import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
 
    interface Props {
       onSubmit: (data: {
@@ -57,9 +57,8 @@
                TOURNAMENT_ACRONYM_MAX_LENGTH,
                `Acronym must be ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters or less.`,
             ),
-         rendition: z
-            .union([z.string().trim(), z.number(), z.null()])
-            .refine((value) => {
+         rendition: z.union([z.string().trim(), z.number(), z.null()]).refine(
+            (value) => {
                if (value === "" || value === null) {
                   return true;
                }
@@ -69,9 +68,11 @@
                }
 
                return /^\d+$/.test(value);
-            }, {
+            },
+            {
                message: "Rendition must be a positive integer.",
-            }),
+            },
+         ),
          description: z.string(),
          startDate: z
             .string()
