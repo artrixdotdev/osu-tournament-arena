@@ -51,9 +51,18 @@
             .min(1, m.tournamentCreate_errors_requiredName()),
          acronym: z.string(),
          rendition: z
-            .string()
-            .trim()
-            .refine((value) => value === "" || /^\d+$/.test(value), {
+            .union([z.string().trim(), z.number(), z.null()])
+            .refine((value) => {
+               if (value === "" || value === null) {
+                  return true;
+               }
+
+               if (typeof value === "number") {
+                  return Number.isInteger(value) && value > 0;
+               }
+
+               return /^\d+$/.test(value);
+            }, {
                message: "Rendition must be a positive integer.",
             }),
          description: z.string(),
@@ -134,15 +143,21 @@
          return;
       }
 
+      const renditionInput = validation.data.rendition;
+      const normalizedRendition =
+         renditionInput === "" || renditionInput === null
+            ? null
+            : typeof renditionInput === "number"
+              ? renditionInput
+              : Number(renditionInput);
+
       await onSubmit({
          id: validation.data.id.trim(),
          name: validation.data.name.trim(),
          acronym: validation.data.acronym.trim()
             ? validation.data.acronym.trim()
             : null,
-         rendition: validation.data.rendition.trim()
-            ? Number(validation.data.rendition)
-            : null,
+         rendition: normalizedRendition,
          description: validation.data.description.trim()
             ? validation.data.description.trim()
             : null,
