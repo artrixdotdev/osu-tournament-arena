@@ -117,12 +117,17 @@
    export { formData, validateForm, settingsForm };
 
    function parseOptionalInt(value: string) {
-      if (!value.trim()) {
+      const trimmed = value.trim();
+      if (!trimmed) {
          return undefined;
       }
 
-      const parsed = Number.parseInt(value, 10);
-      if (Number.isNaN(parsed)) {
+      if (!/^[+-]?\d+$/.test(trimmed)) {
+         return undefined;
+      }
+
+      const parsed = Number(trimmed);
+      if (!Number.isInteger(parsed)) {
          return undefined;
       }
 
@@ -130,12 +135,17 @@
    }
 
    function parseOptionalFloat(value: string) {
-      if (!value.trim()) {
+      const trimmed = value.trim();
+      if (!trimmed) {
          return undefined;
       }
 
-      const parsed = Number.parseFloat(value);
-      if (Number.isNaN(parsed)) {
+      if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(trimmed)) {
+         return undefined;
+      }
+
+      const parsed = Number(trimmed);
+      if (!Number.isFinite(parsed)) {
          return undefined;
       }
 
