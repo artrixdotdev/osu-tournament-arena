@@ -176,7 +176,7 @@ export const screeningAppealRelations = relations(
  * - `allowedCountries`: Restrict to specific country codes (null = all allowed)
  * - `useBws`: Enable Badge Weighted Seeding for tournament
  * - `minimumBadges`: Minimum badge count required for BWS seeding (optional)
- * - `bwsExponent`: Exponent used in BWS calculation (default: 0.75)
+ * - `bwsExponent`: Exponent used in BWS calculation (default: 0.9937)
  *
  * **Constraints:**
  * - One requirements entry per tournament
@@ -192,7 +192,7 @@ export const screeningAppealRelations = relations(
  *   allowedCountries: ["US", "CA", "GB"],
  *   useBws: true,
  *   minimumBadges: 1,
- *   bwsExponent: 0.75,
+ *   bwsExponent: 0.9937,
  * };
  * ```
  */
