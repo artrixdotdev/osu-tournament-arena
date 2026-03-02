@@ -178,7 +178,7 @@ export const updateTournamentVisibilitySchema = updateTournamentSchema
 
 export const updateTournamentDiscordSchema = updateTournamentSchema
    .pick({ id: true, discord: true })
-   .required({ id: true });
+   .required({ id: true, discord: true });
 
 export const updateTournamentScreeningRequirementsSchema = baseIdSchema
    .merge(
