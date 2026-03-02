@@ -15,6 +15,7 @@
    import { Input } from "@ota/ui/components/input/index.ts";
    import { Textarea } from "@ota/ui/components/textarea/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
+   import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
 
    interface Props {
       onSubmit: (data: {
@@ -49,7 +50,13 @@
             .string()
             .trim()
             .min(1, m.tournamentCreate_errors_requiredName()),
-         acronym: z.string().trim().max(6, "Acronym must be 6 characters or less."),
+         acronym: z
+            .string()
+            .trim()
+            .max(
+               TOURNAMENT_ACRONYM_MAX_LENGTH,
+               `Acronym must be ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters or less.`,
+            ),
          rendition: z
             .union([z.string().trim(), z.number(), z.null()])
             .refine((value) => {
@@ -278,7 +285,7 @@
                   </Tooltip.Root>
                </div>
                <Input
-                  maxlength={6}
+                  maxlength={TOURNAMENT_ACRONYM_MAX_LENGTH}
                   placeholder="OTC6"
                   bind:value={$detailsFormData.acronym}
                />

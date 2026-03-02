@@ -17,6 +17,8 @@ import { screening } from "./screening";
 import { staff } from "./staff";
 import { team } from "./team";
 
+export const TOURNAMENT_ACRONYM_MAX_LENGTH = 6;
+
 /**
  * Tournament table - central entity for organizing competitive events.
  *
@@ -47,7 +49,7 @@ export const tournament = sqliteTable(
       name: text().notNull(),
 
       /** Short identifier (max 6 chars) */
-      acronym: text({ length: 6 }),
+      acronym: text({ length: TOURNAMENT_ACRONYM_MAX_LENGTH }),
 
       /** Edition number (e.g., 16 for OWC 2026) */
       rendition: integer(),

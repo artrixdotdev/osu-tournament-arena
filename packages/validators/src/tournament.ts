@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
    StaffRole,
+   TOURNAMENT_ACRONYM_MAX_LENGTH,
    TournamentDiscord,
    tournament as tournamentTable,
 } from "@ota/db/schema";
@@ -85,7 +86,11 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
          .describe("Unique tournament identifier"),
    name: (schema) => schema.min(1).describe("Full tournament name"),
    acronym: (schema) =>
-      schema.max(6).describe("Short acronym (up to 6 characters)"),
+      schema
+         .max(TOURNAMENT_ACRONYM_MAX_LENGTH)
+         .describe(
+            `Short acronym (up to ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters)`,
+         ),
    rendition: (schema) =>
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) => schema.max(255).describe("Brief description"),
@@ -110,7 +115,12 @@ export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
    id: (schema) => schema.min(1).describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
    acronym: (schema) =>
-      schema.max(6).optional().describe("Short acronym (up to 6 characters)"),
+      schema
+         .max(TOURNAMENT_ACRONYM_MAX_LENGTH)
+         .optional()
+         .describe(
+            `Short acronym (up to ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters)`,
+         ),
    rendition: (schema) =>
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) =>
