@@ -85,7 +85,7 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
          .describe("Unique tournament identifier"),
    name: (schema) => schema.min(1).describe("Full tournament name"),
    acronym: (schema) =>
-      schema.length(4).describe("Short acronym (exactly 4 characters)"),
+      schema.max(6).describe("Short acronym (up to 6 characters)"),
    rendition: (schema) =>
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) => schema.max(255).describe("Brief description"),
@@ -109,7 +109,8 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
 export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
    id: (schema) => schema.min(1).describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
-   acronym: (schema) => schema.length(4).optional().describe("Short acronym"),
+   acronym: (schema) =>
+      schema.max(6).optional().describe("Short acronym (up to 6 characters)"),
    rendition: (schema) =>
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) =>

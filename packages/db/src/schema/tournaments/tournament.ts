@@ -46,8 +46,8 @@ export const tournament = sqliteTable(
       id: text().primaryKey(),
       name: text().notNull(),
 
-      /** Short identifier (max 4 chars) */
-      acronym: text({ length: 4 }),
+      /** Short identifier (max 6 chars) */
+      acronym: text({ length: 6 }),
 
       /** Edition number (e.g., 16 for OWC 2026) */
       rendition: integer(),

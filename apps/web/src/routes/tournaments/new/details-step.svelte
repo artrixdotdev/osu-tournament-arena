@@ -49,7 +49,7 @@
             .string()
             .trim()
             .min(1, m.tournamentCreate_errors_requiredName()),
-         acronym: z.string(),
+         acronym: z.string().trim().max(6, "Acronym must be 6 characters or less."),
          rendition: z
             .union([z.string().trim(), z.number(), z.null()])
             .refine((value) => {
@@ -278,7 +278,7 @@
                   </Tooltip.Root>
                </div>
                <Input
-                  maxlength={4}
+                  maxlength={6}
                   placeholder="OTC6"
                   bind:value={$detailsFormData.acronym}
                />

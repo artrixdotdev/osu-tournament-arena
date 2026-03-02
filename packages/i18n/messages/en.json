@@ -89,7 +89,7 @@
 
    "tournamentCreate_help_id": "Unique URL-safe identifier for this tournament. Locked mode keeps it synced with the name.",
    "tournamentCreate_help_name": "Primary public name shown to users.",
-   "tournamentCreate_help_acronym": "Short code used in overlays and compact views. Exactly 4 characters if provided.",
+   "tournamentCreate_help_acronym": "Short code used in overlays and compact views. Up to 6 characters if provided.",
    "tournamentCreate_help_rendition": "Edition number, such as 1, 2, or 16.",
    "tournamentCreate_help_description": "Short summary for tournament listings and overview pages.",
    "tournamentCreate_help_startDate": "Tournament start date.",

@@ -339,7 +339,7 @@ export const tournamentProcedures = {
     *
     * @param input.id - Tournament ID to update
     * @param input.name - New tournament name (1-100 chars)
-    * @param input.acronym - New short identifier (max 4 chars)
+    * @param input.acronym - New short identifier (max 6 chars)
     * @param input.rendition - New edition number (positive integer)
     * @param input.description - New description (max 255 chars)
     * @returns `{ updated: false }` if no fields provided, or `{ updated: true, tournament }` on success
