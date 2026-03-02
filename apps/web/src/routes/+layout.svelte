@@ -18,8 +18,9 @@
    <link rel="icon" href={favicon} />
 </svelte:head>
 
+<Toaster />
+
 <svelte:boundary>
-   <Toaster />
    <ModeWatcher />
 
    <Sidebar.Provider class="bg-sidebar flex h-screen flex-col overflow-hidden">

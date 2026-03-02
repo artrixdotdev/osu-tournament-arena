@@ -28,14 +28,20 @@
    }
 
    const items: MultiSelectItem[] = $derived(
-      countries.map((c) => {
+      countries.flatMap((c) => {
          const FlagComponent = getFlagComponent(c.code);
-         return {
-            value: c.code,
-            label: c.name,
-            icon: FlagComponent,
-            secondaryLabel: c.code,
-         };
+         if (!FlagComponent) {
+            return [];
+         }
+
+         return [
+            {
+               value: c.code,
+               label: c.name,
+               icon: FlagComponent,
+               secondaryLabel: c.code,
+            },
+         ];
       }),
    );
 </script>

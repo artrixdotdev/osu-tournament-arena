@@ -7,6 +7,22 @@
       onFinish: () => Promise<void>;
       onBack: () => void;
    }>();
+
+   let loading = $state(false);
+
+   async function handleFinish() {
+      if (loading) {
+         return;
+      }
+
+      loading = true;
+
+      try {
+         await onFinish();
+      } finally {
+         loading = false;
+      }
+   }
 </script>
 
 <div class="space-y-2">
@@ -27,10 +43,10 @@
    </Button>
 
    <div class="flex items-center gap-2">
-      <Button variant="outline" onclick={onFinish}>
+      <Button variant="outline" onclick={handleFinish} disabled={loading}>
          {m.common_skip()}
       </Button>
-      <Button onclick={onFinish}>
+      <Button onclick={handleFinish} disabled={loading}>
          {m.common_finish()}
       </Button>
    </div>
