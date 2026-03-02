@@ -25,23 +25,8 @@ import {
 import { requireAdmin, requireHost } from "../middleware/staff";
 import { authorized, base } from "../orpc";
 
-const updateTournamentSettingsAndScreeningSchema = updateTournamentSettingsSchema
-   .merge(updateTournamentScreeningRequirementsSchema.omit({ id: true }))
-   .required({ id: true })
-   .refine(
-      (data) =>
-         data.minimumRank === undefined ||
-         data.maximumRank === undefined ||
-         data.minimumRank <= data.maximumRank,
-      { message: "minimumRank must be less than or equal to maximumRank" },
-   )
-   .refine(
-      (data) =>
-         data.minimumRating === undefined ||
-         data.maximumRating === undefined ||
-         data.minimumRating <= data.maximumRating,
-      { message: "minimumRating must be less than or equal to maximumRating" },
-   );
+const updateTournamentSettingsAndScreeningSchema =
+   updateTournamentSettingsSchema.and(updateTournamentScreeningRequirementsSchema);
 
 /**
  * Applies a partial update to a tournament record.
