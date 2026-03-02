@@ -57,6 +57,7 @@
       startDate: string;
       endDate: string;
    }) {
+      detailsError = null;
       detailsSubmitting = true;
 
       try {
@@ -104,6 +105,7 @@
       minimumBadges?: number;
       bwsExponent?: number;
    }) {
+      settingsError = false;
       if (!createdTournamentId) {
          settingsError = true;
          return;
