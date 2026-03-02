@@ -69,7 +69,11 @@
          "@trpc/server": "^11.8.1",
          "shadcn-svelte": "^2.0.0",
          "@hugeicons/core-free-icons": "^3.1.1",
-         "@hugeicons/svelte": "^1.1.1"
+         "@hugeicons/svelte": "^1.1.1",
+         "svelte-sonner": "^1.0.7",
+         "sveltekit-superforms": "^2.30.0",
+         "formsnap": "^2.0.1",
+         "mode-watcher": "^1.1.0"
       }
    },
    "overrides": {
