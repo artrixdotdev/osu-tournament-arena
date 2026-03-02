@@ -4,8 +4,14 @@
  * Every other entity in the system references a tournament.
  */
 
-import { relations } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { relations, sql } from "drizzle-orm";
+import {
+   check,
+   index,
+   integer,
+   sqliteTable,
+   text,
+} from "drizzle-orm/sqlite-core";
 
 import type { TournamentDiscord } from "./types";
 import { auditTimestamps, boolean, json, timestamp } from "../../util";
@@ -85,6 +91,10 @@ export const tournament = sqliteTable(
       ...auditTimestamps,
    },
    (table) => [
+      check(
+         "tournament_acronym_len_check",
+         sql`length(${table.acronym}) <= ${TOURNAMENT_ACRONYM_MAX_LENGTH}`,
+      ),
       index("tournament_archived_idx").on(table.isArchived),
       index("tournament_deleted_idx").on(table.isDeleted),
       index("tournament_public_idx").on(table.isPublic),
