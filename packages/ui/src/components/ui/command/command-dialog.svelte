@@ -14,6 +14,12 @@
       open = $bindable(false),
       ref = $bindable(null),
       value = $bindable(""),
+      onOpenChange,
+      onOpenChangeComplete,
+      onValueChange,
+      label,
+      filter,
+      columns,
       title = "Command Palette",
       description = "Search for a command to run",
       portalProps,
@@ -26,9 +32,22 @@
          title?: string;
          description?: string;
       } = $props();
+
+   const dialogProps = $derived({
+      onOpenChange,
+      onOpenChangeComplete,
+   });
+
+   const commandProps = $derived({
+      onValueChange,
+      label,
+      filter,
+      columns,
+      ...restProps,
+   });
 </script>
 
-<Dialog.Root bind:open {...restProps}>
+<Dialog.Root bind:open {...dialogProps}>
    <Dialog.Header class="sr-only">
       <Dialog.Title>{title}</Dialog.Title>
       <Dialog.Description>{description}</Dialog.Description>
@@ -36,7 +55,7 @@
    <Dialog.Content class="overflow-hidden p-0" {portalProps}>
       <Command
          class="**:data-[slot=command-input-wrapper]:h-12 [&_[data-command-group]]:px-2 [&_[data-command-group]:not([hidden])_~[data-command-group]]:pt-0 [&_[data-command-input-wrapper]_svg]:h-5 [&_[data-command-input-wrapper]_svg]:w-5 [&_[data-command-input]]:h-12 [&_[data-command-item]]:px-2 [&_[data-command-item]]:py-3 [&_[data-command-item]_svg]:h-5 [&_[data-command-item]_svg]:w-5"
-         {...restProps}
+         {...commandProps}
          bind:value
          bind:ref
          {children}

@@ -3,16 +3,19 @@
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { Combobox as ComboboxPrimitive } from "bits-ui";
 
-   import type { WithoutChild } from "@ota/ui/utils.js";
+   import type { WithElementRef, WithoutChild } from "@ota/ui/utils.js";
    import { cn } from "@ota/ui/utils.js";
 
    let {
+      ref = $bindable(null),
       class: className,
       ...restProps
-   }: WithoutChild<ComboboxPrimitive.ScrollUpButtonProps> = $props();
+   }: WithElementRef<WithoutChild<ComboboxPrimitive.ScrollUpButtonProps>> =
+      $props();
 </script>
 
 <ComboboxPrimitive.ScrollUpButton
+   bind:ref
    class={cn("flex w-full items-center justify-center py-1", className)}
    {...restProps}
 >

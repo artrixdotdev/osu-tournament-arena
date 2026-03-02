@@ -6,15 +6,12 @@
 
    let {
       open = $bindable(false),
-      value = $bindable(),
+      value = $bindable<ComboboxPrimitive.RootProps["value"]>(),
       items = [],
       type = "multiple",
       children,
       ...restProps
-   }: {
-      type?: "single" | "multiple";
-      open?: boolean;
-      value?: string[];
+   }: ComboboxPrimitive.RootProps & {
       items?: Item[];
       children?: Snippet;
    } = $props();
@@ -23,9 +20,9 @@
 <ComboboxPrimitive.Root
    {type}
    {open}
-   bind:value={value as never}
+   bind:value
    {items}
-   {...restProps as any}
+   {...restProps}
 >
    {@render children?.()}
 </ComboboxPrimitive.Root>
