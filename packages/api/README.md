@@ -99,21 +99,17 @@ The `authorized` procedure requires a valid session. Adds `user` and `session` t
 
 Role-based middleware for tournament-specific permissions:
 
-- `requireHost(tournamentId)` - Requires HOST role
-- `requireAdmin(tournamentId)` - Requires ADMIN role or higher
-- `requirePooler(tournamentId)` - Requires POOLER role or higher
-- `requirePlaytester(tournamentId)` - Requires PLAYTESTER role or higher
-- `requireReferee(tournamentId)` - Requires REFEREE role or higher
-- `requireCommentator(tournamentId)` - Requires COMMENTATOR role or higher
+- `requireHost()` - Requires HOST role
+- `requireAdmin()` - Requires ADMIN role or higher
+- `requirePooler()` - Requires POOLER role or higher
+- `requirePlaytester()` - Requires PLAYTESTER role or higher
+- `requireReferee()` - Requires REFEREE role or higher
+- `requireCommentator()` - Requires COMMENTATOR role or higher
 
 Staff middleware adds `staff` to context:
 
 ```ts
 context.staff = {
-   id: string;
-   name: string;
-   tournamentId: string;
-   userId: string;
    roles: StaffRole[];
 }
 ```

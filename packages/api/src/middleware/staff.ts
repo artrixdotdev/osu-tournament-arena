@@ -123,7 +123,7 @@ export function requireStaff(requiredRole: StaffRole) {
  *
  * @example
  * ```typescript
- * const requireTournamentHost = requireHost("owc2026");
+ * const requireTournamentHost = requireHost();
  *
  * delete: authorized
  *    .use(requireTournamentHost)
@@ -139,7 +139,7 @@ export function requireHost() {
  *
  * @example
  * ```typescript
- * const requireTournamentAdmin = requireAdmin("owc2026");
+ * const requireTournamentAdmin = requireAdmin();
  *
  * update: authorized
  *    .use(requireTournamentAdmin)
@@ -155,7 +155,7 @@ export function requireAdmin() {
  *
  * @example
  * ```typescript
- * const requireMappooler = requirePooler("owc2026");
+ * const requireMappooler = requirePooler();
  *
  * updateMappool: authorized
  *    .use(requireMappooler)
@@ -171,10 +171,10 @@ export function requirePooler() {
  *
  * @example
  * ```typescript
- * const requirePlaytester = requirePlaytester("owc2026");
+ * const requirePlaytesterMiddleware = requirePlaytester();
  *
  * updateMap: authorized
- *    .use(requirePlaytester)
+ *    .use(requirePlaytesterMiddleware)
  *    .handler(...)
  * ```
  */
@@ -187,10 +187,10 @@ export function requirePlaytester() {
  *
  * @example
  * ```typescript
- * const requireReferee = requireReferee("owc2026");
+ * const requireRefereeMiddleware = requireReferee();
  *
  * createMatch: authorized
- *    .use(requireReferee)
+ *    .use(requireRefereeMiddleware)
  *    .handler(...)
  * ```
  */
@@ -203,10 +203,10 @@ export function requireReferee() {
  *
  * @example
  * ```typescript
- * const requireCommentator = requireCommentator("owc2026");
+ * const requireCommentatorMiddleware = requireCommentator();
  *
  * updateStream: authorized
- *    .use(requireCommentator)
+ *    .use(requireCommentatorMiddleware)
  *    .handler(...)
  * ```
  */
