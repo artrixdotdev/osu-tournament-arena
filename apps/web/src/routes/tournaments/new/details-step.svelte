@@ -55,7 +55,9 @@
             .trim()
             .max(
                TOURNAMENT_ACRONYM_MAX_LENGTH,
-               `Acronym must be ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters or less.`,
+               m.tournamentCreate_errors_acronymTooLong({
+                  max: TOURNAMENT_ACRONYM_MAX_LENGTH,
+               }),
             ),
          rendition: z.union([z.string().trim(), z.number(), z.null()]).refine(
             (value) => {
@@ -70,7 +72,7 @@
                return /^\d+$/.test(value);
             },
             {
-               message: "Rendition must be a positive integer.",
+               message: m.tournamentCreate_errors_invalidRendition(),
             },
          ),
          description: z.string(),

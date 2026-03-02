@@ -72,6 +72,8 @@
    "tournamentCreate_actions_unlockId": "Unlock ID",
    "tournamentCreate_errors_requiredName": "Tournament name is required.",
    "tournamentCreate_errors_requiredId": "Tournament ID is required.",
+   "tournamentCreate_errors_acronymTooLong": "Acronym must be {max} characters or less.",
+   "tournamentCreate_errors_invalidRendition": "Rendition must be a positive integer.",
    "tournamentCreate_errors_requiredStartDate": "Start date is required.",
    "tournamentCreate_errors_requiredEndDate": "End date is required.",
    "tournamentCreate_errors_invalidDateRange": "End date must be on or after start date.",
