@@ -50,7 +50,12 @@
             .trim()
             .min(1, m.tournamentCreate_errors_requiredName()),
          acronym: z.string(),
-         rendition: z.string(),
+         rendition: z
+            .string()
+            .trim()
+            .refine((value) => value === "" || /^\d+$/.test(value), {
+               message: "Rendition must be a positive integer.",
+            }),
          description: z.string(),
          startDate: z
             .string()
@@ -136,7 +141,7 @@
             ? validation.data.acronym.trim()
             : null,
          rendition: validation.data.rendition.trim()
-            ? Number.parseInt(validation.data.rendition, 10)
+            ? Number(validation.data.rendition)
             : null,
          description: validation.data.description.trim()
             ? validation.data.description.trim()

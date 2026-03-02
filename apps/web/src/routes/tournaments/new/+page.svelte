@@ -66,8 +66,8 @@
             acronym: data.acronym,
             rendition: data.rendition,
             description: data.description,
-            startDate: new Date(`${data.startDate}T00:00:00`),
-            endDate: new Date(`${data.endDate}T00:00:00`),
+            startDate: new Date(`${data.startDate}T00:00:00Z`),
+            endDate: new Date(`${data.endDate}T00:00:00Z`),
             isPublic: false,
             isArchived: false,
             lobbySize: DEFAULT_LOBBY_SIZE,
@@ -99,7 +99,7 @@
       maximumRank?: number;
       minimumRating?: number;
       maximumRating?: number;
-      allowedCountries: string[];
+      allowedCountries?: string[] | null;
       useBws?: boolean;
       minimumBadges?: number;
       bwsExponent?: number;
@@ -123,7 +123,7 @@
             maximumRank: data.maximumRank,
             minimumRating: data.minimumRating,
             maximumRating: data.maximumRating,
-            allowedCountries: data.allowedCountries.length
+            allowedCountries: data.allowedCountries?.length
                ? data.allowedCountries
                : null,
             useBws: data.useBws,

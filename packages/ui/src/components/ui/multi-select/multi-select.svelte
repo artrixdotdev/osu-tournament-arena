@@ -15,18 +15,20 @@
       [key: string]: unknown;
    };
 
-   type Props = {
-      value?: string[];
-      items?: MultiSelectItem[];
-      onchange?: (value: string[]) => void;
+type Props = {
+   name?: string;
+   value?: string[];
+   items?: MultiSelectItem[];
+   onchange?: (value: string[]) => void;
       placeholder?: string;
       noResultsMessage?: string;
    };
 
-   let {
-      value = $bindable([]),
-      items = [],
-      onchange,
+let {
+   name,
+   value = $bindable([]),
+   items = [],
+   onchange,
       placeholder = "Search...",
       noResultsMessage = "No results found.",
    }: Props = $props();
@@ -52,7 +54,7 @@
 <ComboboxPrimitive.Root
    type="multiple"
    bind:value
-   name="multi-select"
+   {name}
    onOpenChangeComplete={(o) => {
       if (!o) searchValue = "";
    }}

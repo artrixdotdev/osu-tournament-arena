@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
 import { ORPCError } from "@orpc/server";
-import { and, desc, DrizzleQueryError, eq } from "drizzle-orm";
+import { and, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
@@ -50,6 +50,12 @@ async function applyUpdate<T extends Record<string, unknown>>(
       .set(fields)
       .where(eq(tournamentTable.id, id))
       .returning();
+
+   if (!updated) {
+      throw new ORPCError("NOT_FOUND", {
+         message: "Tournament not found",
+      });
+   }
 
    return { updated: true as const, tournament: updated };
 }
@@ -152,7 +158,12 @@ export const tournamentProcedures = {
          const result = await db
             .select()
             .from(tournamentTable)
-            .where(eq(tournamentTable.id, input.id))
+            .where(
+               and(
+                  eq(tournamentTable.id, input.id),
+                  eq(tournamentTable.isDeleted, false),
+               ),
+            )
             .limit(1);
 
          const tournament = result[0] ?? null;
@@ -212,10 +223,13 @@ export const tournamentProcedures = {
       .handler(async ({ input }) => {
          const { limit, cursor } = input;
 
-         const conditions = [eq(tournamentTable.isPublic, true)];
+         const conditions = [
+            eq(tournamentTable.isPublic, true),
+            eq(tournamentTable.isDeleted, false),
+         ];
 
          if (cursor) {
-            conditions.push(eq(tournamentTable.id, cursor));
+            conditions.push(lt(tournamentTable.id, cursor));
          }
 
          const result = await db
@@ -271,24 +285,30 @@ export const tournamentProcedures = {
       .input(createTournamentSchema)
       .handler(async ({ input, context }) => {
          try {
-            const [tourny] = await db
-               .insert(tournamentTable)
-               .values({
-                  ...input,
-               })
-               .returning();
-            if (!tourny)
-               throw new ORPCError("INTERNAL_SERVER_ERROR", {
-                  message: "Failed to create tournament",
+            const tournament = await db.transaction(async (tx) => {
+               const [createdTournament] = await tx
+                  .insert(tournamentTable)
+                  .values({
+                     ...input,
+                  })
+                  .returning();
+
+               if (!createdTournament) {
+                  throw new ORPCError("INTERNAL_SERVER_ERROR", {
+                     message: "Failed to create tournament",
+                  });
+               }
+
+               await tx.insert(staff).values({
+                  tournamentId: createdTournament.id,
+                  userId: context.user.id,
+                  roles: [StaffRole.HOST],
                });
 
-            await db.insert(staff).values({
-               tournamentId: tourny.id,
-               userId: context.user.id,
-               roles: [StaffRole.HOST],
+               return createdTournament;
             });
 
-            return tourny;
+            return tournament;
          } catch (error) {
             if (error instanceof DrizzleQueryError) {
                const sqlError: (Error & { code?: string }) | undefined =
@@ -493,38 +513,21 @@ export const tournamentProcedures = {
             return { updated: false as const };
          }
 
-         const [existing] = await db
-            .select({
-               id: screeningRequirementsTable.id,
-            })
-            .from(screeningRequirementsTable)
-            .where(eq(screeningRequirementsTable.tournamentId, id))
-            .limit(1);
-
-         if (existing) {
-            const [updated] = await db
-               .update(screeningRequirementsTable)
-               .set(fields)
-               .where(eq(screeningRequirementsTable.id, existing.id))
-               .returning();
-
-            return {
-               updated: true as const,
-               screeningRequirements: updated,
-            };
-         }
-
-         const [created] = await db
+         const [screeningRequirements] = await db
             .insert(screeningRequirementsTable)
             .values({
                tournamentId: id,
                ...fields,
             })
+            .onConflictDoUpdate({
+               target: screeningRequirementsTable.tournamentId,
+               set: fields,
+            })
             .returning();
 
          return {
             updated: true as const,
-            screeningRequirements: created,
+            screeningRequirements,
          };
       }),
 

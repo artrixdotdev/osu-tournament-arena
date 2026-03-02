@@ -149,7 +149,7 @@
          maximumRank?: number;
          minimumRating?: number;
          maximumRating?: number;
-         allowedCountries: string[];
+         allowedCountries?: string[] | null;
          useBws?: boolean;
          minimumBadges?: number;
          bwsExponent?: number;
@@ -186,6 +186,8 @@
       const parsedAllowedCountries = validation.data.allowedCountries.map(
          (country: string) => country.toUpperCase(),
       );
+      const normalizedAllowedCountries =
+         parsedAllowedCountries.length > 0 ? parsedAllowedCountries : null;
 
       if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
          return;
@@ -232,7 +234,7 @@
          maximumRank: parsedMaximumRank,
          minimumRating: parsedMinimumRating,
          maximumRating: parsedMaximumRating,
-         allowedCountries: parsedAllowedCountries,
+         allowedCountries: normalizedAllowedCountries,
          useBws,
          minimumBadges: parsedMinimumBadges,
          bwsExponent: parsedBwsExponent,
