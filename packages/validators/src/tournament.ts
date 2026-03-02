@@ -29,8 +29,14 @@ const baseDiscordSchema: z.ZodType<TournamentDiscord> = z.object({
    roles: z.record(staffRoleLiteral, z.string()),
 });
 
+const tournamentIdValueSchema = z
+   .string()
+   .min(1)
+   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i, "Tournament ID must be a valid slug")
+   .describe("Tournament ID");
+
 const baseIdSchema = z.object({
-   id: z.string().min(1).describe("Tournament ID"),
+   id: tournamentIdValueSchema,
 });
 
 const basePaginationSchema = z.object({
@@ -76,14 +82,7 @@ const baseRatingSchema = z.object({
 });
 
 export const createTournamentSchema = createInsertSchema(tournamentTable, {
-   id: (schema) =>
-      schema
-         .min(1)
-         .regex(
-            /^[a-z0-9]+(?:-[a-z0-9]+)*$/i,
-            "Tournament ID must be a valid slug",
-         )
-         .describe("Unique tournament identifier"),
+   id: () => tournamentIdValueSchema.describe("Unique tournament identifier"),
    name: (schema) => schema.min(1).describe("Full tournament name"),
    acronym: (schema) =>
       schema
@@ -112,7 +111,7 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
 });
 
 export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
-   id: (schema) => schema.min(1).describe("Tournament ID to update"),
+   id: () => tournamentIdValueSchema.describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
    acronym: (schema) =>
       schema
