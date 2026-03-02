@@ -105,7 +105,7 @@
          class={cn(
             "z-50 rounded-xl border outline-hidden select-none",
             "border-muted bg-popover shadow-popover",
-            "max-h-[calc(var(--bits-combobox-content-available-height)-90%)]",
+            "max-h-[calc(var(--bits-combobox-content-available-height)-90px)]",
             "w-[var(--bits-combobox-anchor-width)]",
             "min-w-[var(--bits-combobox-anchor-width)]",
             "overflow-y-scroll",
