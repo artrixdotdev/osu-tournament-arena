@@ -57,7 +57,9 @@ export const screening = sqliteTable(
    {
       id: integer().primaryKey(),
       playerId: integer().notNull(),
-      tournamentId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id),
 
       /** Current screening status */
       status: enumurate(ScreeningStatus)
