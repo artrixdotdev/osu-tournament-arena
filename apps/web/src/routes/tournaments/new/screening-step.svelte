@@ -220,7 +220,7 @@
 
          if (
             parsedBwsExponent !== undefined &&
-            (parsedBwsExponent <= 0 || parsedBwsExponent > 1)
+            (parsedBwsExponent <= 0 || parsedBwsExponent >= 1)
          ) {
             return;
          }

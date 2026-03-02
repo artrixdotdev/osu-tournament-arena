@@ -76,7 +76,13 @@ const baseRatingSchema = z.object({
 
 export const createTournamentSchema = createInsertSchema(tournamentTable, {
    id: (schema) =>
-      schema.slugify().min(1).describe("Unique tournament identifier"),
+      schema
+         .min(1)
+         .regex(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/i,
+            "Tournament ID must be a valid slug",
+         )
+         .describe("Unique tournament identifier"),
    name: (schema) => schema.min(1).describe("Full tournament name"),
    acronym: (schema) =>
       schema.length(4).describe("Short acronym (exactly 4 characters)"),
@@ -95,10 +101,13 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
    discord: baseDiscordSchema
       .optional()
       .describe("Discord bot integration settings"),
+}).refine((data) => data.startDate <= data.endDate, {
+   message: "startDate must be less than or equal to endDate",
+   path: ["endDate"],
 });
 
 export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
-   id: (schema) => schema.describe("Tournament ID to update"),
+   id: (schema) => schema.min(1).describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
    acronym: (schema) => schema.length(4).optional().describe("Short acronym"),
    rendition: (schema) =>
@@ -137,7 +146,17 @@ export const updateTournamentDetailsSchema = updateTournamentSchema
 
 export const updateTournamentScheduleSchema = updateTournamentSchema
    .pick({ id: true, startDate: true, endDate: true })
-   .required({ id: true });
+   .required({ id: true })
+   .refine(
+      (data) =>
+         data.startDate === undefined ||
+         data.endDate === undefined ||
+         data.startDate <= data.endDate,
+      {
+         message: "startDate must be less than or equal to endDate",
+         path: ["endDate"],
+      },
+   );
 
 export const updateTournamentSettingsSchema = updateTournamentSchema
    .pick({ id: true, lobbySize: true, teamSize: true })
@@ -166,10 +185,13 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
          minimumBadges: z
             .number()
             .int()
+            .min(0)
             .optional()
             .describe("Minimum badge count required for BWS seeding"),
          bwsExponent: z
             .number()
+            .gt(0)
+            .lt(1)
             .optional()
             .describe("Exponent used in BWS calculation (typically 0.5-1.0)"),
       }),
