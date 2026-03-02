@@ -5,4 +5,4 @@
       $props();
 </script>
 
-<CommandPrimitive.Loading bind:ref {...restProps} />
+<CommandPrimitive.Loading bind:ref data-slot="loading" {...restProps} />

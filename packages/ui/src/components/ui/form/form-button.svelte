@@ -5,4 +5,4 @@
    let { ref = $bindable(null), ...restProps }: ButtonProps = $props();
 </script>
 
-<Button bind:ref type="submit" {...restProps} />
+<Button {...restProps} type="submit" bind:ref />

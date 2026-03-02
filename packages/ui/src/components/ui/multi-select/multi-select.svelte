@@ -115,7 +115,7 @@
          sideOffset={10}
       >
          <ComboboxPrimitive.Viewport class="max-h-64 overflow-y-scroll! p-2">
-            {#each filteredItems as item, i (i + item.value)}
+            {#each filteredItems as item (item.value)}
                <ComboboxPrimitive.Item
                   class="data-highlighted:bg-secondary flex h-10 w-full items-center rounded-md py-3 pr-1.5 pl-3 text-sm outline-hidden select-none"
                   value={item.value}
