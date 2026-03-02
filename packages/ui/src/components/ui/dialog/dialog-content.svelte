@@ -4,11 +4,11 @@
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { Dialog as DialogPrimitive } from "bits-ui";
 
-   import type { WithoutChildrenOrChild } from "@ota/ui/utils.js";
-   import { cn } from "@ota/ui/utils.js";
+import type { WithoutChildrenOrChild } from "@ota/ui/utils.js";
+import { cn } from "@ota/ui/utils.js";
 
-   import DialogPortal from "./dialog-portal.svelte";
-   import * as Dialog from "./index.js";
+import DialogOverlay from "./dialog-overlay.svelte";
+import DialogPortal from "./dialog-portal.svelte";
 
    let {
       ref = $bindable(null),
@@ -25,7 +25,7 @@
 </script>
 
 <DialogPortal {...portalProps}>
-   <Dialog.Overlay />
+   <DialogOverlay />
    <DialogPrimitive.Content
       bind:ref
       data-slot="dialog-content"

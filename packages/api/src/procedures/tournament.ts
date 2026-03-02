@@ -25,6 +25,24 @@ import {
 import { requireAdmin, requireHost } from "../middleware/staff";
 import { authorized, base } from "../orpc";
 
+const updateTournamentSettingsAndScreeningSchema = updateTournamentSettingsSchema
+   .merge(updateTournamentScreeningRequirementsSchema.omit({ id: true }))
+   .required({ id: true })
+   .refine(
+      (data) =>
+         data.minimumRank === undefined ||
+         data.maximumRank === undefined ||
+         data.minimumRank <= data.maximumRank,
+      { message: "minimumRank must be less than or equal to maximumRank" },
+   )
+   .refine(
+      (data) =>
+         data.minimumRating === undefined ||
+         data.maximumRating === undefined ||
+         data.minimumRating <= data.maximumRating,
+      { message: "minimumRating must be less than or equal to maximumRating" },
+   );
+
 /**
  * Applies a partial update to a tournament record.
  *
@@ -482,6 +500,100 @@ export const tournamentProcedures = {
       .handler(async ({ input }) => {
          const { id, ...fields } = input;
          return applyUpdate(id, fields);
+      }),
+
+   /**
+    * Updates tournament settings and screening requirements atomically.
+    *
+    * **Access:** Protected (requires authentication + HOST role)
+    * **OpenAPI:** Not exposed
+    * **RPC:** Yes (only)
+    */
+   updateSettingsAndScreening: authorized
+      .input(updateTournamentSettingsAndScreeningSchema)
+      .use(requireHost())
+      .handler(async ({ input }) => {
+         const {
+            id,
+            lobbySize,
+            teamSize,
+            minimumRank,
+            maximumRank,
+            minimumRating,
+            maximumRating,
+            allowedCountries,
+            useBws,
+            minimumBadges,
+            bwsExponent,
+         } = input;
+
+         const tournamentFields = { lobbySize, teamSize };
+         const hasTournamentUpdates = Object.values(tournamentFields).some(
+            (v) => v !== undefined,
+         );
+         const screeningFields = {
+            minimumRank,
+            maximumRank,
+            minimumRating,
+            maximumRating,
+            allowedCountries,
+            useBws,
+            minimumBadges,
+            bwsExponent,
+         };
+         const hasScreeningUpdates = Object.values(screeningFields).some(
+            (v) => v !== undefined,
+         );
+
+         if (!hasTournamentUpdates && !hasScreeningUpdates) {
+            return { updated: false as const };
+         }
+
+         const result = await db.transaction(async (tx) => {
+            let tournament: typeof tournamentTable.$inferSelect | undefined;
+
+            if (hasTournamentUpdates) {
+               const [updatedTournament] = await tx
+                  .update(tournamentTable)
+                  .set(tournamentFields)
+                  .where(eq(tournamentTable.id, id))
+                  .returning();
+
+               if (!updatedTournament) {
+                  throw new ORPCError("NOT_FOUND", {
+                     message: "Tournament not found",
+                  });
+               }
+
+               tournament = updatedTournament;
+            }
+
+            let screeningRequirements:
+               | typeof screeningRequirementsTable.$inferSelect
+               | undefined;
+            if (hasScreeningUpdates) {
+               const [updatedScreeningRequirements] = await tx
+                  .insert(screeningRequirementsTable)
+                  .values({
+                     tournamentId: id,
+                     ...screeningFields,
+                  })
+                  .onConflictDoUpdate({
+                     target: screeningRequirementsTable.tournamentId,
+                     set: screeningFields,
+                  })
+                  .returning();
+
+               screeningRequirements = updatedScreeningRequirements;
+            }
+
+            return { tournament, screeningRequirements };
+         });
+
+         return {
+            updated: true as const,
+            ...result,
+         };
       }),
 
    /**

@@ -13,13 +13,15 @@
    }: CommandPrimitive.GroupProps & {
       heading?: string;
    } = $props();
+
+   const fallbackGroupId = useId();
 </script>
 
 <CommandPrimitive.Group
    bind:ref
    data-slot="command-group"
    class={cn("text-foreground overflow-hidden p-1", className)}
-   value={value ?? heading ?? `----${useId()}`}
+   value={value ?? heading ?? `----${fallbackGroupId}`}
    {...restProps}
 >
    {#if heading}

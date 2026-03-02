@@ -12,7 +12,7 @@
       ref = $bindable(null),
       class: className,
       items = [],
-      value = $bindable(),
+      value = $bindable([]),
       size = "default",
       placeholder = "Select items...",
       onRemove,
@@ -56,14 +56,21 @@
                class="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-medium"
             >
                {item.label}
-               <button
-                  type="button"
+               <span
+                  role="button"
+                  tabindex="0"
                   class="text-muted-foreground hover:text-foreground focus:ring-ring rounded-md p-0.5 transition-colors focus:ring-1 focus:outline-none"
                   onclick={(e) => handleRemove(e, item.value)}
+                  onkeydown={(e) => {
+                     if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleRemove(e, item.value);
+                     }
+                  }}
                   aria-label={`Remove ${item.label}`}
                >
                   <HugeiconsIcon icon={Cancel01Icon} class="size-3" />
-               </button>
+               </span>
             </span>
          {/each}
       </div>

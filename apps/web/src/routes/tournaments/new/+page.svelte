@@ -112,13 +112,9 @@
       settingsSubmitting = true;
 
       try {
-         await client.tournament.updateSettings({
+         await client.tournament.updateSettingsAndScreening({
             id: createdTournamentId,
             teamSize: data.teamSize,
-         });
-
-         await client.tournament.updateScreeningRequirements({
-            id: createdTournamentId,
             minimumRank: data.minimumRank,
             maximumRank: data.maximumRank,
             minimumRating: data.minimumRating,
