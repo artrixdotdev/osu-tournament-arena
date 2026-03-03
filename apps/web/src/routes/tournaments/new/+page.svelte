@@ -2,6 +2,7 @@
    import { goto } from "$app/navigation";
    import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
+   import { parseISO } from "date-fns";
    import { toast } from "svelte-sonner";
 
    import { Stepper } from "@ota/ui/components/stepper/index.ts";
@@ -66,8 +67,8 @@
             acronym: data.acronym,
             rendition: data.rendition,
             description: data.description,
-            startDate: new Date(`${data.startDate}T00:00:00Z`),
-            endDate: new Date(`${data.endDate}T00:00:00Z`),
+            startDate: parseISO(`${data.startDate}T00:00:00Z`),
+            endDate: parseISO(`${data.endDate}T00:00:00Z`),
             isPublic: false,
             isArchived: false,
             lobbySize: data.lobbySize,

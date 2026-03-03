@@ -9,6 +9,7 @@
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
+   import { parseISO } from "date-fns";
    import { defaults, superForm } from "sveltekit-superforms";
    import { zod4, zod4Client } from "sveltekit-superforms/adapters";
    import { z } from "zod/v4";
@@ -96,7 +97,7 @@
                return true;
             }
 
-            return new Date(data.endDate) >= new Date(data.startDate);
+            return parseISO(data.endDate) >= parseISO(data.startDate);
          },
          {
             path: ["endDate"],

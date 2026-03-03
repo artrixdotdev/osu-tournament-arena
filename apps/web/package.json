@@ -24,6 +24,7 @@
       "@ota/ui": "workspace:*",
       "better-auth": "catalog:",
       "bits-ui": "catalog:",
+      "date-fns": "catalog:",
       "formsnap": "catalog:",
       "mode-watcher": "catalog:",
       "sveltekit-superforms": "catalog:",
