@@ -55,6 +55,7 @@
    type="multiple"
    bind:value
    {name}
+   inputValue={searchValue}
    onOpenChangeComplete={(o) => {
       if (!o) searchValue = "";
    }}
