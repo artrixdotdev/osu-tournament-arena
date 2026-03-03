@@ -24,9 +24,6 @@
       },
    ];
 
-   const DEFAULT_TEAM_SIZE = 8;
-   const DEFAULT_LOBBY_SIZE = 16;
-
    let currentStepIndex = $state(0);
    let createdTournamentId = $state<string | null>(null);
 
@@ -56,6 +53,8 @@
       description: string | null;
       startDate: string;
       endDate: string;
+      teamSize: number;
+      lobbySize: number;
    }) {
       detailsError = null;
       detailsSubmitting = true;
@@ -71,8 +70,8 @@
             endDate: new Date(`${data.endDate}T00:00:00Z`),
             isPublic: false,
             isArchived: false,
-            lobbySize: DEFAULT_LOBBY_SIZE,
-            teamSize: DEFAULT_TEAM_SIZE,
+            lobbySize: data.lobbySize,
+            teamSize: data.teamSize,
          });
 
          createdTournamentId = data.id;

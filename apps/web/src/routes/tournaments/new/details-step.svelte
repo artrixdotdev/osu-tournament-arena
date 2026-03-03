@@ -1,8 +1,11 @@
 <script lang="ts">
    import {
+      CalendarIcon,
       HelpCircleIcon,
+      MeetingRoomIcon,
       SquareLock01Icon,
       SquareUnlock01Icon,
+      UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
@@ -26,6 +29,8 @@
          description: string | null;
          startDate: string;
          endDate: string;
+         teamSize: number;
+         lobbySize: number;
       }) => Promise<void>;
       submitting?: boolean;
       error?: string | null;
@@ -82,6 +87,8 @@
          endDate: z
             .string()
             .min(1, m.tournamentCreate_errors_requiredEndDate()),
+         teamSize: z.string(),
+         lobbySize: z.string(),
       })
       .refine(
          (data) => {
@@ -95,7 +102,57 @@
             path: ["endDate"],
             message: m.tournamentCreate_errors_invalidDateRange(),
          },
-      );
+      )
+      .superRefine((data, ctx) => {
+         const parsedTeamSize = parseOptionalInt(data.teamSize);
+         const parsedLobbySize = parseOptionalInt(data.lobbySize);
+
+         if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
+            ctx.addIssue({
+               code: "custom",
+               path: ["teamSize"],
+               message: m.tournamentCreate_errors_invalidTeamSize(),
+            });
+         }
+
+         if (parsedLobbySize === undefined || parsedLobbySize <= 0) {
+            ctx.addIssue({
+               code: "custom",
+               path: ["lobbySize"],
+               message: m.tournamentCreate_errors_invalidLobbySize(),
+            });
+         }
+
+         if (
+            parsedTeamSize !== undefined &&
+            parsedLobbySize !== undefined &&
+            parsedLobbySize < parsedTeamSize
+         ) {
+            ctx.addIssue({
+               code: "custom",
+               path: ["lobbySize"],
+               message: m.tournamentCreate_errors_lobbySizeTooSmall(),
+            });
+         }
+      });
+
+   function parseOptionalInt(value: string) {
+      const trimmed = value.trim();
+      if (!trimmed) {
+         return undefined;
+      }
+
+      if (!/^[+-]?\d+$/.test(trimmed)) {
+         return undefined;
+      }
+
+      const parsed = Number(trimmed);
+      if (!Number.isInteger(parsed)) {
+         return undefined;
+      }
+
+      return parsed;
+   }
 
    const detailsForm = superForm(
       defaults(
@@ -107,6 +164,8 @@
             description: "",
             startDate: "",
             endDate: "",
+            teamSize: "8",
+            lobbySize: "16",
          },
          zod4(detailsSchema),
       ),
@@ -161,6 +220,9 @@
               ? renditionInput
               : Number(renditionInput);
 
+      const parsedTeamSize = parseOptionalInt(validation.data.teamSize);
+      const parsedLobbySize = parseOptionalInt(validation.data.lobbySize);
+
       await onSubmit({
          id: validation.data.id.trim(),
          name: validation.data.name.trim(),
@@ -173,6 +235,8 @@
             : null,
          startDate: validation.data.startDate,
          endDate: validation.data.endDate,
+         teamSize: parsedTeamSize ?? 8,
+         lobbySize: parsedLobbySize ?? 16,
       });
    }
 
@@ -368,6 +432,11 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={CalendarIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
                   <Form.Label
                      >{m.tournamentCreate_fields_startDate()}</Form.Label
                   >
@@ -394,6 +463,11 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={CalendarIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
                   <Form.Label>{m.tournamentCreate_fields_endDate()}</Form.Label>
                   <Tooltip.Root>
                      <Tooltip.Trigger>
@@ -410,8 +484,81 @@
                </div>
                <Input
                   type="date"
-                  min={$detailsFormData.startDate || undefined}
+                  min={$detailsFormData.startDate ?? undefined}
                   bind:value={$detailsFormData.endDate}
+               />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+   </div>
+
+   <div class="grid gap-4 sm:grid-cols-2">
+      <Form.Field form={detailsForm} name="teamSize">
+         <Form.Control>
+            <div class="space-y-2">
+               <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={UserGroupIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
+                  <Form.Label>{m.tournamentCreate_fields_teamSize()}</Form.Label
+                  >
+                  <Tooltip.Root>
+                     <Tooltip.Trigger>
+                        <HugeiconsIcon
+                           icon={HelpCircleIcon}
+                           size={14}
+                           strokeWidth={1.7}
+                        />
+                     </Tooltip.Trigger>
+                     <Tooltip.Content
+                        >{m.tournamentCreate_help_teamSize()}</Tooltip.Content
+                     >
+                  </Tooltip.Root>
+               </div>
+               <Input
+                  type="number"
+                  min={1}
+                  placeholder="8"
+                  bind:value={$detailsFormData.teamSize}
+               />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={detailsForm} name="lobbySize">
+         <Form.Control>
+            <div class="space-y-2">
+               <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={MeetingRoomIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
+                  <Form.Label
+                     >{m.tournamentCreate_fields_lobbySize()}</Form.Label
+                  >
+                  <Tooltip.Root>
+                     <Tooltip.Trigger>
+                        <HugeiconsIcon
+                           icon={HelpCircleIcon}
+                           size={14}
+                           strokeWidth={1.7}
+                        />
+                     </Tooltip.Trigger>
+                     <Tooltip.Content
+                        >{m.tournamentCreate_help_lobbySize()}</Tooltip.Content
+                     >
+                  </Tooltip.Root>
+               </div>
+               <Input
+                  type="number"
+                  min={1}
+                  placeholder="16"
+                  bind:value={$detailsFormData.lobbySize}
                />
                <Form.FieldErrors />
             </div>

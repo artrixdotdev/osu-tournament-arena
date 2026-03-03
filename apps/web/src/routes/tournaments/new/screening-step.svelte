@@ -1,5 +1,9 @@
 <script lang="ts">
-   import { HelpCircleIcon } from "@hugeicons/core-free-icons";
+   import {
+      HelpCircleIcon,
+      RankingIcon,
+      StarIcon,
+   } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
    import CountryMultiSelect from "$lib/components/country-multi-select.svelte";
@@ -302,6 +306,11 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={RankingIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
                   <Form.Label
                      >{m.tournamentCreate_fields_minimumRank()}</Form.Label
                   >
@@ -336,6 +345,11 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon
+                     icon={RankingIcon}
+                     size={16}
+                     strokeWidth={1.7}
+                  />
                   <Form.Label
                      >{m.tournamentCreate_fields_maximumRank()}</Form.Label
                   >
@@ -372,6 +386,7 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon icon={StarIcon} size={16} strokeWidth={1.7} />
                   <Form.Label
                      >{m.tournamentCreate_fields_minimumRating()}</Form.Label
                   >
@@ -405,6 +420,7 @@
          <Form.Control>
             <div class="space-y-2">
                <div class="flex items-center gap-2">
+                  <HugeiconsIcon icon={StarIcon} size={16} strokeWidth={1.7} />
                   <Form.Label
                      >{m.tournamentCreate_fields_maximumRating()}</Form.Label
                   >
