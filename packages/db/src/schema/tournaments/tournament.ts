@@ -95,9 +95,18 @@ export const tournament = sqliteTable(
          "tournament_acronym_len_check",
          sql`length(${table.acronym}) <= ${TOURNAMENT_ACRONYM_MAX_LENGTH}`,
       ),
-      index("tournament_archived_idx").on(table.isArchived),
-      index("tournament_deleted_idx").on(table.isDeleted),
-      index("tournament_public_idx").on(table.isPublic),
+      index("tournament_deleted_startdate_idx").on(
+         table.isDeleted,
+         table.startDate,
+      ),
+      index("tournament_archived_startdate_idx").on(
+         table.isArchived,
+         table.startDate,
+      ),
+      index("tournament_public_startdate_idx").on(
+         table.isPublic,
+         table.startDate,
+      ),
       index("tournament_dates_idx").on(table.startDate, table.endDate),
    ],
 );
