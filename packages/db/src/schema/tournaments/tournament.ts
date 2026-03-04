@@ -101,6 +101,10 @@ export const tournament = sqliteTable(
          "tournaments_dates_ordering",
          sql`${table.startDate} <= ${table.endDate}`,
       ),
+      check(
+         "tournaments_description_len_check",
+         sql`length(${table.description}) <= 255`,
+      ),
       index("tournament_deleted_startdate_idx").on(
          table.isDeleted,
          table.startDate,
