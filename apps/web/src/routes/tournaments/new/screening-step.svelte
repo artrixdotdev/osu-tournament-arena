@@ -19,7 +19,6 @@
 
    const settingsSchema = z
       .object({
-         teamSize: z.string(),
          minimumRank: z.string(),
          maximumRank: z.string(),
          minimumRating: z.string(),
@@ -31,21 +30,12 @@
       })
       .superRefine((data, ctx) => {
          const settingsError = m.tournamentCreate_errors_settingsFailed();
-         const parsedTeamSize = parseOptionalInt(data.teamSize);
          const parsedMinimumRank = parseOptionalInt(data.minimumRank);
          const parsedMaximumRank = parseOptionalInt(data.maximumRank);
          const parsedMinimumRating = parseOptionalInt(data.minimumRating);
          const parsedMaximumRating = parseOptionalInt(data.maximumRating);
          const parsedMinimumBadges = parseOptionalInt(data.minimumBadges);
          const parsedBwsExponent = parseOptionalFloat(data.bwsExponent);
-
-         if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
-            ctx.addIssue({
-               code: "custom",
-               path: ["teamSize"],
-               message: settingsError,
-            });
-         }
 
          if (
             parsedMinimumRank !== undefined &&
@@ -97,7 +87,6 @@
       superForm(
          defaults(
             {
-               teamSize: "8",
                minimumRank: "",
                maximumRank: "",
                minimumRating: "",
@@ -158,7 +147,6 @@
 
    interface Props {
       onSubmit: (data: {
-         teamSize: number;
          minimumRank?: number;
          maximumRank?: number;
          minimumRating?: number;
@@ -188,7 +176,6 @@
          return;
       }
 
-      const parsedTeamSize = parseOptionalInt(validation.data.teamSize);
       const parsedMinimumRank = parseOptionalInt(validation.data.minimumRank);
       const parsedMaximumRank = parseOptionalInt(validation.data.maximumRank);
       const parsedMinimumRating = parseOptionalInt(
@@ -202,10 +189,6 @@
       );
       const normalizedAllowedCountries =
          parsedAllowedCountries.length > 0 ? parsedAllowedCountries : null;
-
-      if (parsedTeamSize === undefined || parsedTeamSize <= 0) {
-         return;
-      }
 
       if (
          parsedMinimumRank !== undefined &&
@@ -243,7 +226,6 @@
       }
 
       await onSubmit({
-         teamSize: parsedTeamSize,
          minimumRank: parsedMinimumRank,
          maximumRank: parsedMaximumRank,
          minimumRating: parsedMinimumRating,
@@ -272,35 +254,6 @@
       void handleSubmit();
    }}
 >
-   <Form.Field form={settingsForm} name="teamSize">
-      <Form.Control>
-         <div class="space-y-2">
-            <div class="flex items-center gap-2">
-               <Form.Label>{m.tournamentCreate_fields_teamSize()}</Form.Label>
-               <Tooltip.Root>
-                  <Tooltip.Trigger>
-                     <HugeiconsIcon
-                        icon={HelpCircleIcon}
-                        size={14}
-                        strokeWidth={1.7}
-                     />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                     >{m.tournamentCreate_help_teamSize()}</Tooltip.Content
-                  >
-               </Tooltip.Root>
-            </div>
-            <Input
-               type="number"
-               min={1}
-               placeholder="8"
-               bind:value={$formData.teamSize}
-            />
-            <Form.FieldErrors />
-         </div>
-      </Form.Control>
-   </Form.Field>
-
    <div class="grid gap-4 sm:grid-cols-2">
       <Form.Field form={settingsForm} name="minimumRank">
          <Form.Control>
