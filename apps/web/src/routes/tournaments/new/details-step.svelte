@@ -9,6 +9,10 @@
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
+   import {
+      numericInputAsStringSchema,
+      parseOptionalInt,
+   } from "$lib/utils/number";
    import { parseISO } from "date-fns";
    import { defaults, superForm } from "sveltekit-superforms";
    import { zod4, zod4Client } from "sveltekit-superforms/adapters";
@@ -88,8 +92,8 @@
          endDate: z
             .string()
             .min(1, m.tournamentCreate_errors_requiredEndDate()),
-         teamSize: z.string(),
-         lobbySize: z.string(),
+         teamSize: numericInputAsStringSchema,
+         lobbySize: numericInputAsStringSchema,
       })
       .refine(
          (data) => {
@@ -136,24 +140,6 @@
             });
          }
       });
-
-   function parseOptionalInt(value: string) {
-      const trimmed = value.trim();
-      if (!trimmed) {
-         return undefined;
-      }
-
-      if (!/^[+-]?\d+$/.test(trimmed)) {
-         return undefined;
-      }
-
-      const parsed = Number(trimmed);
-      if (!Number.isInteger(parsed)) {
-         return undefined;
-      }
-
-      return parsed;
-   }
 
    const detailsForm = superForm(
       defaults(

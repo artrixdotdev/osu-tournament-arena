@@ -7,6 +7,11 @@
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
    import CountryMultiSelect from "$lib/components/country-multi-select.svelte";
+   import {
+      numericInputAsStringSchema,
+      parseOptionalFloat,
+      parseOptionalInt,
+   } from "$lib/utils/number";
    import { defaults, superForm } from "sveltekit-superforms";
    import { zod4, zod4Client } from "sveltekit-superforms/adapters";
    import { z } from "zod/v4";
@@ -19,14 +24,14 @@
 
    const settingsSchema = z
       .object({
-         minimumRank: z.string(),
-         maximumRank: z.string(),
-         minimumRating: z.string(),
-         maximumRating: z.string(),
+         minimumRank: numericInputAsStringSchema,
+         maximumRank: numericInputAsStringSchema,
+         minimumRating: numericInputAsStringSchema,
+         maximumRating: numericInputAsStringSchema,
          allowedCountries: z.array(z.string()),
          useBws: z.boolean(),
-         minimumBadges: z.string(),
-         bwsExponent: z.string(),
+         minimumBadges: numericInputAsStringSchema,
+         bwsExponent: numericInputAsStringSchema,
       })
       .superRefine((data, ctx) => {
          const settingsError = m.tournamentCreate_errors_settingsFailed();
@@ -108,42 +113,6 @@
    const { form: formData, validateForm } = settingsForm;
 
    export { formData, validateForm, settingsForm };
-
-   function parseOptionalInt(value: string) {
-      const trimmed = value.trim();
-      if (!trimmed) {
-         return undefined;
-      }
-
-      if (!/^[+-]?\d+$/.test(trimmed)) {
-         return undefined;
-      }
-
-      const parsed = Number(trimmed);
-      if (!Number.isInteger(parsed)) {
-         return undefined;
-      }
-
-      return parsed;
-   }
-
-   function parseOptionalFloat(value: string) {
-      const trimmed = value.trim();
-      if (!trimmed) {
-         return undefined;
-      }
-
-      if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(trimmed)) {
-         return undefined;
-      }
-
-      const parsed = Number(trimmed);
-      if (!Number.isFinite(parsed)) {
-         return undefined;
-      }
-
-      return parsed;
-   }
 
    interface Props {
       onSubmit: (data: {
