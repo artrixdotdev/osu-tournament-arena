@@ -95,7 +95,6 @@
    }
 
    async function handleSettingsSubmit(data: {
-      teamSize: number;
       minimumRank?: number;
       maximumRank?: number;
       minimumRating?: number;
@@ -116,7 +115,6 @@
       try {
          await client.tournament.updateSettingsAndScreening({
             id: createdTournamentId,
-            teamSize: data.teamSize,
             minimumRank: data.minimumRank,
             maximumRank: data.maximumRank,
             minimumRating: data.minimumRating,
