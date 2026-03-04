@@ -97,6 +97,10 @@ export const tournament = sqliteTable(
       ),
       check("tournaments_lobby_size_positive", sql`${table.lobbySize} > 0`),
       check("tournaments_team_size_positive", sql`${table.teamSize} > 0`),
+      check(
+         "tournaments_dates_ordering",
+         sql`${table.startDate} <= ${table.endDate}`,
+      ),
       index("tournament_deleted_startdate_idx").on(
          table.isDeleted,
          table.startDate,
