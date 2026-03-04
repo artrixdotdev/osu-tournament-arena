@@ -39,7 +39,9 @@ export const mappool = sqliteTable(
    "mappool",
    {
       id: integer().primaryKey(),
-      tournamentId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
       ...auditTimestamps,
    },
    (table) => [index("mappool_tournament_idx").on(table.tournamentId)],
@@ -95,13 +97,15 @@ export const map = sqliteTable(
    "map",
    {
       id: integer().primaryKey(),
-      mappoolId: integer().notNull(),
+      mappoolId: integer()
+         .notNull()
+         .references(() => mappool.id, { onDelete: "cascade" }),
 
       /** osu! beatmap ID */
       mapId: integer().notNull(),
 
       /** Staff member who selected this map */
-      poolerId: integer(),
+      poolerId: integer().references(() => staff.id, { onDelete: "set null" }),
 
       /** Pool slot identifier (e.g., "NM1", "HD2") */
       slot: text(),

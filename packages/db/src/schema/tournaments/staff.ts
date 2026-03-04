@@ -4,8 +4,9 @@
  * Handles tournament personnel and their scheduling preferences.
  */
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+   check,
    index,
    integer,
    sqliteTable,
@@ -45,8 +46,12 @@ export const staff = sqliteTable(
    {
       id: integer().primaryKey(),
 
-      tournamentId: text().notNull(),
-      userId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
+      userId: text()
+         .notNull()
+         .references(() => user.id, { onDelete: "cascade" }),
 
       /** Array of assigned roles */
       roles: array<StaffRole>().notNull().default([]),
@@ -109,10 +114,12 @@ export const refereeAvailability = sqliteTable(
    "referee_availability",
    {
       id: integer().primaryKey(),
-      refereeId: integer().notNull(),
+      refereeId: integer()
+         .notNull()
+         .references(() => staff.id, { onDelete: "cascade" }),
 
       /** Specific round (optional) */
-      roundId: integer(),
+      roundId: integer().references(() => round.id, { onDelete: "cascade" }),
 
       /** Week start for recurring availability (optional) */
       weekStart: timestamp(),
@@ -131,6 +138,10 @@ export const refereeAvailability = sqliteTable(
    (table) => [
       index("referee_availability_referee_idx").on(table.refereeId),
       index("referee_availability_round_idx").on(table.roundId),
+      check(
+         "referee_availability_max_matches_positive",
+         sql`${table.maxMatches} IS NULL OR ${table.maxMatches} > 0`,
+      ),
    ],
 );
 

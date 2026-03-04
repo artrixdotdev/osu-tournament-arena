@@ -14,7 +14,13 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import type { TournamentDiscord } from "./types";
-import { auditTimestamps, boolean, json, timestamp } from "../../util";
+import {
+   auditTimestamps,
+   boolean,
+   json,
+   positiveCheck,
+   timestamp,
+} from "../../util";
 import { bracket } from "./bracket";
 import { mappool } from "./mappool";
 import { player } from "./player";
@@ -95,8 +101,9 @@ export const tournament = sqliteTable(
          "tournament_acronym_len_check",
          sql`length(${table.acronym}) <= ${sql.raw(String(TOURNAMENT_ACRONYM_MAX_LENGTH))}`,
       ),
-      check("tournaments_lobby_size_positive", sql`${table.lobbySize} > 0`),
-      check("tournaments_team_size_positive", sql`${table.teamSize} > 0`),
+      positiveCheck("tournaments_lobby_size_positive", table.lobbySize),
+      positiveCheck("tournaments_team_size_positive", table.teamSize),
+      positiveCheck("tournaments_rendition_positive", table.rendition),
       check(
          "tournaments_dates_ordering",
          sql`${table.startDate} <= ${table.endDate}`,

@@ -48,13 +48,17 @@ export const player = sqliteTable(
    {
       id: integer().primaryKey(),
 
-      tournamentId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
 
       /** NULL if player is a free agent */
-      teamId: integer(),
+      teamId: integer().references(() => team.id, { onDelete: "set null" }),
 
       /** Reference to authenticated user */
-      userId: text().notNull(),
+      userId: text()
+         .notNull()
+         .references(() => user.id, { onDelete: "cascade" }),
 
       /** Whether player is team captain */
       isCaptain: boolean().notNull().default(false),
@@ -120,8 +124,12 @@ export const playerAvailability = sqliteTable(
    "player_availability",
    {
       id: integer().primaryKey(),
-      playerId: integer().notNull(),
-      roundId: integer().notNull(),
+      playerId: integer()
+         .notNull()
+         .references(() => player.id, { onDelete: "cascade" }),
+      roundId: integer()
+         .notNull()
+         .references(() => round.id, { onDelete: "cascade" }),
 
       /** Array of available time windows */
       timeSlots: json<TimeSlot[]>().notNull().default([]),
