@@ -169,7 +169,7 @@ export const updateTournamentScheduleSchema = updateTournamentSchema
    );
 
 export const updateTournamentSettingsSchema = updateTournamentSchema
-   .pick({ id: true, lobbySize: true })
+   .pick({ id: true, lobbySize: true, teamSize: true })
    .required({ id: true });
 
 export const updateTournamentVisibilitySchema = updateTournamentSchema
