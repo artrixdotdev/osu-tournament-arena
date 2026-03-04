@@ -93,7 +93,7 @@ export const tournament = sqliteTable(
    (table) => [
       check(
          "tournament_acronym_len_check",
-         sql`length(${table.acronym}) <= ${TOURNAMENT_ACRONYM_MAX_LENGTH}`,
+         sql`length(${table.acronym}) <= ${sql.raw(String(TOURNAMENT_ACRONYM_MAX_LENGTH))}`,
       ),
       index("tournament_deleted_startdate_idx").on(
          table.isDeleted,
