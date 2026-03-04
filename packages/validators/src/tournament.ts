@@ -181,7 +181,7 @@ export const updateTournamentDiscordSchema = updateTournamentSchema
    .required({ id: true, discord: true });
 
 export const updateTournamentScreeningRequirementsSchema = baseIdSchema
-   .merge(
+   .extend(
       z.object({
          allowedCountries: z
             .array(z.string().length(2))
@@ -204,10 +204,10 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
             .lt(1)
             .optional()
             .describe("Exponent used in BWS calculation (typically 0.5-1.0)"),
-      }),
+      }).shape,
    )
-   .merge(baseRankSchema)
-   .merge(baseRatingSchema)
+   .extend(baseRankSchema.shape)
+   .extend(baseRatingSchema.shape)
    .refine(
       (data) =>
          data.minimumRank === undefined ||
