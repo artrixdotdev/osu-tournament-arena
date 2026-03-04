@@ -232,8 +232,10 @@
          maximumRating: parsedMaximumRating,
          allowedCountries: normalizedAllowedCountries,
          useBws,
-         minimumBadges: parsedMinimumBadges,
-         bwsExponent: parsedBwsExponent,
+         ...(useBws && {
+            minimumBadges: parsedMinimumBadges,
+            bwsExponent: parsedBwsExponent,
+         }),
       });
    }
 </script>
