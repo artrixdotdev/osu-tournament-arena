@@ -30,7 +30,7 @@ import { Mods } from "./types";
  * @example
  * ```ts
  * const mappool = {
- *   id: "pool_ro16",
+ *   id: 101,
  *   tournamentId: "owc2026"
  * };
  * ```
@@ -38,8 +38,10 @@ import { Mods } from "./types";
 export const mappool = sqliteTable(
    "mappool",
    {
-      id: text().primaryKey(),
-      tournamentId: text().notNull(),
+      id: integer().primaryKey(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
       ...auditTimestamps,
    },
    (table) => [index("mappool_tournament_idx").on(table.tournamentId)],
@@ -78,11 +80,11 @@ export const mappoolRelations = relations(mappool, ({ one, many }) => ({
  * @example
  * ```ts
  * const map = {
- *   mappoolId: "pool_ro16",
+ *   mappoolId: 101,
  *   mapId: 3574361, // osu! beatmap ID
  *   slot: "NM1",
  *   mod: "NM",
- *   poolerId: "staff_123",
+ *   poolerId: 123,
  *   multipliers: {
  *     "NM": 1.0,
  *     "HD": 1.06,
@@ -94,14 +96,16 @@ export const mappoolRelations = relations(mappool, ({ one, many }) => ({
 export const map = sqliteTable(
    "map",
    {
-      id: text().primaryKey(),
-      mappoolId: text().notNull(),
+      id: integer().primaryKey(),
+      mappoolId: integer()
+         .notNull()
+         .references(() => mappool.id, { onDelete: "cascade" }),
 
       /** osu! beatmap ID */
       mapId: integer().notNull(),
 
       /** Staff member who selected this map */
-      poolerId: text(),
+      poolerId: integer().references(() => staff.id, { onDelete: "set null" }),
 
       /** Pool slot identifier (e.g., "NM1", "HD2") */
       slot: text(),

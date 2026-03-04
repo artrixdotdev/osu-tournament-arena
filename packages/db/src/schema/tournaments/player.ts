@@ -5,7 +5,13 @@
  */
 
 import { relations } from "drizzle-orm";
-import { index, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import {
+   index,
+   integer,
+   sqliteTable,
+   text,
+   unique,
+} from "drizzle-orm/sqlite-core";
 
 import type { TimeSlot } from "./types";
 import { auditTimestamps, boolean, json } from "../../util";
@@ -29,30 +35,30 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const player = {
- *   id: "player_123",
- *   userId: "user_456",
+ *   id: 123,
+ *   userId: "user_456", // auth user ID
  *   tournamentId: "owc2026",
- *   teamId: "team_789",
- *   isCaptain: true,
- *   name: "PlayerName"
+ *   teamId: 789,
+ *   isCaptain: true
  * };
  * ```
  */
 export const player = sqliteTable(
    "player",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
 
-      /** Display name for the tournament */
-      name: text().notNull(),
-
-      tournamentId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
 
       /** NULL if player is a free agent */
-      teamId: text(),
+      teamId: integer().references(() => team.id, { onDelete: "set null" }),
 
       /** Reference to authenticated user */
-      userId: text().notNull(),
+      userId: text()
+         .notNull()
+         .references(() => user.id, { onDelete: "cascade" }),
 
       /** Whether player is team captain */
       isCaptain: boolean().notNull().default(false),
@@ -105,8 +111,8 @@ export const playerRelations = relations(player, ({ one, many }) => ({
  * @example
  * ```ts
  * const availability = {
- *   playerId: "player_123",
- *   roundId: "round_456",
+ *   playerId: 123,
+ *   roundId: 456,
  *   timeSlots: [
  *     { start: "2026-02-15T14:00:00Z", end: "2026-02-15T18:00:00Z" },
  *     { start: "2026-02-16T14:00:00Z", end: "2026-02-16T18:00:00Z" }
@@ -117,9 +123,13 @@ export const playerRelations = relations(player, ({ one, many }) => ({
 export const playerAvailability = sqliteTable(
    "player_availability",
    {
-      id: text().primaryKey(),
-      playerId: text().notNull(),
-      roundId: text().notNull(),
+      id: integer().primaryKey(),
+      playerId: integer()
+         .notNull()
+         .references(() => player.id, { onDelete: "cascade" }),
+      roundId: integer()
+         .notNull()
+         .references(() => round.id, { onDelete: "cascade" }),
 
       /** Array of available time windows */
       timeSlots: json<TimeSlot[]>().notNull().default([]),

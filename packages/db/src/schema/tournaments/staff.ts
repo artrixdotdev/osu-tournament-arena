@@ -4,8 +4,9 @@
  * Handles tournament personnel and their scheduling preferences.
  */
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+   check,
    index,
    integer,
    sqliteTable,
@@ -33,10 +34,9 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const staff = {
- *   id: "staff_123",
+ *   id: 123,
  *   userId: "user_456",
  *   tournamentId: "owc2026",
- *   name: "StaffName",
  *   roles: ["REFEREE", "ADMIN"]
  * };
  * ```
@@ -44,13 +44,14 @@ import { tournament } from "./tournament";
 export const staff = sqliteTable(
    "staff",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
 
-      /** Display name for tournament */
-      name: text().notNull(),
-
-      tournamentId: text().notNull(),
-      userId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
+      userId: text()
+         .notNull()
+         .references(() => user.id, { onDelete: "cascade" }),
 
       /** Array of assigned roles */
       roles: array<StaffRole>().notNull().default([]),
@@ -99,8 +100,8 @@ export const staffRelations = relations(staff, ({ one, many }) => ({
  * ```ts
  * // Round-specific availability
  * const availability = {
- *   refereeId: "staff_123",
- *   roundId: "round_456",
+ *   refereeId: 123,
+ *   roundId: 456,
  *   timezone: "Europe/London",
  *   maxMatches: 5,
  *   timeSlots: [
@@ -112,11 +113,13 @@ export const staffRelations = relations(staff, ({ one, many }) => ({
 export const refereeAvailability = sqliteTable(
    "referee_availability",
    {
-      id: text().primaryKey(),
-      refereeId: text().notNull(),
+      id: integer().primaryKey(),
+      refereeId: integer()
+         .notNull()
+         .references(() => staff.id, { onDelete: "cascade" }),
 
       /** Specific round (optional) */
-      roundId: text(),
+      roundId: integer().references(() => round.id, { onDelete: "cascade" }),
 
       /** Week start for recurring availability (optional) */
       weekStart: timestamp(),
@@ -135,6 +138,10 @@ export const refereeAvailability = sqliteTable(
    (table) => [
       index("referee_availability_referee_idx").on(table.refereeId),
       index("referee_availability_round_idx").on(table.roundId),
+      check(
+         "referee_availability_max_matches_positive",
+         sql`${table.maxMatches} IS NULL OR ${table.maxMatches} > 0`,
+      ),
    ],
 );
 

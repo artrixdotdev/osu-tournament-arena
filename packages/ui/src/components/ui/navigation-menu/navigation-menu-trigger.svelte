@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-   import { ChevronDownIcon } from "@hugeicons/core-free-icons";
+   import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { NavigationMenu as NavigationMenuPrimitive } from "bits-ui";
 
@@ -30,7 +30,7 @@
    {@render children?.()}
 
    <HugeiconsIcon
-      icon={ChevronDownIcon}
+      icon={ArrowDown01Icon}
       size={12}
       class="relative top-[1px] ms-1 transition duration-300 group-data-[state=open]:rotate-180"
       aria-hidden="true"

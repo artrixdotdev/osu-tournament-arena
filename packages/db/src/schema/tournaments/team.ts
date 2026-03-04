@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 import type { TeamDiscord } from "./types";
-import { auditTimestamps, boolean, json } from "../../util";
+import { auditTimestamps, boolean, json, positiveCheck } from "../../util";
 import { player } from "./player";
 import { qualifierParticipant } from "./qualifier";
 import { tournament } from "./tournament";
@@ -35,7 +35,7 @@ import { tournament } from "./tournament";
  * @example
  * ```ts
  * const team = {
- *   id: "team_123",
+ *   id: 123,
  *   name: "Team Awesome",
  *   seed: 1,
  *   tournamentId: "owc2026",
@@ -46,7 +46,7 @@ import { tournament } from "./tournament";
 export const team = sqliteTable(
    "team",
    {
-      id: text().primaryKey(),
+      id: integer().primaryKey(),
       name: text().notNull(),
 
       /** Ranking position after qualifiers (1 = highest seed) */
@@ -55,7 +55,9 @@ export const team = sqliteTable(
       /** Whether team has been eliminated from bracket */
       isEliminated: boolean().notNull().default(false),
 
-      tournamentId: text().notNull(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
 
       /** Discord channel and role assignment */
       discord: json<TeamDiscord>(),
@@ -66,6 +68,7 @@ export const team = sqliteTable(
       index("team_tournament_idx").on(table.tournamentId),
       index("team_seed_idx").on(table.seed),
       unique("team_name_tournament_unique").on(table.name, table.tournamentId),
+      positiveCheck("team_seed_positive", table.seed),
    ],
 );
 

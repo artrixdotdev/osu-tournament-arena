@@ -4,10 +4,23 @@
  * Handles tournament progression, match scheduling, and results tracking.
  */
 
-import { relations } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { relations, sql } from "drizzle-orm";
+import {
+   check,
+   index,
+   integer,
+   sqliteTable,
+   text,
+} from "drizzle-orm/sqlite-core";
 
-import { auditTimestamps, boolean, enumurate, timestamp } from "../../util";
+import {
+   auditTimestamps,
+   boolean,
+   enumurate,
+   nonNegativeCheck,
+   positiveCheck,
+   timestamp,
+} from "../../util";
 import { map, mappool } from "./mappool";
 import { playerAvailability } from "./player";
 import { refereeAvailability, staff } from "./staff";
@@ -49,8 +62,10 @@ import {
 export const bracket = sqliteTable(
    "bracket",
    {
-      id: text().primaryKey(),
-      tournamentId: text().notNull(),
+      id: integer().primaryKey(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
 
       /** Display name */
       name: text().notNull(),
@@ -113,11 +128,15 @@ export const bracketRelations = relations(bracket, ({ one, many }) => ({
 export const round = sqliteTable(
    "round",
    {
-      id: text().primaryKey(),
-      bracketId: text().notNull(),
+      id: integer().primaryKey(),
+      bracketId: integer()
+         .notNull()
+         .references(() => bracket.id, { onDelete: "cascade" }),
 
       /** Mappool used for this round */
-      mappoolId: text(),
+      mappoolId: integer().references(() => mappool.id, {
+         onDelete: "restrict",
+      }),
 
       /** Display name (e.g., "Quarterfinals") */
       name: text().notNull(),
@@ -137,6 +156,9 @@ export const round = sqliteTable(
       index("round_bracket_idx").on(table.bracketId),
       index("round_mappool_idx").on(table.mappoolId),
       index("round_bracket_order_idx").on(table.bracketId, table.order),
+      positiveCheck("round_order_positive", table.order),
+      positiveCheck("round_bestof_positive", table.bestOf),
+      check("round_bestof_odd", sql`${table.bestOf} % 2 = 1`),
    ],
 );
 
@@ -202,12 +224,16 @@ export const roundRelations = relations(round, ({ one, many }) => ({
 export const match = sqliteTable(
    "match",
    {
-      id: text().primaryKey(),
-      bracketId: text().notNull(),
-      tournamentId: text().notNull(),
+      id: integer().primaryKey(),
+      bracketId: integer()
+         .notNull()
+         .references(() => bracket.id, { onDelete: "cascade" }),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
 
       /** Round this match belongs to */
-      roundId: text(),
+      roundId: integer().references(() => round.id, { onDelete: "set null" }),
 
       /** Round number in bracket */
       roundNumber: integer().notNull(),
@@ -219,25 +245,25 @@ export const match = sqliteTable(
       bracketSide: enumurate(BracketSide).notNull(),
 
       // Team Assignment
-      teamRedId: text(),
-      teamBlueId: text(),
+      teamRedId: integer().references(() => team.id, { onDelete: "set null" }),
+      teamBlueId: integer().references(() => team.id, { onDelete: "set null" }),
 
       /** Current score */
       teamRedScore: integer().default(0),
       teamBlueScore: integer().default(0),
 
       /** Winning team */
-      winnerId: text(),
+      winnerId: integer().references(() => team.id, { onDelete: "set null" }),
 
       /** Current match status */
       status: enumurate(MatchStatus).notNull().default(MatchStatus.PENDING),
 
-      // Match Dependencies
+      // Match Dependencies (self-referencing, no explicit FK constraints)
       /** Red team comes from this match */
-      teamRedFromMatchId: text(),
+      teamRedFromMatchId: integer(),
 
       /** Blue team comes from this match */
-      teamBlueFromMatchId: text(),
+      teamBlueFromMatchId: integer(),
 
       /** True if red team is winner of previous match */
       teamRedFromMatchIsWinner: boolean(),
@@ -246,14 +272,14 @@ export const match = sqliteTable(
       teamBlueFromMatchIsWinner: boolean(),
 
       /** Winner advances to this match */
-      winnerToMatchId: text(),
+      winnerToMatchId: integer(),
 
       /** Loser advances to this match (double elim) */
-      loserToMatchId: text(),
+      loserToMatchId: integer(),
 
       // Match Logistics
       /** Assigned referee */
-      refereeId: text(),
+      refereeId: integer().references(() => staff.id, { onDelete: "set null" }),
 
       /** Twitch/YouTube stream URL */
       streamUrl: text(),
@@ -279,6 +305,23 @@ export const match = sqliteTable(
       index("match_team_red_idx").on(table.teamRedId),
       index("match_team_blue_idx").on(table.teamBlueId),
       index("match_referee_idx").on(table.refereeId),
+      index("match_teams_status_idx").on(
+         table.teamRedId,
+         table.teamBlueId,
+         table.status,
+      ),
+      positiveCheck("match_round_number_positive", table.roundNumber),
+      positiveCheck("match_match_number_positive", table.matchNumber),
+      nonNegativeCheck("match_score_non_negative", table.teamRedScore),
+      nonNegativeCheck("match_score_blue_non_negative", table.teamBlueScore),
+      check(
+         "match_completed_has_timestamp",
+         sql`(${table.status} != 'COMPLETED') OR (${table.completedAt} IS NOT NULL)`,
+      ),
+      check(
+         "match_in_progress_has_timestamp",
+         sql`(${table.status} != 'IN_PROGRESS') OR (${table.startedAt} IS NOT NULL)`,
+      ),
    ],
 );
 
@@ -355,9 +398,13 @@ export const matchRelations = relations(match, ({ one, many }) => ({
 export const matchPickBan = sqliteTable(
    "match_pick_ban",
    {
-      id: text().primaryKey(),
-      matchId: text().notNull(),
-      mapId: text().notNull(),
+      id: integer().primaryKey(),
+      matchId: integer()
+         .notNull()
+         .references(() => match.id, { onDelete: "cascade" }),
+      mapId: integer()
+         .notNull()
+         .references(() => map.id, { onDelete: "cascade" }),
 
       /** Which team performed action */
       team: enumurate(TeamColor).notNull(),
@@ -426,9 +473,13 @@ export const matchPickBanRelations = relations(matchPickBan, ({ one }) => ({
 export const matchMapResult = sqliteTable(
    "match_map_result",
    {
-      id: text().primaryKey(),
-      matchId: text().notNull(),
-      mapId: text().notNull(),
+      id: integer().primaryKey(),
+      matchId: integer()
+         .notNull()
+         .references(() => match.id, { onDelete: "cascade" }),
+      mapId: integer()
+         .notNull()
+         .references(() => map.id, { onDelete: "restrict" }),
 
       /** Play order within match */
       order: integer().notNull(),
@@ -438,7 +489,7 @@ export const matchMapResult = sqliteTable(
       teamBlueScore: integer().notNull().default(0),
 
       /** Team that won this map */
-      winnerId: text(),
+      winnerId: integer().references(() => team.id, { onDelete: "set null" }),
 
       /** Which team picked this map */
       pickedByTeam: enumurate(TeamColor),
@@ -455,6 +506,15 @@ export const matchMapResult = sqliteTable(
       index("match_map_result_match_idx").on(table.matchId),
       index("match_map_result_map_idx").on(table.mapId),
       index("match_map_result_match_order_idx").on(table.matchId, table.order),
+      positiveCheck("match_result_order_positive", table.order),
+      nonNegativeCheck(
+         "match_result_red_score_non_negative",
+         table.teamRedScore,
+      ),
+      nonNegativeCheck(
+         "match_result_blue_score_non_negative",
+         table.teamBlueScore,
+      ),
    ],
 );
 

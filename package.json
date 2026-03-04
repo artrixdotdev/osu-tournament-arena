@@ -53,6 +53,7 @@
          "svelte-check": "^4.3",
          "vite": "^7.3",
          "@sveltejs/kit": "^2.52.0",
+         "bits-ui": "^2.16.2",
          "@sveltejs/vite-plugin-svelte": "5.1.0",
          "tailwindcss": "^4.1.17",
          "@tailwindcss/postcss": "^4.1.16",
@@ -68,7 +69,12 @@
          "@trpc/server": "^11.8.1",
          "shadcn-svelte": "^2.0.0",
          "@hugeicons/core-free-icons": "^3.1.1",
-         "@hugeicons/svelte": "^1.1.1"
+         "@hugeicons/svelte": "^1.1.1",
+         "svelte-sonner": "^1.0.7",
+         "sveltekit-superforms": "^2.30.0",
+         "formsnap": "^2.0.1",
+         "mode-watcher": "^1.1.0",
+         "date-fns": "^4.1.0"
       }
    },
    "overrides": {

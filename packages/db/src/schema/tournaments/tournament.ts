@@ -4,11 +4,23 @@
  * Every other entity in the system references a tournament.
  */
 
-import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { relations, sql } from "drizzle-orm";
+import {
+   check,
+   index,
+   integer,
+   sqliteTable,
+   text,
+} from "drizzle-orm/sqlite-core";
 
 import type { TournamentDiscord } from "./types";
-import { auditTimestamps, boolean, json, timestamp } from "../../util";
+import {
+   auditTimestamps,
+   boolean,
+   json,
+   positiveCheck,
+   timestamp,
+} from "../../util";
 import { bracket } from "./bracket";
 import { mappool } from "./mappool";
 import { player } from "./player";
@@ -16,6 +28,8 @@ import { qualifierLobby } from "./qualifier";
 import { screening } from "./screening";
 import { staff } from "./staff";
 import { team } from "./team";
+
+export const TOURNAMENT_ACRONYM_MAX_LENGTH = 6;
 
 /**
  * Tournament table - central entity for organizing competitive events.
@@ -40,46 +54,79 @@ import { team } from "./team";
  * };
  * ```
  */
-export const tournament = sqliteTable("tournament", {
-   id: text().primaryKey(),
-   name: text().notNull(),
+export const tournament = sqliteTable(
+   "tournament",
+   {
+      id: text().primaryKey(),
+      name: text().notNull(),
 
-   /** Short identifier (max 4 chars) */
-   acronym: text({ length: 4 }),
+      /** Short identifier (max 6 chars) */
+      acronym: text({ length: TOURNAMENT_ACRONYM_MAX_LENGTH }),
 
-   /** Edition number (e.g., 16 for OWC 2026) */
-   rendition: integer(),
+      /** Edition number (e.g., 16 for OWC 2026) */
+      rendition: integer(),
 
-   /** Brief description shown on tournament page */
-   description: text({ length: 255 }).notNull(),
+      /** Brief description shown on tournament page */
+      description: text({ length: 255 }),
 
-   /** Tournament start date */
-   startDate: timestamp().notNull(),
+      /** Tournament start date */
+      startDate: timestamp().notNull(),
 
-   /** Tournament end date */
-   endDate: timestamp().notNull(),
+      /** Tournament end date */
+      endDate: timestamp().notNull(),
 
-   /** Whether tournament is visible to public */
-   isPublic: boolean().notNull(),
+      /** Whether tournament is visible to public */
+      isPublic: boolean().notNull().default(false),
 
-   /** Whether tournament is archived (read-only) */
-   isArchived: boolean().notNull(),
+      /** Whether tournament is archived (read-only) */
+      isArchived: boolean().notNull().default(false),
 
-   /** Soft deletion flag */
-   isDeleted: boolean().notNull(),
+      /** Soft deletion flag */
+      isDeleted: boolean().notNull().default(false),
 
-   // Tournament Settings
-   /** Maximum players per lobby */
-   lobbySize: integer().notNull(),
+      // Tournament Settings
+      /** Maximum players per lobby */
+      lobbySize: integer().notNull(),
 
-   /** Maximum players per team */
-   teamSize: integer().notNull(),
+      /** Maximum players per team */
+      teamSize: integer().notNull(),
 
-   /** Discord bot integration settings */
-   discord: json<TournamentDiscord>(),
+      /** Discord bot integration settings */
+      discord: json<TournamentDiscord>(),
 
-   ...auditTimestamps,
-});
+      ...auditTimestamps,
+   },
+   (table) => [
+      check(
+         "tournament_acronym_len_check",
+         sql`length(${table.acronym}) <= ${sql.raw(String(TOURNAMENT_ACRONYM_MAX_LENGTH))}`,
+      ),
+      positiveCheck("tournaments_lobby_size_positive", table.lobbySize),
+      positiveCheck("tournaments_team_size_positive", table.teamSize),
+      positiveCheck("tournaments_rendition_positive", table.rendition),
+      check(
+         "tournaments_dates_ordering",
+         sql`${table.startDate} <= ${table.endDate}`,
+      ),
+      check(
+         "tournaments_description_len_check",
+         sql`length(${table.description}) <= 255`,
+      ),
+      index("tournament_deleted_startdate_idx").on(
+         table.isDeleted,
+         table.startDate,
+      ),
+      index("tournament_archived_startdate_idx").on(
+         table.isArchived,
+         table.startDate,
+      ),
+      index("tournament_public_startdate_idx").on(
+         table.isPublic,
+         table.startDate,
+      ),
+      index("tournament_dates_idx").on(table.startDate, table.endDate),
+   ],
+);
 
 /**
  * Tournament relationships.

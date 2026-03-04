@@ -4,8 +4,9 @@
  * Manages qualifier lobby scheduling and team participation.
  */
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+   check,
    index,
    integer,
    sqliteTable,
@@ -13,7 +14,13 @@ import {
    unique,
 } from "drizzle-orm/sqlite-core";
 
-import { auditTimestamps, boolean, enumurate, timestamp } from "../../util";
+import {
+   auditTimestamps,
+   boolean,
+   enumurate,
+   positiveCheck,
+   timestamp,
+} from "../../util";
 import { mappool } from "./mappool";
 import { staff } from "./staff";
 import { team } from "./team";
@@ -56,9 +63,13 @@ import { QualifierLobbyStatus } from "./types";
 export const qualifierLobby = sqliteTable(
    "qualifier_lobby",
    {
-      id: text().primaryKey(),
-      tournamentId: text().notNull(),
-      mappoolId: text().notNull(),
+      id: integer().primaryKey(),
+      tournamentId: text()
+         .notNull()
+         .references(() => tournament.id, { onDelete: "cascade" }),
+      mappoolId: integer()
+         .notNull()
+         .references(() => mappool.id, { onDelete: "restrict" }),
 
       /** Display name for lobby */
       name: text().notNull(),
@@ -72,7 +83,7 @@ export const qualifierLobby = sqliteTable(
          .default(QualifierLobbyStatus.SCHEDULED),
 
       /** Assigned referee */
-      refereeId: text(),
+      refereeId: integer().references(() => staff.id, { onDelete: "set null" }),
 
       /** osu! multiplayer lobby ID */
       osuMatchId: integer(),
@@ -95,6 +106,26 @@ export const qualifierLobby = sqliteTable(
       index("qualifier_lobby_tournament_idx").on(table.tournamentId),
       index("qualifier_lobby_mappool_idx").on(table.mappoolId),
       index("qualifier_lobby_scheduled_idx").on(table.scheduledAt),
+      index("qualifier_lobby_tournament_status_idx").on(
+         table.tournamentId,
+         table.status,
+      ),
+      index("qualifier_lobby_scheduled_status_idx").on(
+         table.scheduledAt,
+         table.status,
+      ),
+      positiveCheck(
+         "qualifier_max_participants_positive",
+         table.maxParticipants,
+      ),
+      check(
+         "qualifier_lobby_completed_has_timestamp",
+         sql`(${table.status} != 'COMPLETED') OR (${table.completedAt} IS NOT NULL)`,
+      ),
+      check(
+         "qualifier_lobby_in_progress_has_timestamp",
+         sql`(${table.status} != 'IN_PROGRESS') OR (${table.startedAt} IS NOT NULL)`,
+      ),
    ],
 );
 
@@ -145,9 +176,13 @@ export const qualifierLobbyRelations = relations(
 export const qualifierParticipant = sqliteTable(
    "qualifier_participant",
    {
-      id: text().primaryKey(),
-      lobbyId: text().notNull(),
-      teamId: text().notNull(),
+      id: integer().primaryKey(),
+      lobbyId: integer()
+         .notNull()
+         .references(() => qualifierLobby.id, { onDelete: "cascade" }),
+      teamId: integer()
+         .notNull()
+         .references(() => team.id, { onDelete: "cascade" }),
 
       /** Whether team showed up and played */
       attended: boolean().notNull().default(false),

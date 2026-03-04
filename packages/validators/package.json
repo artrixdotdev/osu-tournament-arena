@@ -6,6 +6,10 @@
       ".": {
          "types": "./dist/index.d.ts",
          "default": "./src/index.ts"
+      },
+      "./tournament": {
+         "types": "./dist/tournament.d.ts",
+         "default": "./src/tournament.ts"
       }
    },
    "license": "MIT",
@@ -18,6 +22,7 @@
       "typecheck": "tsc --noEmit --emitDeclarationOnly false"
    },
    "dependencies": {
+      "@ota/db": "workspace:*",
       "zod": "catalog:"
    },
    "devDependencies": {

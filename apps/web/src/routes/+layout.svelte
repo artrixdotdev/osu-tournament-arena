@@ -9,12 +9,16 @@
    import "@ota/tailwind-config/theme";
    import "@ota/tailwind-config/fonts";
 
+   import { Toaster } from "@ota/ui/components/sonner/index.ts";
+
    let { children, data } = $props();
 </script>
 
 <svelte:head>
    <link rel="icon" href={favicon} />
 </svelte:head>
+
+<Toaster />
 
 <svelte:boundary>
    <ModeWatcher />
