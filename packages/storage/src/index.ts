@@ -6,6 +6,10 @@ import {
    PutObjectCommand,
    S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+import { storageEnv } from "@ota/env";
+
 import type {
    DeleteObjectCommandOutput,
    GetObjectCommandOutput,
@@ -14,9 +18,6 @@ import type {
    PutObjectCommandInput,
    PutObjectCommandOutput,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-import { storageEnv } from "@ota/env";
 
 /**
  * Logical bucket keys used by the application.
@@ -84,20 +85,25 @@ export interface PresignOptions {
  * Resolves storage configuration from environment variables with optional
  * per-field runtime overrides.
  */
-export function resolveS3StorageConfig(overrides: S3StorageOverrides = {}): S3StorageConfig {
+export function resolveS3StorageConfig(
+   overrides: S3StorageOverrides = {},
+): S3StorageConfig {
    const env = storageEnv();
 
    return {
       endpoint: overrides.endpoint ?? env.STORAGE_S3_ENDPOINT,
       region: overrides.region ?? env.STORAGE_S3_REGION,
       accessKeyId: overrides.accessKeyId ?? env.STORAGE_S3_ACCESS_KEY_ID,
-      secretAccessKey: overrides.secretAccessKey ?? env.STORAGE_S3_SECRET_ACCESS_KEY,
-      forcePathStyle: overrides.forcePathStyle ?? env.STORAGE_S3_FORCE_PATH_STYLE,
+      secretAccessKey:
+         overrides.secretAccessKey ?? env.STORAGE_S3_SECRET_ACCESS_KEY,
+      forcePathStyle:
+         overrides.forcePathStyle ?? env.STORAGE_S3_FORCE_PATH_STYLE,
       publicUrl: overrides.publicUrl ?? env.STORAGE_S3_PUBLIC_URL,
       buckets: {
          replays: overrides.buckets?.replays ?? env.STORAGE_S3_BUCKET_REPLAYS,
          tournamentMedia:
-            overrides.buckets?.tournamentMedia ?? env.STORAGE_S3_BUCKET_TOURNAMENT_MEDIA,
+            overrides.buckets?.tournamentMedia ??
+            env.STORAGE_S3_BUCKET_TOURNAMENT_MEDIA,
       },
    };
 }
@@ -141,7 +147,10 @@ export class S3Storage {
    /**
     * Uploads an object to the selected bucket.
     */
-   async putObject(bucket: StorageBucketKey, input: PutObjectInput): Promise<PutObjectCommandOutput> {
+   async putObject(
+      bucket: StorageBucketKey,
+      input: PutObjectInput,
+   ): Promise<PutObjectCommandOutput> {
       return this.client.send(
          new PutObjectCommand({
             Bucket: this.getBucketName(bucket),
@@ -158,7 +167,10 @@ export class S3Storage {
    /**
     * Retrieves an object stream and metadata from the selected bucket.
     */
-   async getObject(bucket: StorageBucketKey, key: string): Promise<GetObjectCommandOutput> {
+   async getObject(
+      bucket: StorageBucketKey,
+      key: string,
+   ): Promise<GetObjectCommandOutput> {
       return this.client.send(
          new GetObjectCommand({
             Bucket: this.getBucketName(bucket),
@@ -170,7 +182,10 @@ export class S3Storage {
    /**
     * Checks object metadata existence without downloading the object body.
     */
-   async headObject(bucket: StorageBucketKey, key: string): Promise<HeadObjectCommandOutput> {
+   async headObject(
+      bucket: StorageBucketKey,
+      key: string,
+   ): Promise<HeadObjectCommandOutput> {
       return this.client.send(
          new HeadObjectCommand({
             Bucket: this.getBucketName(bucket),
@@ -182,7 +197,10 @@ export class S3Storage {
    /**
     * Deletes an object from the selected bucket.
     */
-   async deleteObject(bucket: StorageBucketKey, key: string): Promise<DeleteObjectCommandOutput> {
+   async deleteObject(
+      bucket: StorageBucketKey,
+      key: string,
+   ): Promise<DeleteObjectCommandOutput> {
       return this.client.send(
          new DeleteObjectCommand({
             Bucket: this.getBucketName(bucket),

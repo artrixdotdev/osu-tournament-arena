@@ -29,7 +29,10 @@ export function storageEnv() {
 
    return createEnv({
       server: {
-         STORAGE_S3_ENDPOINT: z.url().optional().default("http://127.0.0.1:3900"),
+         STORAGE_S3_ENDPOINT: z
+            .url()
+            .optional()
+            .default("http://127.0.0.1:3900"),
          STORAGE_S3_REGION: z.string().min(1).optional().default("garage"),
          STORAGE_S3_ACCESS_KEY_ID: z.string().min(1),
          STORAGE_S3_SECRET_ACCESS_KEY: z.string().min(1),
@@ -37,7 +40,11 @@ export function storageEnv() {
             .string()
             .optional()
             .transform((value) => (value ? parseBoolean(value) : true)),
-         STORAGE_S3_BUCKET_REPLAYS: z.string().min(1).optional().default("replays"),
+         STORAGE_S3_BUCKET_REPLAYS: z
+            .string()
+            .min(1)
+            .optional()
+            .default("replays"),
          STORAGE_S3_BUCKET_TOURNAMENT_MEDIA: z
             .string()
             .min(1)
