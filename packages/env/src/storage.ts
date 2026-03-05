@@ -32,7 +32,7 @@ export function storageEnv() {
          STORAGE_S3_ENDPOINT: z
             .url()
             .optional()
-            .default("http://127.0.0.1:3900"),
+            .default("http://127.0.0.1:7279"),
          STORAGE_S3_REGION: z.string().min(1).optional().default("garage"),
          STORAGE_S3_ACCESS_KEY_ID: z.string().min(1),
          STORAGE_S3_SECRET_ACCESS_KEY: z.string().min(1),
