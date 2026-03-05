@@ -31,6 +31,7 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 │   ├── auth/                    # Better Auth configuration
 │   ├── db/                      # Drizzle ORM schema & client
 │   ├── env/                     # Environment variable validation
+│   ├── storage/                 # S3-compatible storage layer
 │   ├── ui/                      # Shared UI components (shadcn-svelte)
 │   └── validators/              # Shared Zod schemas
 └── tooling/
@@ -49,6 +50,7 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 | [`@ota/auth`](./packages/auth)             | Authentication with osu! and Discord OAuth      |
 | [`@ota/db`](./packages/db)                 | Database schema and Drizzle ORM client          |
 | [`@ota/env`](./packages/env)               | Type-safe environment variable validation       |
+| [`@ota/storage`](./packages/storage)       | S3-compatible object storage abstraction        |
 | [`@ota/ui`](./packages/ui)                 | Reusable UI components built with shadcn-svelte |
 | [`@ota/validators`](./packages/validators) | Shared Zod validation schemas                   |
 
@@ -63,6 +65,7 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 ### Prerequisites
 
 - bun `^1.3.9`
+- [Garage](https://garagehq.deuxfleurs.fr/documentation/quick-start/) installed and available in `PATH` (required for local `@ota/storage` development)
 
 ### Setup
 
@@ -74,9 +77,14 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 3. Configure your OAuth providers (osu!, Discord) in the `.env` file
 4. Push the database schema:
    ```bash
-   bun run db:push
+   bun run db:init
    ```
-5. Start the development server:
+5. Bootstrap the storage server:
+   ```bash
+   bun run storage:init
+   ```
+   This creates the Garage buckets `replays` and `tournament-media` and writes `S3_*` credentials to `.env`.
+6. Start the development server:
    ```bash
    bun run dev
    ```
@@ -92,7 +100,8 @@ osu! Tournament Arena is a tournament management platform designed for osu! play
 | `bun run typecheck` | Run TypeScript type checking    |
 | `bun run db:push`   | Push Drizzle schema to database |
 | `bun run db:studio` | Open Drizzle Studio             |
-| `bun run ui-add`    | Add shadcn-svelte components    |
+| `bun run storage:init` | Bootstrap local Garage S3 buckets and env vars |
+| `bun run ui:add`    | Add shadcn-svelte components    |
 
 ## Contributing
 
