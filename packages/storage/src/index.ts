@@ -134,6 +134,8 @@ export class S3Storage {
                accessKeyId: config.accessKeyId,
                secretAccessKey: config.secretAccessKey,
             },
+            requestChecksumCalculation: "WHEN_REQUIRED",
+            responseChecksumValidation: "WHEN_REQUIRED",
          });
    }
 
