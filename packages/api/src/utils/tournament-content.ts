@@ -38,7 +38,6 @@ const MARKDOWN_ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = 
    video: ["src", "controls", "width", "height", "poster", "preload"],
    audio: ["src", "controls", "preload"],
    source: ["src", "type"],
-   "*": ["class"],
 };
 
 const MARKDOWN_ALLOWED_SCHEMES = ["http", "https", "mailto", "tel"];
@@ -55,7 +54,16 @@ export async function renderSafeTournamentMarkdown(
       allowedTags: [...MARKDOWN_ALLOWED_TAGS],
       allowedAttributes: MARKDOWN_ALLOWED_ATTRIBUTES,
       allowedSchemes: MARKDOWN_ALLOWED_SCHEMES,
+      allowedSchemesByTag: {
+         img: ["http", "https"],
+         video: ["http", "https"],
+         audio: ["http", "https"],
+         source: ["http", "https"],
+      },
+      allowProtocolRelative: false,
       disallowedTagsMode: "discard",
+      nonTextTags: ["script", "style", "textarea", "option"],
+      enforceHtmlBoundary: true,
       transformTags: {
          a: sanitizeHtml.simpleTransform("a", {
             target: "_blank",
