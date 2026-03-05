@@ -23,7 +23,8 @@
       "typecheck": "turbo run typecheck",
       "ui:add": "turbo run ui:add",
       "db:start": "turbo watch start-db",
-      "db:init": "./scripts/clean-db.ts"
+      "db:init": "./scripts/clean-db.ts",
+      "storage:init": "./scripts/bootstrap-storage.ts -k"
    },
    "devDependencies": {
       "@ota/prettier-config": "workspace:*",

@@ -14,7 +14,8 @@ src/
 ├── index.ts     # Combined env exports
 ├── auth.ts      # Auth-related env vars
 ├── db.ts        # Database-related env vars
-└── discord.ts   # Discord-related env vars
+├── discord.ts   # Discord-related env vars
+└── storage.ts   # S3 storage-related env vars
 ```
 
 ## Usage
@@ -41,6 +42,24 @@ const env = dbEnv();
 // env.DATABASE_URL
 // env.DATABASE_AUTH_TOKEN
 ```
+
+### Storage Environment
+
+```ts
+import { storageEnv } from "@ota/env";
+
+const env = storageEnv();
+// env.STORAGE_S3_ENDPOINT
+// env.STORAGE_S3_REGION
+// env.STORAGE_S3_ACCESS_KEY_ID
+// env.STORAGE_S3_SECRET_ACCESS_KEY
+// env.STORAGE_S3_FORCE_PATH_STYLE
+// env.STORAGE_S3_BUCKET_REPLAYS
+// env.STORAGE_S3_BUCKET_TOURNAMENT_MEDIA
+// env.STORAGE_S3_PUBLIC_URL
+```
+
+`storageEnv()` also accepts `S3_*` aliases (`S3_ENDPOINT`, `S3_REGION`, etc.) for compatibility with `scripts/bootstrap-storage.ts`.
 
 ## Why Separate Env Functions?
 
