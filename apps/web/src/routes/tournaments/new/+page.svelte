@@ -10,6 +10,7 @@
 
    import DetailsStep from "./details-step.svelte";
    import DiscordStep from "./discord-step.svelte";
+   import CustomizationStep from "./customization-step.svelte";
    import ScreeningStep from "./screening-step.svelte";
 
    const steps = [
@@ -17,6 +18,11 @@
       {
          id: "rankAndScreening",
          label: m.tournamentCreate_step_rankAndScreening(),
+      },
+      {
+         id: "customization",
+         label: m.tournamentCreate_step_customization(),
+         optional: true,
       },
       {
          id: "discord",
@@ -32,6 +38,7 @@
    let detailsError = $state<string | null>(null);
    let settingsSubmitting = $state(false);
    let settingsError = $state(false);
+   let customizationSubmitting = $state(false);
 
    const currentStep = $derived(steps[currentStepIndex]?.id ?? "details");
    const completedSteps = $derived(
@@ -52,6 +59,7 @@
       acronym: string | null;
       rendition: number | null;
       description: string | null;
+      logo: string | null;
       startDate: string;
       endDate: string;
       teamSize: number;
@@ -67,6 +75,7 @@
             acronym: data.acronym,
             rendition: data.rendition,
             description: data.description,
+            logo: data.logo,
             startDate: parseISO(`${data.startDate}T00:00:00Z`),
             endDate: parseISO(`${data.endDate}T00:00:00Z`),
             isPublic: false,
@@ -146,6 +155,43 @@
 
       await goto(`/tournaments/${createdTournamentId}`);
    }
+
+   async function handleCustomizationSubmit(data: {
+      body?: string;
+      fontFamily?: string | null;
+      themeColors?: {
+         background?: string;
+         foreground?: string;
+         primary?: string;
+         primaryForeground?: string;
+         accent?: string;
+         accentForeground?: string;
+      } | null;
+   }) {
+      if (!createdTournamentId) {
+         return;
+      }
+
+      customizationSubmitting = true;
+      try {
+         await client.tournament.updateContent({
+            id: createdTournamentId,
+            body: data.body ?? "",
+            fontFamily: data.fontFamily ?? null,
+            themeColors: data.themeColors ?? null,
+         });
+         currentStepIndex = 3;
+      } catch (error) {
+         console.error("Failed to save tournament customization:", error);
+         toast.error(m.tournamentCreate_errors_customizationFailed());
+      } finally {
+         customizationSubmitting = false;
+      }
+   }
+
+   function handleCustomizationSkip() {
+      currentStepIndex = 3;
+   }
 </script>
 
 <svelte:head>
@@ -185,6 +231,16 @@
                   error={settingsError}
                   onBack={handleBack}
                />
+            {:else if currentStep === "customization"}
+               {#if createdTournamentId}
+                  <CustomizationStep
+                     tournamentId={createdTournamentId}
+                     submitting={customizationSubmitting}
+                     onSubmit={handleCustomizationSubmit}
+                     onBack={handleBack}
+                     onSkip={handleCustomizationSkip}
+                  />
+               {/if}
             {:else}
                <DiscordStep onFinish={handleFinish} onBack={handleBack} />
             {/if}

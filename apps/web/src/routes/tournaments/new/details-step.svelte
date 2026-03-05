@@ -32,6 +32,7 @@
          acronym: string | null;
          rendition: number | null;
          description: string | null;
+         logo: string | null;
          startDate: string;
          endDate: string;
          teamSize: number;
@@ -86,6 +87,12 @@
             },
          ),
          description: z.string(),
+         logo: z
+            .string()
+            .trim()
+            .refine((value) => value === "" || URL.canParse(value), {
+               message: m.tournamentCreate_errors_invalidLogoUrl(),
+            }),
          startDate: z
             .string()
             .min(1, m.tournamentCreate_errors_requiredStartDate()),
@@ -149,6 +156,7 @@
             acronym: "",
             rendition: "",
             description: "",
+            logo: "",
             startDate: "",
             endDate: "",
             teamSize: "8",
@@ -220,6 +228,7 @@
          description: validation.data.description.trim()
             ? validation.data.description.trim()
             : null,
+         logo: validation.data.logo.trim() ? validation.data.logo.trim() : null,
          startDate: validation.data.startDate,
          endDate: validation.data.endDate,
          teamSize: parsedTeamSize ?? 8,
@@ -408,6 +417,37 @@
             <Textarea
                placeholder="A short summary of the tournament."
                bind:value={$detailsFormData.description}
+            />
+            <Form.FieldErrors />
+         </div>
+      </Form.Control>
+   </Form.Field>
+
+   <Form.Field form={detailsForm} name="logo">
+      <Form.Control>
+         <div class="space-y-2">
+            <div class="flex items-center gap-2">
+               <Form.Label>{m.tournamentCreate_fields_logo()}</Form.Label>
+               <span class="text-muted-foreground text-xs">
+                  ({m.common_optional()})
+               </span>
+               <Tooltip.Root>
+                  <Tooltip.Trigger>
+                     <HugeiconsIcon
+                        icon={HelpCircleIcon}
+                        size={14}
+                        strokeWidth={1.7}
+                     />
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                     >{m.tournamentCreate_help_logo()}</Tooltip.Content
+                  >
+               </Tooltip.Root>
+            </div>
+            <Input
+               type="url"
+               placeholder="https://cdn.example.com/logo.png"
+               bind:value={$detailsFormData.logo}
             />
             <Form.FieldErrors />
          </div>
