@@ -28,8 +28,10 @@ import { qualifierLobby } from "./qualifier";
 import { screening } from "./screening";
 import { staff } from "./staff";
 import { team } from "./team";
+import { tournamentContent } from "./tournament-content";
 
 export const TOURNAMENT_ACRONYM_MAX_LENGTH = 6;
+export const TOURNAMENT_LOGO_URL_MAX_LENGTH = 1024;
 
 /**
  * Tournament table - central entity for organizing competitive events.
@@ -68,6 +70,9 @@ export const tournament = sqliteTable(
 
       /** Brief description shown on tournament page */
       description: text({ length: 255 }),
+
+      /** Optional tournament logo URL */
+      logo: text({ length: TOURNAMENT_LOGO_URL_MAX_LENGTH }),
 
       /** Tournament start date */
       startDate: timestamp().notNull(),
@@ -112,6 +117,10 @@ export const tournament = sqliteTable(
          "tournaments_description_len_check",
          sql`length(${table.description}) <= 255`,
       ),
+      check(
+         "tournaments_logo_len_check",
+         sql`length(${table.logo}) <= ${sql.raw(String(TOURNAMENT_LOGO_URL_MAX_LENGTH))}`,
+      ),
       index("tournament_deleted_startdate_idx").on(
          table.isDeleted,
          table.startDate,
@@ -132,7 +141,7 @@ export const tournament = sqliteTable(
  * Tournament relationships.
  * Defines one-to-many connections with child entities.
  */
-export const tournamentRelations = relations(tournament, ({ many }) => ({
+export const tournamentRelations = relations(tournament, ({ many, one }) => ({
    teams: many(team),
    players: many(player),
    brackets: many(bracket),
@@ -140,4 +149,5 @@ export const tournamentRelations = relations(tournament, ({ many }) => ({
    staff: many(staff),
    screenings: many(screening),
    qualifierLobbies: many(qualifierLobby),
+   content: one(tournamentContent),
 }));
