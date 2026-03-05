@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
+import { randomUUID } from "node:crypto";
+
 import { ORPCError } from "@orpc/server";
 import { and, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
 
@@ -9,11 +11,15 @@ import {
    staff,
    StaffRole,
    tournament as tournamentTable,
+   tournamentContent as tournamentContentTable,
 } from "@ota/db/schema";
+import { createS3Storage } from "@ota/storage";
 import {
+   createTournamentMediaUploadSchema,
    createTournamentSchema,
    tournamentIdSchema,
    tournamentListSchema,
+   updateTournamentContentSchema,
    updateTournamentDetailsSchema,
    updateTournamentDiscordSchema,
    updateTournamentScheduleSchema,
@@ -24,11 +30,44 @@ import {
 
 import { requireAdmin, requireHost } from "../middleware/staff";
 import { authorized, base } from "../orpc";
+import { renderSafeTournamentMarkdown } from "../utils/tournament-content";
 
 const updateTournamentSettingsAndScreeningSchema =
    updateTournamentSettingsSchema.and(
       updateTournamentScreeningRequirementsSchema,
    );
+const tournamentStorage = createS3Storage();
+const TOURNAMENT_MEDIA_UPLOAD_URL_EXPIRES_SECONDS = 900;
+
+function sanitizeFileName(fileName: string): string {
+   const normalized = fileName.trim().toLowerCase();
+   const sanitized = normalized
+      .replace(/[^a-z0-9._-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+
+   return sanitized.slice(0, 120) || "file";
+}
+
+async function getTournamentById(id: string) {
+   const [tournament] = await db
+      .select()
+      .from(tournamentTable)
+      .where(and(eq(tournamentTable.id, id), eq(tournamentTable.isDeleted, false)))
+      .limit(1);
+
+   return tournament ?? null;
+}
+
+async function getTournamentContentById(id: string) {
+   const [content] = await db
+      .select()
+      .from(tournamentContentTable)
+      .where(eq(tournamentContentTable.tournamentId, id))
+      .limit(1);
+
+   return content ?? null;
+}
 
 /**
  * Applies a partial update to a tournament record.
@@ -182,6 +221,67 @@ export const tournamentProcedures = {
          }
 
          return tournament;
+      }),
+
+   getContent: base
+      .route({
+         method: "GET",
+         path: "/tournament/{id}/content",
+         summary: "Get tournament page content",
+         description:
+            "Retrieves the tournament page content (markdown and customization settings) for public tournaments.",
+         tags: ["tournament"],
+      })
+      .input(tournamentIdSchema)
+      .handler(async ({ input }) => {
+         const tournament = await getTournamentById(input.id);
+
+         if (!tournament) {
+            return null;
+         }
+
+         if (!tournament.isPublic && !tournament.isArchived) {
+            return null;
+         }
+
+         const content = await getTournamentContentById(input.id);
+         const body = content?.body ?? "";
+
+         return {
+            tournament,
+            content: {
+               body,
+               renderedBody: await renderSafeTournamentMarkdown(body),
+               fontFamily: content?.fontFamily ?? null,
+               themeColors: content?.themeColors ?? null,
+            },
+         };
+      }),
+
+   getContentForStaff: authorized
+      .input(tournamentIdSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         const tournament = await getTournamentById(input.id);
+
+         if (!tournament) {
+            throw new ORPCError("NOT_FOUND", {
+               message: "Tournament not found",
+            });
+         }
+
+         const content = await getTournamentContentById(input.id);
+         const body = content?.body ?? "";
+
+         return {
+            tournament,
+            content: {
+               body,
+               renderedBody: await renderSafeTournamentMarkdown(body),
+               fontFamily: content?.fontFamily ?? null,
+               themeColors: content?.themeColors ?? null,
+            },
+         };
       }),
 
    /**
@@ -707,6 +807,105 @@ export const tournamentProcedures = {
       .handler(async ({ input }) => {
          const { id, ...fields } = input;
          return applyUpdate(id, fields);
+      }),
+
+   updateContent: authorized
+      .input(updateTournamentContentSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         const { id, ...fields } = input;
+         const hasUpdates = Object.values(fields).some((v) => v !== undefined);
+
+         if (!hasUpdates) {
+            return { updated: false as const };
+         }
+
+         const tournament = await getTournamentById(id);
+         if (!tournament) {
+            throw new ORPCError("NOT_FOUND", {
+               message: "Tournament not found",
+            });
+         }
+
+         const existingContent = await getTournamentContentById(id);
+         const normalizedFontFamily =
+            fields.fontFamily === "" ? null : fields.fontFamily;
+         const nextBody = fields.body ?? existingContent?.body ?? "";
+         const nextFontFamily =
+            normalizedFontFamily === undefined
+               ? existingContent?.fontFamily ?? null
+               : normalizedFontFamily;
+         const nextThemeColors =
+            fields.themeColors === undefined
+               ? existingContent?.themeColors ?? null
+               : fields.themeColors;
+
+         const [content] = existingContent
+            ? await db
+                 .update(tournamentContentTable)
+                 .set({
+                    body: nextBody,
+                    fontFamily: nextFontFamily,
+                    themeColors: nextThemeColors,
+                 })
+                 .where(eq(tournamentContentTable.tournamentId, id))
+                 .returning()
+            : await db
+                 .insert(tournamentContentTable)
+                 .values({
+                    tournamentId: id,
+                    body: nextBody,
+                    fontFamily: nextFontFamily,
+                    themeColors: nextThemeColors,
+                 })
+                 .returning();
+
+         if (!content) {
+            throw new ORPCError("INTERNAL_SERVER_ERROR", {
+               message: "Failed to update tournament content",
+            });
+         }
+
+         return {
+            updated: true as const,
+            content: {
+               ...content,
+               renderedBody: await renderSafeTournamentMarkdown(content.body),
+            },
+         };
+      }),
+
+   createContentMediaUpload: authorized
+      .input(createTournamentMediaUploadSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         const tournament = await getTournamentById(input.id);
+         if (!tournament) {
+            throw new ORPCError("NOT_FOUND", {
+               message: "Tournament not found",
+            });
+         }
+
+         const safeName = sanitizeFileName(input.fileName);
+         const key = `tournaments/${input.id}/${Date.now()}-${randomUUID()}-${safeName}`;
+
+         const uploadUrl = await tournamentStorage.createPresignedPutUrl(
+            "tournamentMedia",
+            key,
+            { expiresIn: TOURNAMENT_MEDIA_UPLOAD_URL_EXPIRES_SECONDS },
+         );
+         const publicUrl = tournamentStorage.getPublicUrl(
+            "tournamentMedia",
+            key,
+         );
+
+         return {
+            key,
+            uploadUrl,
+            publicUrl,
+            maxSizeBytes: 4 * 1024 * 1024,
+            contentType: input.contentType,
+         };
       }),
 
    /**

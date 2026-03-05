@@ -4,6 +4,9 @@ import { z } from "zod";
 import {
    StaffRole,
    TOURNAMENT_ACRONYM_MAX_LENGTH,
+   TOURNAMENT_BODY_MAX_LENGTH,
+   TOURNAMENT_FONT_FAMILY_MAX_LENGTH,
+   TOURNAMENT_LOGO_URL_MAX_LENGTH,
    TournamentDiscord,
    tournament as tournamentTable,
 } from "@ota/db/schema";
@@ -37,6 +40,32 @@ const tournamentIdValueSchema = z
 
 const baseIdSchema = z.object({
    id: tournamentIdValueSchema,
+});
+
+const hslColorTokenSchema = z
+   .string()
+   .trim()
+   .regex(
+      /^\d{1,3}(?:\.\d+)?\s+\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/,
+      "Color values must be valid HSL tokens (e.g. 222.2 84% 4.9%)",
+   );
+
+const tournamentThemeColorsSchema = z.object({
+   background: hslColorTokenSchema.optional(),
+   foreground: hslColorTokenSchema.optional(),
+   card: hslColorTokenSchema.optional(),
+   cardForeground: hslColorTokenSchema.optional(),
+   primary: hslColorTokenSchema.optional(),
+   primaryForeground: hslColorTokenSchema.optional(),
+   secondary: hslColorTokenSchema.optional(),
+   secondaryForeground: hslColorTokenSchema.optional(),
+   muted: hslColorTokenSchema.optional(),
+   mutedForeground: hslColorTokenSchema.optional(),
+   accent: hslColorTokenSchema.optional(),
+   accentForeground: hslColorTokenSchema.optional(),
+   border: hslColorTokenSchema.optional(),
+   input: hslColorTokenSchema.optional(),
+   ring: hslColorTokenSchema.optional(),
 });
 
 const basePaginationSchema = z.object({
@@ -93,6 +122,10 @@ export const createTournamentSchema = createInsertSchema(tournamentTable, {
    rendition: (schema) =>
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) => schema.max(255).describe("Brief description"),
+   logo: (schema) =>
+      schema
+         .max(TOURNAMENT_LOGO_URL_MAX_LENGTH)
+         .describe("Optional tournament logo URL"),
    startDate: (schema) => schema.describe("Tournament start date"),
    endDate: (schema) => schema.describe("Tournament end date"),
    isPublic: (schema) =>
@@ -124,6 +157,11 @@ export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
       schema.int().positive().optional().describe("Edition number"),
    description: (schema) =>
       schema.max(255).optional().describe("Brief description"),
+   logo: (schema) =>
+      schema
+         .max(TOURNAMENT_LOGO_URL_MAX_LENGTH)
+         .optional()
+         .describe("Optional tournament logo URL"),
    startDate: (schema) => schema.optional().describe("Tournament start date"),
    endDate: (schema) => schema.optional().describe("Tournament end date"),
    isPublic: (schema) =>
@@ -151,6 +189,7 @@ export const updateTournamentDetailsSchema = updateTournamentSchema
       acronym: true,
       rendition: true,
       description: true,
+      logo: true,
    })
    .required({ id: true });
 
@@ -223,6 +262,48 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
       { message: "minimumRating must be less than or equal to maximumRating" },
    );
 
+export const updateTournamentContentSchema = baseIdSchema.extend({
+   body: z
+      .string()
+      .max(TOURNAMENT_BODY_MAX_LENGTH)
+      .optional()
+      .describe("Tournament markdown body content"),
+   fontFamily: z
+      .string()
+      .trim()
+      .max(TOURNAMENT_FONT_FAMILY_MAX_LENGTH)
+      .nullable()
+      .optional()
+      .describe("Google font family for tournament page"),
+   themeColors: tournamentThemeColorsSchema
+      .nullable()
+      .optional()
+      .describe("Scoped tournament theme color tokens"),
+});
+
+export const createTournamentMediaUploadSchema = baseIdSchema.extend({
+   fileName: z
+      .string()
+      .trim()
+      .min(1)
+      .max(255)
+      .describe("Original file name"),
+   contentType: z
+      .string()
+      .trim()
+      .regex(
+         /^(image|video|audio)\/[a-z0-9.+-]+$/i,
+         "contentType must be image/*, video/*, or audio/*",
+      )
+      .describe("MIME content type"),
+   sizeBytes: z
+      .number()
+      .int()
+      .positive()
+      .max(4 * 1024 * 1024)
+      .describe("File size in bytes (max 4 MB)"),
+});
+
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;
 export type UpdateTournamentInput = z.infer<typeof updateTournamentSchema>;
 export type TournamentIdInput = z.infer<typeof tournamentIdSchema>;
@@ -244,4 +325,10 @@ export type UpdateTournamentDiscordInput = z.infer<
 >;
 export type UpdateTournamentScreeningRequirementsInput = z.infer<
    typeof updateTournamentScreeningRequirementsSchema
+>;
+export type UpdateTournamentContentInput = z.infer<
+   typeof updateTournamentContentSchema
+>;
+export type CreateTournamentMediaUploadInput = z.infer<
+   typeof createTournamentMediaUploadSchema
 >;
