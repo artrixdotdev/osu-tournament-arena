@@ -24,10 +24,19 @@
       fontFamily: z.string(),
       background: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
       foreground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      card: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      cardForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
       primary: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
       primaryForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      secondary: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      secondaryForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      muted: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      mutedForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
       accent: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
       accentForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      border: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      input: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
+      ring: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
    });
 
    const GOOGLE_FONT_OPTIONS = [
@@ -54,10 +63,19 @@
          themeColors?: {
             background?: string;
             foreground?: string;
+            card?: string;
+            cardForeground?: string;
             primary?: string;
             primaryForeground?: string;
+            secondary?: string;
+            secondaryForeground?: string;
+            muted?: string;
+            mutedForeground?: string;
             accent?: string;
             accentForeground?: string;
+            border?: string;
+            input?: string;
+            ring?: string;
          } | null;
       }) => Promise<void>;
    }
@@ -77,10 +95,19 @@
             fontFamily: "",
             background: "",
             foreground: "",
+            card: "",
+            cardForeground: "",
             primary: "",
             primaryForeground: "",
+            secondary: "",
+            secondaryForeground: "",
+            muted: "",
+            mutedForeground: "",
             accent: "",
             accentForeground: "",
+            border: "",
+            input: "",
+            ring: "",
          },
          zod4(customizationSchema),
       ),
@@ -163,10 +190,19 @@
       const themeColors = {
          background: validation.data.background || undefined,
          foreground: validation.data.foreground || undefined,
+         card: validation.data.card || undefined,
+         cardForeground: validation.data.cardForeground || undefined,
          primary: validation.data.primary || undefined,
          primaryForeground: validation.data.primaryForeground || undefined,
+         secondary: validation.data.secondary || undefined,
+         secondaryForeground: validation.data.secondaryForeground || undefined,
+         muted: validation.data.muted || undefined,
+         mutedForeground: validation.data.mutedForeground || undefined,
          accent: validation.data.accent || undefined,
          accentForeground: validation.data.accentForeground || undefined,
+         border: validation.data.border || undefined,
+         input: validation.data.input || undefined,
+         ring: validation.data.ring || undefined,
       };
 
       const hasThemeColors = Object.values(themeColors).some(Boolean);
@@ -276,6 +312,16 @@
          </Form.Control>
       </Form.Field>
 
+      <Form.Field form={customizationForm} name="card">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Card</Form.Label>
+               <Input placeholder="0 0% 100%" bind:value={$formData.card} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
       <Form.Field form={customizationForm} name="primaryForeground">
          <Form.Control>
             <div class="space-y-2">
@@ -296,11 +342,91 @@
          </Form.Control>
       </Form.Field>
 
+      <Form.Field form={customizationForm} name="secondary">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Secondary</Form.Label>
+               <Input placeholder="210 40% 96.1%" bind:value={$formData.secondary} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
       <Form.Field form={customizationForm} name="accentForeground">
          <Form.Control>
             <div class="space-y-2">
                <Form.Label>{m.tournamentCreate_fields_themeAccentForeground()}</Form.Label>
                <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.accentForeground} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="cardForeground">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Card Foreground</Form.Label>
+               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.cardForeground} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="secondaryForeground">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Secondary Foreground</Form.Label>
+               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.secondaryForeground} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="muted">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Muted</Form.Label>
+               <Input placeholder="210 40% 96.1%" bind:value={$formData.muted} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="mutedForeground">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Muted Foreground</Form.Label>
+               <Input placeholder="215.4 16.3% 46.9%" bind:value={$formData.mutedForeground} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="border">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Border</Form.Label>
+               <Input placeholder="214.3 31.8% 91.4%" bind:value={$formData.border} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="input">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Input</Form.Label>
+               <Input placeholder="214.3 31.8% 91.4%" bind:value={$formData.input} />
+               <Form.FieldErrors />
+            </div>
+         </Form.Control>
+      </Form.Field>
+
+      <Form.Field form={customizationForm} name="ring">
+         <Form.Control>
+            <div class="space-y-2">
+               <Form.Label>Ring</Form.Label>
+               <Input placeholder="221.2 83.2% 53.3%" bind:value={$formData.ring} />
                <Form.FieldErrors />
             </div>
          </Form.Control>
