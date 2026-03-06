@@ -167,6 +167,34 @@ export class S3Storage {
    }
 
    /**
+    * Uploads an object and makes it publicly readable.
+    *
+    * Use this for files that need a stable URL you can store in a database.
+    * The returned URL stays valid as long as the object exists and the public
+    * base URL does not change.
+    *
+    * This method uses `ACL: "public-read"`. Some S3-compatible providers
+    * disable ACLs. In that case, use a bucket policy instead.
+    */
+   async putPublicObject(
+      bucket: StorageBucketKey,
+      input: PutObjectInput,
+   ): Promise<PutObjectCommandOutput> {
+      return this.client.send(
+         new PutObjectCommand({
+            Bucket: this.getBucketName(bucket),
+            Key: input.key,
+            Body: input.body,
+            ContentType: input.contentType,
+            CacheControl: input.cacheControl,
+            ContentDisposition: input.contentDisposition,
+            Metadata: input.metadata,
+            ACL: "public-read",
+         }),
+      );
+   }
+
+   /**
     * Retrieves an object stream and metadata from the selected bucket.
     */
    async getObject(
