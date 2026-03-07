@@ -257,6 +257,32 @@ export class S3Storage {
    }
 
    /**
+    * Creates a time-limited presigned URL for object uploads.
+    *
+    * Use this when a client needs to upload directly to S3 without exposing
+    * long-lived credentials.
+    */
+   async createPresignedPutUrl(
+      bucket: StorageBucketKey,
+      key: string,
+      options: PresignOptions & { contentType?: string } = {},
+   ): Promise<string> {
+      return getSignedUrl(
+         this.client,
+         new PutObjectCommand({
+            Bucket: this.getBucketName(bucket),
+            Key: key,
+            ...(options.contentType
+               ? { ContentType: options.contentType }
+               : {}),
+         }),
+         {
+            expiresIn: options.expiresIn,
+         },
+      );
+   }
+
+   /**
     * Creates a time-limited presigned URL for object downloads.
     */
    async createPresignedGetUrl(
@@ -267,26 +293,6 @@ export class S3Storage {
       return getSignedUrl(
          this.client,
          new GetObjectCommand({
-            Bucket: this.getBucketName(bucket),
-            Key: key,
-         }),
-         {
-            expiresIn: options.expiresIn,
-         },
-      );
-   }
-
-   /**
-    * Creates a time-limited presigned URL for object uploads.
-    */
-   async createPresignedPutUrl(
-      bucket: StorageBucketKey,
-      key: string,
-      options: PresignOptions = {},
-   ): Promise<string> {
-      return getSignedUrl(
-         this.client,
-         new PutObjectCommand({
             Bucket: this.getBucketName(bucket),
             Key: key,
          }),
