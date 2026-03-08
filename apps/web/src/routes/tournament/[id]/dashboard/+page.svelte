@@ -9,6 +9,8 @@
       UserGroupIcon,
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
+   import CountryMultiSelect from "$lib/components/country-multi-select.svelte";
+   import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
    import { client } from "$lib/orpc";
    import {
       previewTournamentMarkdown,
@@ -26,20 +28,17 @@
    import { parseOptionalFloat, parseOptionalInt } from "$lib/utils/number";
    import { toast } from "svelte-sonner";
 
+   import type {
+      TournamentDiscord,
+      TournamentThemeColors,
+   } from "@ota/db/schema";
+   import * as Accordion from "@ota/ui/components/accordion/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Checkbox } from "@ota/ui/components/checkbox/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { MarkdownEditor } from "@ota/ui/components/markdown-editor/index.ts";
    import { Textarea } from "@ota/ui/components/textarea/index.ts";
-   import * as Accordion from "@ota/ui/components/accordion/index.ts";
 
-   import CountryMultiSelect from "$lib/components/country-multi-select.svelte";
-   import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
-
-   import type {
-      TournamentDiscord,
-      TournamentThemeColors,
-   } from "@ota/db/schema";
    import type { PageData } from "./$types";
 
    type DashboardData = PageData["dashboard"];
@@ -288,7 +287,12 @@
             .filter(([, roleId]) => roleId),
       );
 
-      if (!serverId && !matchResults && !matchPings && !Object.keys(roles).length) {
+      if (
+         !serverId &&
+         !matchResults &&
+         !matchPings &&
+         !Object.keys(roles).length
+      ) {
          return null;
       }
 
@@ -459,7 +463,9 @@
             maximumRating !== undefined &&
             minimumRating > maximumRating
          ) {
-            throw new Error("Maximum rating must be greater than minimum rating");
+            throw new Error(
+               "Maximum rating must be greater than minimum rating",
+            );
          }
 
          const minimumBadges = parseOptionalInt(competitionDraft.minimumBadges);
@@ -483,27 +489,21 @@
             id: tournament.id,
             teamSize,
             lobbySize,
-            minimumRank:
-               minimumRank ?? ((null as unknown) as number | undefined),
-            maximumRank:
-               maximumRank ?? ((null as unknown) as number | undefined),
+            minimumRank: minimumRank ?? (null as unknown as number | undefined),
+            maximumRank: maximumRank ?? (null as unknown as number | undefined),
             minimumRating:
-               minimumRating ?? ((null as unknown) as number | undefined),
+               minimumRating ?? (null as unknown as number | undefined),
             maximumRating:
-               maximumRating ?? ((null as unknown) as number | undefined),
+               maximumRating ?? (null as unknown as number | undefined),
             allowedCountries: competitionDraft.allowedCountries.length
                ? competitionDraft.allowedCountries.map((country) =>
                     country.toUpperCase(),
                  )
                : null,
             useBws: competitionDraft.useBws,
-            minimumBadges:
-               (competitionDraft.useBws
-                  ? (minimumBadges ??
-                       ((null as unknown) as number | undefined))
-                  : ((null as unknown) as number | undefined)) as
-                  | number
-                  | undefined,
+            minimumBadges: (competitionDraft.useBws
+               ? (minimumBadges ?? (null as unknown as number | undefined))
+               : (null as unknown as number | undefined)) as number | undefined,
             bwsExponent: competitionDraft.useBws
                ? (bwsExponent ?? undefined)
                : 0.9937,
@@ -549,7 +549,11 @@
 
          tournament = result.tournament;
          discordDraft = createDiscordDraft(tournament.discord);
-         toast.success(discord ? "Discord integration updated" : "Discord integration removed");
+         toast.success(
+            discord
+               ? "Discord integration updated"
+               : "Discord integration removed",
+         );
       });
    }
 
@@ -620,7 +624,7 @@
 <div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
    <div class="grid gap-6 xl:grid-cols-[18rem_minmax(0,1fr)]">
       <aside class="space-y-4 xl:sticky xl:top-6 xl:self-start">
-         <section class="rounded-[1.5rem] border bg-card p-5 shadow-xs">
+         <section class="bg-card rounded-[1.5rem] border p-5 shadow-xs">
             <div class="flex items-center gap-4">
                {#if tournament.logo?.trim()}
                   <img
@@ -637,13 +641,17 @@
                {/if}
 
                <div class="min-w-0">
-                  <p class="text-muted-foreground text-xs font-semibold uppercase tracking-[0.16em]">
+                  <p
+                     class="text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase"
+                  >
                      Tournament dashboard
                   </p>
                   <h1 class="mt-1 text-xl font-semibold tracking-[-0.03em]">
                      {tournament.name}
                   </h1>
-                  <p class="text-muted-foreground mt-1 text-sm">{tournament.id}</p>
+                  <p class="text-muted-foreground mt-1 text-sm">
+                     {tournament.id}
+                  </p>
                </div>
             </div>
 
@@ -666,8 +674,10 @@
             </Button>
          </section>
 
-         <section class="rounded-[1.5rem] border bg-card p-5 shadow-xs">
-            <p class="text-muted-foreground text-xs font-semibold uppercase tracking-[0.16em]">
+         <section class="bg-card rounded-[1.5rem] border p-5 shadow-xs">
+            <p
+               class="text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase"
+            >
                Snapshot
             </p>
             <div class="mt-4 space-y-4 text-sm">
@@ -678,7 +688,8 @@
                <div>
                   <p class="text-muted-foreground">Competition</p>
                   <p class="mt-1 font-medium">
-                     {tournament.teamSize}v{tournament.teamSize} with {tournament.lobbySize} slots
+                     {tournament.teamSize}v{tournament.teamSize} with {tournament.lobbySize}
+                     slots
                   </p>
                </div>
                <div>
@@ -694,34 +705,42 @@
       </aside>
 
       <div class="space-y-6">
-         <section class="rounded-[1.75rem] border bg-card p-6 shadow-xs">
+         <section class="bg-card rounded-[1.75rem] border p-6 shadow-xs">
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
                <div class="space-y-3">
-                  <p class="text-muted-foreground text-xs font-semibold uppercase tracking-[0.2em]">
+                  <p
+                     class="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase"
+                  >
                      Control room
                   </p>
-                  <h2 class="text-[clamp(1.85rem,3vw,3rem)] font-semibold tracking-[-0.04em]">
-                     Clean tournament management with public-facing polish built in.
+                  <h2
+                     class="text-[clamp(1.85rem,3vw,3rem)] font-semibold tracking-[-0.04em]"
+                  >
+                     Clean tournament management with public-facing polish built
+                     in.
                   </h2>
                   <p class="text-muted-foreground max-w-3xl leading-7">
-                     This dashboard separates operations from presentation. Use it to manage event identity, publishing, competitive settings, eligibility, branding, and Discord without touching the public page layout.
+                     This dashboard separates operations from presentation. Use
+                     it to manage event identity, publishing, competitive
+                     settings, eligibility, branding, and Discord without
+                     touching the public page layout.
                   </p>
                </div>
 
                <div class="grid gap-3 text-sm">
-                  <div class="rounded-2xl border bg-background px-4 py-3">
+                  <div class="bg-background rounded-2xl border px-4 py-3">
                      <p class="text-muted-foreground">Public guide</p>
                      <p class="mt-1 font-medium">
-                        {content.body.trim() ? "Published" : "Empty"}
+                        {content?.body?.trim() ? "Published" : "Empty"}
                      </p>
                   </div>
-                  <div class="rounded-2xl border bg-background px-4 py-3">
+                  <div class="bg-background rounded-2xl border px-4 py-3">
                      <p class="text-muted-foreground">Discord</p>
                      <p class="mt-1 font-medium">
                         {tournament.discord ? "Connected" : "Not configured"}
                      </p>
                   </div>
-                  <div class="rounded-2xl border bg-background px-4 py-3">
+                  <div class="bg-background rounded-2xl border px-4 py-3">
                      <p class="text-muted-foreground">Eligibility</p>
                      <p class="mt-1 font-medium">
                         {screeningRequirements ? "Configured" : "Open"}
@@ -736,8 +755,13 @@
             value={["identity", "schedule", "competition", "public-page"]}
             class="space-y-4"
          >
-            <Accordion.Item value="identity" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="identity"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Identity</p>
                      <p class="text-muted-foreground text-sm font-normal">
@@ -749,19 +773,35 @@
                   <div class="grid gap-4 md:grid-cols-2">
                      <label class="space-y-2">
                         <span class="field-label">Tournament name</span>
-                        <Input bind:value={identityDraft.name} disabled={!permissions.canManageDetails} />
+                        <Input
+                           bind:value={identityDraft.name}
+                           disabled={!permissions.canManageDetails}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Acronym</span>
-                        <Input bind:value={identityDraft.acronym} maxlength={6} disabled={!permissions.canManageDetails} />
+                        <Input
+                           bind:value={identityDraft.acronym}
+                           maxlength={6}
+                           disabled={!permissions.canManageDetails}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Rendition</span>
-                        <Input bind:value={identityDraft.rendition} inputmode="numeric" disabled={!permissions.canManageDetails} />
+                        <Input
+                           bind:value={identityDraft.rendition}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageDetails}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Logo URL</span>
-                        <Input bind:value={identityDraft.logo} type="url" placeholder="https://cdn.example.com/logo.png" disabled={!permissions.canManageDetails} />
+                        <Input
+                           bind:value={identityDraft.logo}
+                           type="url"
+                           placeholder="https://cdn.example.com/logo.png"
+                           disabled={!permissions.canManageDetails}
+                        />
                      </label>
                   </div>
 
@@ -783,21 +823,26 @@
                      </p>
                      <Button
                         onclick={saveIdentity}
-                        disabled={
-                           !permissions.canManageDetails ||
+                        disabled={!permissions.canManageDetails ||
                            savingSection === "identity" ||
                            signature(identityDraft) ===
-                              signature(createIdentityDraft(tournament))
-                        }
+                              signature(createIdentityDraft(tournament))}
                      >
-                        {savingSection === "identity" ? "Saving..." : "Save identity"}
+                        {savingSection === "identity"
+                           ? "Saving..."
+                           : "Save identity"}
                      </Button>
                   </div>
                </Accordion.Content>
             </Accordion.Item>
 
-            <Accordion.Item value="schedule" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="schedule"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Schedule and visibility</p>
                      <p class="text-muted-foreground text-sm font-normal">
@@ -809,24 +854,40 @@
                   <div class="grid gap-4 md:grid-cols-2">
                      <label class="space-y-2">
                         <span class="field-label">Start date</span>
-                        <Input bind:value={scheduleDraft.startDate} type="date" disabled={!permissions.canManageSchedule} />
+                        <Input
+                           bind:value={scheduleDraft.startDate}
+                           type="date"
+                           disabled={!permissions.canManageSchedule}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">End date</span>
-                        <Input bind:value={scheduleDraft.endDate} type="date" disabled={!permissions.canManageSchedule} />
+                        <Input
+                           bind:value={scheduleDraft.endDate}
+                           type="date"
+                           disabled={!permissions.canManageSchedule}
+                        />
                      </label>
                   </div>
 
-                  <div class="mt-5 rounded-2xl border bg-background p-4">
-                     <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div class="bg-background mt-5 rounded-2xl border p-4">
+                     <div
+                        class="flex flex-wrap items-center justify-between gap-3"
+                     >
                         <div>
                            <p class="field-label">Public listing</p>
                            <p class="text-muted-foreground mt-1 text-sm">
-                              Hidden tournaments stay accessible to staff but disappear from public browsing.
+                              Hidden tournaments stay accessible to staff but
+                              disappear from public browsing.
                            </p>
                         </div>
-                        <label class="flex items-center gap-3 text-sm font-medium">
-                           <Checkbox bind:checked={visibilityDraft.isPublic} disabled={!permissions.canManageVisibility} />
+                        <label
+                           class="flex items-center gap-3 text-sm font-medium"
+                        >
+                           <Checkbox
+                              bind:checked={visibilityDraft.isPublic}
+                              disabled={!permissions.canManageVisibility}
+                           />
                            Publicly visible
                         </label>
                      </div>
@@ -834,29 +895,28 @@
 
                   <div class="section-actions">
                      <p class="text-muted-foreground text-sm">
-                        Schedule updates require admin access. Public visibility requires host access.
+                        Schedule updates require admin access. Public visibility
+                        requires host access.
                      </p>
                      <div class="flex flex-wrap gap-3">
                         <Button
                            onclick={saveSchedule}
                            variant="outline"
-                           disabled={
-                              !permissions.canManageSchedule ||
+                           disabled={!permissions.canManageSchedule ||
                               savingSection === "schedule" ||
                               signature(scheduleDraft) ===
-                                 signature(createScheduleDraft(tournament))
-                           }
+                                 signature(createScheduleDraft(tournament))}
                         >
-                           {savingSection === "schedule" ? "Saving..." : "Save schedule"}
+                           {savingSection === "schedule"
+                              ? "Saving..."
+                              : "Save schedule"}
                         </Button>
                         <Button
                            onclick={saveVisibility}
-                           disabled={
-                              !permissions.canManageVisibility ||
+                           disabled={!permissions.canManageVisibility ||
                               savingSection === "visibility" ||
                               signature(visibilityDraft) ===
-                                 signature(createVisibilityDraft(tournament))
-                           }
+                                 signature(createVisibilityDraft(tournament))}
                         >
                            {savingSection === "visibility"
                               ? "Saving..."
@@ -867,12 +927,18 @@
                </Accordion.Content>
             </Accordion.Item>
 
-            <Accordion.Item value="competition" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="competition"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Competition and eligibility</p>
                      <p class="text-muted-foreground text-sm font-normal">
-                        Team sizing, rating gates, country limits, and BWS controls.
+                        Team sizing, rating gates, country limits, and BWS
+                        controls.
                      </p>
                   </div>
                </Accordion.Trigger>
@@ -880,41 +946,70 @@
                   <div class="grid gap-4 md:grid-cols-2">
                      <label class="space-y-2">
                         <span class="field-label">Team size</span>
-                        <Input bind:value={competitionDraft.teamSize} inputmode="numeric" disabled={!permissions.canManageSettings} />
+                        <Input
+                           bind:value={competitionDraft.teamSize}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageSettings}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Lobby size</span>
-                        <Input bind:value={competitionDraft.lobbySize} inputmode="numeric" disabled={!permissions.canManageSettings} />
+                        <Input
+                           bind:value={competitionDraft.lobbySize}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageSettings}
+                        />
                      </label>
                   </div>
 
                   <div class="mt-5 grid gap-4 md:grid-cols-2">
                      <label class="space-y-2">
                         <span class="field-label">Minimum rank</span>
-                        <Input bind:value={competitionDraft.minimumRank} inputmode="numeric" disabled={!permissions.canManageScreening} />
+                        <Input
+                           bind:value={competitionDraft.minimumRank}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageScreening}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Maximum rank</span>
-                        <Input bind:value={competitionDraft.maximumRank} inputmode="numeric" disabled={!permissions.canManageScreening} />
+                        <Input
+                           bind:value={competitionDraft.maximumRank}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageScreening}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Minimum OTR</span>
-                        <Input bind:value={competitionDraft.minimumRating} inputmode="numeric" disabled={!permissions.canManageScreening} />
+                        <Input
+                           bind:value={competitionDraft.minimumRating}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageScreening}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Maximum OTR</span>
-                        <Input bind:value={competitionDraft.maximumRating} inputmode="numeric" disabled={!permissions.canManageScreening} />
+                        <Input
+                           bind:value={competitionDraft.maximumRating}
+                           inputmode="numeric"
+                           disabled={!permissions.canManageScreening}
+                        />
                      </label>
                   </div>
 
                   <div class="mt-5 space-y-2">
                      <span class="field-label">Allowed countries</span>
-                     <CountryMultiSelect bind:value={competitionDraft.allowedCountries} />
+                     <CountryMultiSelect
+                        bind:value={competitionDraft.allowedCountries}
+                     />
                   </div>
 
-                  <div class="mt-5 rounded-2xl border bg-background p-4">
+                  <div class="bg-background mt-5 rounded-2xl border p-4">
                      <label class="flex items-center gap-3 text-sm font-medium">
-                        <Checkbox bind:checked={competitionDraft.useBws} disabled={!permissions.canManageScreening} />
+                        <Checkbox
+                           bind:checked={competitionDraft.useBws}
+                           disabled={!permissions.canManageScreening}
+                        />
                         Enable badge weighted seeding
                      </label>
 
@@ -922,11 +1017,19 @@
                         <div class="mt-4 grid gap-4 md:grid-cols-2">
                            <label class="space-y-2">
                               <span class="field-label">Minimum badges</span>
-                              <Input bind:value={competitionDraft.minimumBadges} inputmode="numeric" disabled={!permissions.canManageScreening} />
+                              <Input
+                                 bind:value={competitionDraft.minimumBadges}
+                                 inputmode="numeric"
+                                 disabled={!permissions.canManageScreening}
+                              />
                            </label>
                            <label class="space-y-2">
                               <span class="field-label">BWS exponent</span>
-                              <Input bind:value={competitionDraft.bwsExponent} inputmode="decimal" disabled={!permissions.canManageScreening} />
+                              <Input
+                                 bind:value={competitionDraft.bwsExponent}
+                                 inputmode="decimal"
+                                 disabled={!permissions.canManageScreening}
+                              />
                            </label>
                         </div>
                      {/if}
@@ -934,13 +1037,13 @@
 
                   <div class="section-actions">
                      <p class="text-muted-foreground text-sm">
-                        Empty rank and rating fields now clear the saved limits instead of leaving stale values behind.
+                        Empty rank and rating fields now clear the saved limits
+                        instead of leaving stale values behind.
                      </p>
                      <Button
                         onclick={saveCompetition}
-                        disabled={
-                           (!permissions.canManageSettings &&
-                              !permissions.canManageScreening) ||
+                        disabled={(!permissions.canManageSettings &&
+                           !permissions.canManageScreening) ||
                            savingSection === "competition" ||
                            signature(competitionDraft) ===
                               signature(
@@ -948,8 +1051,7 @@
                                     tournament,
                                     screeningRequirements,
                                  ),
-                              )
-                        }
+                              )}
                      >
                         {savingSection === "competition"
                            ? "Saving..."
@@ -959,12 +1061,18 @@
                </Accordion.Content>
             </Accordion.Item>
 
-            <Accordion.Item value="public-page" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="public-page"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Public page</p>
                      <p class="text-muted-foreground text-sm font-normal">
-                        Guide content, typography, and tournament-scoped color tokens.
+                        Guide content, typography, and tournament-scoped color
+                        tokens.
                      </p>
                   </div>
                </Accordion.Trigger>
@@ -973,16 +1081,22 @@
                      class="rounded-[1.5rem] border p-5"
                      style={previewScopeStyle}
                   >
-                     <div class="flex flex-wrap items-center justify-between gap-4">
+                     <div
+                        class="flex flex-wrap items-center justify-between gap-4"
+                     >
                         <div class="space-y-1">
-                           <p class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+                           <p
+                              class="text-[0.72rem] font-semibold tracking-[0.16em] text-[hsl(var(--t-mutedForeground))] uppercase"
+                           >
                               Preview scope
                            </p>
                            <p class="text-xl font-semibold tracking-[-0.03em]">
                               {tournament.name}
                            </p>
                         </div>
-                        <span class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[hsl(var(--t-mutedForeground))]">
+                        <span
+                           class="rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.14em] text-[hsl(var(--t-mutedForeground))] uppercase"
+                        >
                            {contentDraft.fontFamily.trim() || "App typography"}
                         </span>
                      </div>
@@ -1014,7 +1128,7 @@
                   <div class="mt-5">
                      <MarkdownEditor
                         bind:value={contentDraft.body}
-                        previewHtml={content.renderedBody}
+                        previewHtml={content?.renderedBody}
                         placeholder="Publish rules, registration notes, schedule detail, and format specifics here."
                         previewPlaceholder="Public page preview"
                         writeLabel="Write"
@@ -1023,36 +1137,47 @@
                         dropLabel="Drop images, video, or audio files here"
                         onPreviewRequest={previewTournamentMarkdown}
                         onUploadFiles={async ({ files }: { files: File[] }) =>
-                           await uploadTournamentMarkdownFiles(tournament.id, files)}
-                        disabled={!permissions.canManageContent || savingSection === "content"}
+                           await uploadTournamentMarkdownFiles(
+                              tournament.id,
+                              files,
+                           )}
+                        disabled={!permissions.canManageContent ||
+                           savingSection === "content"}
                      />
                   </div>
 
                   <div class="section-actions">
                      <p class="text-muted-foreground text-sm">
-                        This content feeds the accordion-based public tournament page.
+                        This content feeds the accordion-based public tournament
+                        page.
                      </p>
                      <Button
                         onclick={saveContent}
-                        disabled={
-                           !permissions.canManageContent ||
+                        disabled={!permissions.canManageContent ||
                            savingSection === "content" ||
                            signature(contentDraft) ===
-                              signature(createContentDraft(content))
-                        }
+                              signature(createContentDraft(content))}
                      >
-                        {savingSection === "content" ? "Saving..." : "Save public page"}
+                        {savingSection === "content"
+                           ? "Saving..."
+                           : "Save public page"}
                      </Button>
                   </div>
                </Accordion.Content>
             </Accordion.Item>
 
-            <Accordion.Item value="discord" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="discord"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Discord integration</p>
                      <p class="text-muted-foreground text-sm font-normal">
-                        Guild, announcement channels, and tournament role mapping.
+                        Guild, announcement channels, and tournament role
+                        mapping.
                      </p>
                   </div>
                </Accordion.Trigger>
@@ -1060,15 +1185,24 @@
                   <div class="grid gap-4 md:grid-cols-2">
                      <label class="space-y-2">
                         <span class="field-label">Server ID</span>
-                        <Input bind:value={discordDraft.serverId} disabled={!permissions.canManageDiscord} />
+                        <Input
+                           bind:value={discordDraft.serverId}
+                           disabled={!permissions.canManageDiscord}
+                        />
                      </label>
                      <label class="space-y-2">
                         <span class="field-label">Match results channel</span>
-                        <Input bind:value={discordDraft.matchResults} disabled={!permissions.canManageDiscord} />
+                        <Input
+                           bind:value={discordDraft.matchResults}
+                           disabled={!permissions.canManageDiscord}
+                        />
                      </label>
                      <label class="space-y-2 md:col-span-2">
                         <span class="field-label">Match pings channel</span>
-                        <Input bind:value={discordDraft.matchPings} disabled={!permissions.canManageDiscord} />
+                        <Input
+                           bind:value={discordDraft.matchPings}
+                           disabled={!permissions.canManageDiscord}
+                        />
                      </label>
                   </div>
 
@@ -1076,32 +1210,41 @@
                      {#each discordRoleOrder as role (role)}
                         <label class="space-y-2">
                            <span class="field-label">{role} role ID</span>
-                           <Input bind:value={discordDraft.roles[role]} disabled={!permissions.canManageDiscord} />
+                           <Input
+                              bind:value={discordDraft.roles[role]}
+                              disabled={!permissions.canManageDiscord}
+                           />
                         </label>
                      {/each}
                   </div>
 
                   <div class="section-actions">
                      <p class="text-muted-foreground text-sm">
-                        Leave every field empty to remove the Discord integration entirely.
+                        Leave every field empty to remove the Discord
+                        integration entirely.
                      </p>
                      <Button
                         onclick={saveDiscord}
-                        disabled={
-                           !permissions.canManageDiscord ||
+                        disabled={!permissions.canManageDiscord ||
                            savingSection === "discord" ||
                            signature(discordDraft) ===
-                              signature(createDiscordDraft(tournament.discord))
-                        }
+                              signature(createDiscordDraft(tournament.discord))}
                      >
-                        {savingSection === "discord" ? "Saving..." : "Save Discord config"}
+                        {savingSection === "discord"
+                           ? "Saving..."
+                           : "Save Discord config"}
                      </Button>
                   </div>
                </Accordion.Content>
             </Accordion.Item>
 
-            <Accordion.Item value="danger" class="rounded-[1.5rem] border bg-card px-6 shadow-xs">
-               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+            <Accordion.Item
+               value="danger"
+               class="bg-card rounded-[1.5rem] border px-6 shadow-xs"
+            >
+               <Accordion.Trigger
+                  class="py-5 text-base font-semibold no-underline hover:no-underline"
+               >
                   <div class="space-y-1">
                      <p>Archive</p>
                      <p class="text-muted-foreground text-sm font-normal">
@@ -1110,20 +1253,22 @@
                   </div>
                </Accordion.Trigger>
                <Accordion.Content class="pb-6">
-                  <div class="rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
+                  <div
+                     class="border-destructive/30 bg-destructive/5 rounded-2xl border p-4"
+                  >
                      <p class="font-medium">Archive tournament</p>
                      <p class="text-muted-foreground mt-1 text-sm leading-6">
-                        Archiving marks the tournament read-only. It stays visible, but it should no longer be treated as an active workflow.
+                        Archiving marks the tournament read-only. It stays
+                        visible, but it should no longer be treated as an active
+                        workflow.
                      </p>
                      <div class="mt-4">
                         <Button
                            variant="destructive"
                            onclick={archiveTournament}
-                           disabled={
-                              !permissions.canManageArchive ||
+                           disabled={!permissions.canManageArchive ||
                               tournament.isArchived ||
-                              savingSection === "archive"
-                           }
+                              savingSection === "archive"}
                         >
                            {tournament.isArchived
                               ? "Already archived"
