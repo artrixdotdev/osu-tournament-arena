@@ -306,12 +306,25 @@ export class S3Storage {
     * Returns a public URL for an object.
     *
     * Uses `publicUrl` when provided, otherwise derives from the S3 endpoint.
+    * This is intended for objects that are publicly readable.
     */
    getPublicUrl(bucket: StorageBucketKey, key: string): string {
       const bucketName = this.getBucketName(bucket);
 
       if (this.config.publicUrl) {
          const base = this.config.publicUrl.replace(/\/$/, "");
+         try {
+            const url = new URL(base);
+            if (
+               url.hostname === bucketName ||
+               url.hostname.startsWith(`${bucketName}.`)
+            ) {
+               return `${base}/${key}`;
+            }
+         } catch {
+            // Ignore invalid absolute URL parsing and fall back to path-style.
+         }
+
          return `${base}/${bucketName}/${key}`;
       }
 
