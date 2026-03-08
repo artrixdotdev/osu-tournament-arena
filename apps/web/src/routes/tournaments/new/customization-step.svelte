@@ -1,56 +1,23 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
-   import { client } from "$lib/orpc";
-   import { toast } from "svelte-sonner";
+   import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
+   import {
+      previewTournamentMarkdown,
+      uploadTournamentMarkdownFiles,
+   } from "$lib/tournament-content";
+   import { TOURNAMENT_FONT_OPTIONS } from "$lib/tournament-theme";
    import { defaults, superForm } from "sveltekit-superforms";
    import { zod4, zod4Client } from "sveltekit-superforms/adapters";
    import { z } from "zod/v4";
 
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
-   import { Input } from "@ota/ui/components/input/index.ts";
-   import { Textarea } from "@ota/ui/components/textarea/index.ts";
-
-   const hslColorSchema = z
-      .string()
-      .trim()
-      .regex(
-         /^\d{1,3}(?:\.\d+)?\s+\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/,
-         m.tournamentCreate_errors_invalidThemeColor(),
-      );
+   import { MarkdownEditor } from "@ota/ui/components/markdown-editor/index.ts";
 
    const customizationSchema = z.object({
       body: z.string(),
       fontFamily: z.string(),
-      background: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      foreground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      card: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      cardForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      primary: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      primaryForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      secondary: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      secondaryForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      muted: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      mutedForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      accent: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      accentForeground: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      border: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      input: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
-      ring: z.string().trim().refine((value) => !value || hslColorSchema.safeParse(value).success, m.tournamentCreate_errors_invalidThemeColor()),
    });
-
-   const GOOGLE_FONT_OPTIONS = [
-      "Inter",
-      "Manrope",
-      "Poppins",
-      "Space Grotesk",
-      "Merriweather",
-      "Bebas Neue",
-      "IBM Plex Sans",
-      "Roboto Slab",
-      "Archivo",
-      "Nunito Sans",
-   ] as const;
 
    interface Props {
       tournamentId: string;
@@ -60,23 +27,7 @@
       onSubmit: (payload: {
          body?: string;
          fontFamily?: string | null;
-         themeColors?: {
-            background?: string;
-            foreground?: string;
-            card?: string;
-            cardForeground?: string;
-            primary?: string;
-            primaryForeground?: string;
-            secondary?: string;
-            secondaryForeground?: string;
-            muted?: string;
-            mutedForeground?: string;
-            accent?: string;
-            accentForeground?: string;
-            border?: string;
-            input?: string;
-            ring?: string;
-         } | null;
+         themeColors?: Record<string, string> | null;
       }) => Promise<void>;
    }
 
@@ -93,21 +44,6 @@
          {
             body: "",
             fontFamily: "",
-            background: "",
-            foreground: "",
-            card: "",
-            cardForeground: "",
-            primary: "",
-            primaryForeground: "",
-            secondary: "",
-            secondaryForeground: "",
-            muted: "",
-            mutedForeground: "",
-            accent: "",
-            accentForeground: "",
-            border: "",
-            input: "",
-            ring: "",
          },
          zod4(customizationSchema),
       ),
@@ -119,91 +55,13 @@
 
    const { form: formData, validateForm } = customizationForm;
 
-   let mediaUploading = $state(false);
-   const mediaInputId = "tournament-media-upload-input";
-
-   function appendMarkdown(snippet: string) {
-      const body = $formData.body.trim();
-      $formData.body = body ? `${body}\n\n${snippet}` : snippet;
-   }
-
-   async function handleMediaUpload(event: Event) {
-      const input = event.currentTarget as HTMLInputElement;
-      const file = input.files?.[0];
-      if (!file || mediaUploading) {
-         return;
-      }
-
-      if (file.size > 4 * 1024 * 1024) {
-         toast.error(m.tournamentCreate_errors_mediaTooLarge());
-         input.value = "";
-         return;
-      }
-
-      mediaUploading = true;
-      try {
-         const upload = await client.tournament.createContentMediaUpload({
-            id: tournamentId,
-            fileName: file.name,
-            contentType: file.type || "application/octet-stream",
-            sizeBytes: file.size,
-         });
-
-         const response = await fetch(upload.uploadUrl, {
-            method: "PUT",
-            body: file,
-            headers: {
-               "Content-Type": file.type,
-            },
-         });
-
-         if (!response.ok) {
-            throw new Error(`Upload failed with status ${response.status}`);
-         }
-
-         if (file.type.startsWith("image/")) {
-            appendMarkdown(`![${file.name}](${upload.publicUrl})`);
-         } else if (file.type.startsWith("video/")) {
-            appendMarkdown(`<video controls src="${upload.publicUrl}"></video>`);
-         } else if (file.type.startsWith("audio/")) {
-            appendMarkdown(`<audio controls src="${upload.publicUrl}"></audio>`);
-         } else {
-            appendMarkdown(`[${file.name}](${upload.publicUrl})`);
-         }
-
-         toast.success(m.tournamentCreate_success_mediaUploaded());
-      } catch (error) {
-         console.error("Failed to upload tournament media:", error);
-         toast.error(m.tournamentCreate_errors_mediaUploadFailed());
-      } finally {
-         mediaUploading = false;
-         input.value = "";
-      }
-   }
+   let themeColors = $state<Record<string, string>>({});
 
    async function handleSubmit() {
       const validation = await validateForm({ update: true });
       if (!validation.valid) {
          return;
       }
-
-      const themeColors = {
-         background: validation.data.background || undefined,
-         foreground: validation.data.foreground || undefined,
-         card: validation.data.card || undefined,
-         cardForeground: validation.data.cardForeground || undefined,
-         primary: validation.data.primary || undefined,
-         primaryForeground: validation.data.primaryForeground || undefined,
-         secondary: validation.data.secondary || undefined,
-         secondaryForeground: validation.data.secondaryForeground || undefined,
-         muted: validation.data.muted || undefined,
-         mutedForeground: validation.data.mutedForeground || undefined,
-         accent: validation.data.accent || undefined,
-         accentForeground: validation.data.accentForeground || undefined,
-         border: validation.data.border || undefined,
-         input: validation.data.input || undefined,
-         ring: validation.data.ring || undefined,
-      };
 
       const hasThemeColors = Object.values(themeColors).some(Boolean);
 
@@ -231,207 +89,78 @@
       void handleSubmit();
    }}
 >
-   <Form.Field form={customizationForm} name="fontFamily">
-      <Form.Control>
-         <div class="space-y-2">
-            <Form.Label>{m.tournamentCreate_fields_fontFamily()}</Form.Label>
-            <select
-               class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-               bind:value={$formData.fontFamily}
-            >
-               <option value="">{m.common_optional()}</option>
-               {#each GOOGLE_FONT_OPTIONS as font (font)}
-                  <option value={font}>{font}</option>
-               {/each}
-            </select>
-            <Form.FieldErrors />
-         </div>
-      </Form.Control>
-   </Form.Field>
-
-   <Form.Field form={customizationForm} name="body">
-      <Form.Control>
-         <div class="space-y-2">
-            <Form.Label>{m.tournamentCreate_fields_pageBody()}</Form.Label>
-            <Textarea
-               rows={12}
-               placeholder={m.tournamentCreate_help_pageBody()}
-               bind:value={$formData.body}
-            />
+   <details class="group rounded-xl border" open>
+      <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3">
+         <div>
+            <p class="text-sm font-medium">Content</p>
             <p class="text-muted-foreground text-xs">
-               {m.tournamentCreate_hints_markdownMedia()}
+               Body copy, embeds, and page copywriting.
             </p>
-            <Form.FieldErrors />
          </div>
-      </Form.Control>
-   </Form.Field>
+         <span class="text-muted-foreground text-xs transition-transform group-open:rotate-180">
+            v
+         </span>
+      </summary>
 
-   <div class="space-y-2">
-      <label class="text-sm font-medium" for={mediaInputId}>
-         {m.tournamentCreate_fields_mediaUpload()}
-      </label>
-      <Input
-         id={mediaInputId}
-         type="file"
-         accept="image/*,video/*,audio/*"
-         onchange={handleMediaUpload}
-      />
-      <p class="text-muted-foreground text-xs">
-         {m.tournamentCreate_help_mediaUpload()}
-      </p>
-   </div>
+      <div class="space-y-3 border-t px-4 py-4">
+         <Form.Field form={customizationForm} name="body">
+            <Form.Control>
+               <div class="space-y-2">
+                  <Form.Label>{m.tournamentCreate_fields_pageBody()}</Form.Label>
+                  <MarkdownEditor
+                     bind:value={$formData.body}
+                     placeholder={m.tournamentCreate_help_pageBody()}
+                     previewPlaceholder={m.tournamentCreate_help_pageBody()}
+                     writeLabel={m.common_write()}
+                     previewLabel={m.common_preview()}
+                     uploadLabel={m.common_upload()}
+                     dropLabel={m.tournamentCreate_hints_markdownMedia()}
+                     onPreviewRequest={previewTournamentMarkdown}
+                     onUploadFiles={async ({ files }: { files: File[] }) =>
+                        await uploadTournamentMarkdownFiles(tournamentId, files)}
+                  />
+                  <Form.FieldErrors />
+               </div>
+            </Form.Control>
+         </Form.Field>
+      </div>
+   </details>
 
-   <div class="grid gap-4 sm:grid-cols-2">
-      <Form.Field form={customizationForm} name="background">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themeBackground()}</Form.Label>
-               <Input placeholder="210 40% 98%" bind:value={$formData.background} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
+   <details class="group rounded-xl border">
+      <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3">
+         <div>
+            <p class="text-sm font-medium">Appearance</p>
+            <p class="text-muted-foreground text-xs">
+               Font and theme overrides for the tournament page.
+            </p>
+         </div>
+         <span class="text-muted-foreground text-xs transition-transform group-open:rotate-180">
+            v
+         </span>
+      </summary>
 
-      <Form.Field form={customizationForm} name="foreground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themeForeground()}</Form.Label>
-               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.foreground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
+      <div class="space-y-4 border-t px-4 py-4">
+         <Form.Field form={customizationForm} name="fontFamily">
+            <Form.Control>
+               <div class="space-y-2">
+                  <Form.Label>{m.tournamentCreate_fields_fontFamily()}</Form.Label>
+                  <select
+                     class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                     bind:value={$formData.fontFamily}
+                  >
+                     <option value="">{m.common_optional()}</option>
+                     {#each TOURNAMENT_FONT_OPTIONS as font (font)}
+                        <option value={font}>{font}</option>
+                     {/each}
+                  </select>
+                  <Form.FieldErrors />
+               </div>
+            </Form.Control>
+         </Form.Field>
 
-      <Form.Field form={customizationForm} name="primary">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themePrimary()}</Form.Label>
-               <Input placeholder="221.2 83.2% 53.3%" bind:value={$formData.primary} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="card">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Card</Form.Label>
-               <Input placeholder="0 0% 100%" bind:value={$formData.card} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="primaryForeground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themePrimaryForeground()}</Form.Label>
-               <Input placeholder="210 40% 98%" bind:value={$formData.primaryForeground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="accent">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themeAccent()}</Form.Label>
-               <Input placeholder="210 40% 96.1%" bind:value={$formData.accent} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="secondary">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Secondary</Form.Label>
-               <Input placeholder="210 40% 96.1%" bind:value={$formData.secondary} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="accentForeground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>{m.tournamentCreate_fields_themeAccentForeground()}</Form.Label>
-               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.accentForeground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="cardForeground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Card Foreground</Form.Label>
-               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.cardForeground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="secondaryForeground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Secondary Foreground</Form.Label>
-               <Input placeholder="222.2 47.4% 11.2%" bind:value={$formData.secondaryForeground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="muted">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Muted</Form.Label>
-               <Input placeholder="210 40% 96.1%" bind:value={$formData.muted} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="mutedForeground">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Muted Foreground</Form.Label>
-               <Input placeholder="215.4 16.3% 46.9%" bind:value={$formData.mutedForeground} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="border">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Border</Form.Label>
-               <Input placeholder="214.3 31.8% 91.4%" bind:value={$formData.border} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="input">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Input</Form.Label>
-               <Input placeholder="214.3 31.8% 91.4%" bind:value={$formData.input} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-
-      <Form.Field form={customizationForm} name="ring">
-         <Form.Control>
-            <div class="space-y-2">
-               <Form.Label>Ring</Form.Label>
-               <Input placeholder="221.2 83.2% 53.3%" bind:value={$formData.ring} />
-               <Form.FieldErrors />
-            </div>
-         </Form.Control>
-      </Form.Field>
-   </div>
+         <TournamentThemeFields bind:value={themeColors} disabled={submitting} />
+      </div>
+   </details>
 
    <div class="flex items-center justify-between">
       <Button variant="outline" onclick={onBack} type="button">
@@ -442,8 +171,8 @@
          <Button variant="outline" onclick={onSkip} type="button">
             {m.common_skip()}
          </Button>
-         <Button type="submit" disabled={submitting || mediaUploading}>
-            {#if submitting || mediaUploading}
+         <Button type="submit" disabled={submitting}>
+            {#if submitting}
                {m.common_loading()}
             {:else}
                {m.common_next()}

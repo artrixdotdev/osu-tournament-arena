@@ -87,12 +87,14 @@ const baseRankSchema = z.object({
       .number()
       .int()
       .positive()
+      .nullable()
       .optional()
       .describe("Minimum osu! rank allowed (inclusive)"),
    maximumRank: z
       .number()
       .int()
       .positive()
+      .nullable()
       .optional()
       .describe("Maximum osu! rank allowed (inclusive)"),
 });
@@ -101,11 +103,13 @@ const baseRatingSchema = z.object({
    minimumRating: z
       .number()
       .int()
+      .nullable()
       .optional()
       .describe("Minimum OTR (osu! Tournament Rating) allowed (inclusive)"),
    maximumRating: z
       .number()
       .int()
+      .nullable()
       .optional()
       .describe("Maximum OTR (osu! Tournament Rating) allowed (inclusive)"),
 });
@@ -235,6 +239,7 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
             .number()
             .int()
             .min(0)
+            .nullable()
             .optional()
             .describe("Minimum badge count required for BWS seeding"),
          bwsExponent: z
@@ -249,15 +254,15 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
    .extend(baseRatingSchema.shape)
    .refine(
       (data) =>
-         data.minimumRank === undefined ||
-         data.maximumRank === undefined ||
+         data.minimumRank == null ||
+         data.maximumRank == null ||
          data.minimumRank <= data.maximumRank,
       { message: "minimumRank must be less than or equal to maximumRank" },
    )
    .refine(
       (data) =>
-         data.minimumRating === undefined ||
-         data.maximumRating === undefined ||
+         data.minimumRating == null ||
+         data.maximumRating == null ||
          data.minimumRating <= data.maximumRating,
       { message: "minimumRating must be less than or equal to maximumRating" },
    );
@@ -304,6 +309,13 @@ export const createTournamentMediaUploadSchema = baseIdSchema.extend({
       .describe("File size in bytes (max 4 MB)"),
 });
 
+export const previewTournamentMarkdownSchema = z.object({
+   body: z
+      .string()
+      .max(TOURNAMENT_BODY_MAX_LENGTH)
+      .describe("Markdown body to preview"),
+});
+
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;
 export type UpdateTournamentInput = z.infer<typeof updateTournamentSchema>;
 export type TournamentIdInput = z.infer<typeof tournamentIdSchema>;
@@ -331,4 +343,7 @@ export type UpdateTournamentContentInput = z.infer<
 >;
 export type CreateTournamentMediaUploadInput = z.infer<
    typeof createTournamentMediaUploadSchema
+>;
+export type PreviewTournamentMarkdownInput = z.infer<
+   typeof previewTournamentMarkdownSchema
 >;

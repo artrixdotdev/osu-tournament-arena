@@ -12,7 +12,7 @@ import { base } from "../orpc";
  * Lower index = higher privilege.
  * A user with a role can perform actions requiring any role at or above their level.
  */
-const ROLE_HIERARCHY: StaffRole[] = [
+export const ROLE_HIERARCHY: StaffRole[] = [
    StaffRole.HOST,
    StaffRole.ADMIN,
    StaffRole.POOLER,
@@ -24,7 +24,7 @@ const ROLE_HIERARCHY: StaffRole[] = [
 /**
  * Checks if the user's role has sufficient permissions for the required role.
  */
-function hasRolePermission(
+export function hasRolePermission(
    userRoles: StaffRole[],
    requiredRole: StaffRole,
 ): boolean {

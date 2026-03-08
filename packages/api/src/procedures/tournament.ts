@@ -16,6 +16,7 @@ import {
 import { createS3Storage } from "@ota/storage";
 import {
    createTournamentMediaUploadSchema,
+   previewTournamentMarkdownSchema,
    createTournamentSchema,
    tournamentIdSchema,
    tournamentListSchema,
@@ -28,7 +29,11 @@ import {
    updateTournamentVisibilitySchema,
 } from "@ota/validators/tournament";
 
-import { requireAdmin, requireHost } from "../middleware/staff";
+import {
+   hasRolePermission,
+   requireAdmin,
+   requireHost,
+} from "../middleware/staff";
 import { authorized, base } from "../orpc";
 import { renderSafeTournamentMarkdown } from "../utils/tournament-content";
 
@@ -67,6 +72,16 @@ async function getTournamentContentById(id: string) {
       .limit(1);
 
    return content ?? null;
+}
+
+async function getTournamentScreeningRequirementsById(id: string) {
+   const [screeningRequirements] = await db
+      .select()
+      .from(screeningRequirementsTable)
+      .where(eq(screeningRequirementsTable.tournamentId, id))
+      .limit(1);
+
+   return screeningRequirements ?? null;
 }
 
 /**
@@ -283,6 +298,68 @@ export const tournamentProcedures = {
             },
          };
       }),
+
+   getDashboard: authorized.input(tournamentIdSchema).handler(async ({
+      context,
+      input,
+   }) => {
+      const tournament = await getTournamentById(input.id);
+
+      if (!tournament) {
+         throw new ORPCError("NOT_FOUND", {
+            message: "Tournament not found",
+         });
+      }
+
+      const [staffRecord] = await db
+         .select({
+            roles: staff.roles,
+         })
+         .from(staff)
+         .where(
+            and(
+               eq(staff.tournamentId, input.id),
+               eq(staff.userId, context.user.id),
+            ),
+         )
+         .limit(1);
+
+      if (!staffRecord) {
+         throw new ORPCError("FORBIDDEN", {
+            message: "User is not a staff member of this tournament",
+         });
+      }
+
+      const content = await getTournamentContentById(input.id);
+      const screeningRequirements =
+         await getTournamentScreeningRequirementsById(input.id);
+      const body = content?.body ?? "";
+      const roles = staffRecord.roles;
+
+      return {
+         tournament,
+         staff: {
+            roles,
+         },
+         permissions: {
+            canManageDetails: hasRolePermission(roles, StaffRole.ADMIN),
+            canManageSchedule: hasRolePermission(roles, StaffRole.ADMIN),
+            canManageDiscord: hasRolePermission(roles, StaffRole.ADMIN),
+            canManageContent: hasRolePermission(roles, StaffRole.ADMIN),
+            canManageArchive: hasRolePermission(roles, StaffRole.ADMIN),
+            canManageSettings: hasRolePermission(roles, StaffRole.HOST),
+            canManageScreening: hasRolePermission(roles, StaffRole.HOST),
+            canManageVisibility: hasRolePermission(roles, StaffRole.HOST),
+         },
+         content: {
+            body,
+            renderedBody: await renderSafeTournamentMarkdown(body),
+            fontFamily: content?.fontFamily ?? null,
+            themeColors: content?.themeColors ?? null,
+         },
+         screeningRequirements,
+      };
+   }),
 
    /**
     * Lists public tournaments with pagination.
@@ -905,6 +982,14 @@ export const tournamentProcedures = {
             publicUrl,
             maxSizeBytes: 4 * 1024 * 1024,
             contentType: input.contentType,
+         };
+      }),
+
+   previewContentMarkdown: authorized
+      .input(previewTournamentMarkdownSchema)
+      .handler(async ({ input }) => {
+         return {
+            renderedBody: await renderSafeTournamentMarkdown(input.body),
          };
       }),
 

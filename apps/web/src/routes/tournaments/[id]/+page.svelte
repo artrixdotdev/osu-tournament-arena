@@ -1,370 +1,289 @@
 <script lang="ts">
-   import { m } from "$i18n/messages";
-   import { client } from "$lib/orpc";
-   import { toast } from "svelte-sonner";
+   import {
+      CalendarIcon,
+      MeetingRoomIcon,
+      SquareLock01Icon,
+      SquareUnlock01Icon,
+      UserGroupIcon,
+   } from "@hugeicons/core-free-icons";
+   import { HugeiconsIcon } from "@hugeicons/svelte";
+
+   import {
+      formatTournamentDateRange,
+      getTournamentFontHref,
+      getTournamentInitials,
+      getTournamentScopeStyle,
+      getTournamentWindowLabel,
+   } from "$lib/tournament-ui";
 
    import { Button } from "@ota/ui/components/button/index.ts";
-   import { Input } from "@ota/ui/components/input/index.ts";
-   import { Textarea } from "@ota/ui/components/textarea/index.ts";
+   import * as Accordion from "@ota/ui/components/accordion/index.ts";
 
    import type { PageData } from "./$types";
 
    let { data }: { data: PageData } = $props();
 
-   const GOOGLE_FONT_OPTIONS = [
-      "Inter",
-      "Manrope",
-      "Poppins",
-      "Space Grotesk",
-      "Merriweather",
-      "Bebas Neue",
-      "IBM Plex Sans",
-      "Roboto Slab",
-      "Archivo",
-      "Nunito Sans",
-   ] as const;
-
-   const THEME_KEYS = [
-      "background",
-      "foreground",
-      "card",
-      "cardForeground",
-      "primary",
-      "primaryForeground",
-      "secondary",
-      "secondaryForeground",
-      "muted",
-      "mutedForeground",
-      "accent",
-      "accentForeground",
-      "border",
-      "input",
-      "ring",
-   ] as const;
-
-   let editing = $state(false);
-   let saving = $state(false);
-   let uploading = $state(false);
-
-   const initialBody = data.content.body;
-   const initialRenderedBody = data.content.renderedBody;
-   const initialFontFamily = data.content.fontFamily ?? "";
-   const initialLogo = data.tournament.logo ?? "";
-   const initialThemeColors = {
-      ...(data.content.themeColors ?? {}),
-   };
-
-   let body = $state(initialBody);
-   let renderedBody = $state(initialRenderedBody);
-   let fontFamily = $state(initialFontFamily);
-   let logo = $state(initialLogo);
-   let themeColors = $state<Record<string, string>>(initialThemeColors);
-
-   let bodyDraft = $state(initialBody);
-   let fontFamilyDraft = $state(initialFontFamily);
-   let logoDraft = $state(initialLogo);
-   let themeDraft = $state<Record<string, string>>(initialThemeColors);
-
-   const mediaInputId = "tournament-page-media-upload";
-
-   const activeFont = $derived(editing ? fontFamilyDraft : fontFamily);
-   const activeTheme = $derived(editing ? themeDraft : themeColors);
-   const activeLogo = $derived(editing ? logoDraft : logo);
-
-   const fontHref = $derived.by(() => {
-      if (!activeFont) {
-         return null;
-      }
-
-      const family = activeFont.trim();
-      if (!family) {
-         return null;
-      }
-
-      return `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family).replace(/%20/g, "+")}:wght@400;500;600;700&display=swap`;
-   });
-
-   const scopeStyle = $derived.by(() => {
-      const styles: string[] = [];
-
-      for (const [key, value] of Object.entries(activeTheme)) {
-         const token = value?.trim();
-         if (!token) {
-            continue;
-         }
-         styles.push(`--t-${key}:${token};`);
-      }
-
-      if (activeFont?.trim()) {
-         const escapedFont = activeFont.trim().replace(/'/g, "\\'");
-         styles.push(`--t-font:'${escapedFont}', sans-serif;`);
-      }
-
-      return styles.join(" ");
-   });
-
-   const tournamentInitials = $derived.by(() => {
-      const acronym = data.tournament.acronym?.trim();
-      if (acronym) {
-         return acronym.slice(0, 2).toUpperCase();
-      }
-
-      return data.tournament.name
-         .split(/\s+/)
-         .filter(Boolean)
-         .slice(0, 2)
-         .map((part) => part[0]?.toUpperCase() ?? "")
-         .join("");
-   });
-
-   function startEditing() {
-      bodyDraft = body;
-      fontFamilyDraft = fontFamily;
-      logoDraft = logo;
-      themeDraft = { ...themeColors };
-      editing = true;
-   }
-
-   function cancelEditing() {
-      editing = false;
-   }
-
-   function normalizeThemeInput(input: Record<string, string>) {
-      const normalized: Record<string, string> = {};
-
-      for (const key of THEME_KEYS) {
-         const value = input[key]?.trim();
-         if (value) {
-            normalized[key] = value;
-         }
-      }
-
-      return normalized;
-   }
-
-   async function savePage() {
-      if (saving) {
-         return;
-      }
-
-      saving = true;
-
-      try {
-         const normalizedTheme = normalizeThemeInput(themeDraft);
-
-         const [contentResult, detailsResult] = await Promise.all([
-            client.tournament.updateContent({
-               id: data.tournament.id,
-               body: bodyDraft,
-               fontFamily: fontFamilyDraft.trim() || null,
-               themeColors:
-                  Object.keys(normalizedTheme).length > 0 ? normalizedTheme : null,
-            }),
-            client.tournament.updateDetails({
-               id: data.tournament.id,
-               logo: logoDraft.trim() || null,
-            }),
-         ]);
-
-         if (!contentResult.updated || !detailsResult.updated) {
-            throw new Error("Update failed");
-         }
-
-         body = contentResult.content.body;
-         renderedBody = contentResult.content.renderedBody;
-         fontFamily = contentResult.content.fontFamily ?? "";
-         themeColors = {
-            ...((contentResult.content.themeColors as Record<string, string> | null) ?? {}),
-         };
-         logo = detailsResult.tournament.logo ?? "";
-         editing = false;
-         toast.success("Tournament page updated");
-      } catch (error) {
-         console.error("Failed to update tournament page:", error);
-         toast.error("Failed to update tournament page");
-      } finally {
-         saving = false;
-      }
-   }
-
-   function appendMarkdown(snippet: string) {
-      const trimmed = bodyDraft.trim();
-      bodyDraft = trimmed ? `${trimmed}\n\n${snippet}` : snippet;
-   }
-
-   async function handleMediaUpload(event: Event) {
-      const input = event.currentTarget as HTMLInputElement;
-      const file = input.files?.[0];
-      if (!file || uploading) {
-         return;
-      }
-
-      if (file.size > 4 * 1024 * 1024) {
-         toast.error("File must be 4 MB or smaller");
-         input.value = "";
-         return;
-      }
-
-      uploading = true;
-      try {
-         const upload = await client.tournament.createContentMediaUpload({
-            id: data.tournament.id,
-            fileName: file.name,
-            contentType: file.type || "application/octet-stream",
-            sizeBytes: file.size,
-         });
-
-         const response = await fetch(upload.uploadUrl, {
-            method: "PUT",
-            body: file,
-            headers: {
-               "Content-Type": file.type,
-            },
-         });
-
-         if (!response.ok) {
-            throw new Error(`Upload failed with status ${response.status}`);
-         }
-
-         if (file.type.startsWith("image/")) {
-            appendMarkdown(`![${file.name}](${upload.publicUrl})`);
-         } else if (file.type.startsWith("video/")) {
-            appendMarkdown(`<video controls src="${upload.publicUrl}"></video>`);
-         } else if (file.type.startsWith("audio/")) {
-            appendMarkdown(`<audio controls src="${upload.publicUrl}"></audio>`);
-         } else {
-            appendMarkdown(`[${file.name}](${upload.publicUrl})`);
-         }
-
-         toast.success("Media uploaded");
-      } catch (error) {
-         console.error("Failed to upload media:", error);
-         toast.error("Failed to upload media");
-      } finally {
-         uploading = false;
-         input.value = "";
-      }
-   }
+   const tournament = $derived(data.tournament!);
+   const content = $derived(data.content!);
+   const canManage = $derived(data.canManage ?? false);
+   const fontHref = $derived(getTournamentFontHref(content.fontFamily));
+   const scopeStyle = $derived(
+      getTournamentScopeStyle(content.themeColors ?? {}, content.fontFamily),
+   );
+   const tournamentInitials = $derived(
+      getTournamentInitials(tournament.name, tournament.acronym),
+   );
+   const dateRange = $derived(
+      formatTournamentDateRange(tournament.startDate, tournament.endDate),
+   );
+   const tournamentState = $derived(
+      tournament.isArchived
+         ? "Archived"
+         : getTournamentWindowLabel(tournament.startDate, tournament.endDate),
+   );
+   const visibilityLabel = $derived(
+      tournament.isPublic ? "Public" : "Hidden",
+   );
+   const infoItems = $derived([
+      {
+         icon: CalendarIcon,
+         label: "Window",
+         value: dateRange,
+      },
+      {
+         icon: UserGroupIcon,
+         label: "Roster format",
+         value: `${tournament.teamSize} players per team`,
+      },
+      {
+         icon: MeetingRoomIcon,
+         label: "Lobby size",
+         value: `${tournament.lobbySize} player slots`,
+      },
+      {
+         icon: tournament.isPublic ? SquareUnlock01Icon : SquareLock01Icon,
+         label: "Visibility",
+         value: visibilityLabel,
+      },
+   ]);
 </script>
 
 <svelte:head>
-   <title>{data.tournament.name}</title>
+   <title>{tournament.name}</title>
    {#if fontHref}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+      <link
+         rel="preconnect"
+         href="https://fonts.gstatic.com"
+         crossorigin="anonymous"
+      />
       <link href={fontHref} rel="stylesheet" />
    {/if}
 </svelte:head>
 
-<div class="mx-auto w-full max-w-5xl p-6">
-   <div class="mb-6 flex items-start justify-between gap-4">
-      <div class="space-y-2">
-         <h1 class="text-3xl font-bold">{data.tournament.name}</h1>
-         {#if data.tournament.description}
-            <p class="text-muted-foreground">{data.tournament.description}</p>
-         {/if}
-      </div>
+<div
+   class="tournament-page-scope min-h-full px-4 py-6 sm:px-6 lg:px-8"
+   style={scopeStyle}
+>
+   <div class="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <div class="space-y-6">
+         <section class="hero-panel overflow-hidden rounded-[1.75rem] border">
+            <div class="hero-stripes"></div>
+            <div
+               class="relative flex flex-col gap-6 px-5 py-6 sm:px-7 sm:py-8 lg:flex-row lg:items-end lg:justify-between"
+            >
+               <div class="space-y-4">
+                  <div class="flex items-center gap-4">
+                     {#if tournament.logo?.trim()}
+                        <img
+                           src={tournament.logo}
+                           alt={`${tournament.name} logo`}
+                           class="h-18 w-18 rounded-2xl border object-cover shadow-sm"
+                        />
+                     {:else}
+                        <div
+                           class="tournament-logo-placeholder flex h-18 w-18 items-center justify-center rounded-2xl border text-xl font-semibold"
+                        >
+                           {tournamentInitials}
+                        </div>
+                     {/if}
 
-      {#if data.canEdit && !editing}
-         <Button onclick={startEditing}>{m.common_edit()}</Button>
-      {/if}
-   </div>
+                     <div class="space-y-2">
+                        <p
+                           class="text-[0.72rem] font-semibold uppercase tracking-[0.26em] text-[hsl(var(--t-mutedForeground))]"
+                        >
+                           Tournament dossier
+                        </p>
+                        <div class="flex flex-wrap items-center gap-2">
+                           <span class="status-pill">{tournamentState}</span>
+                           <span class="status-pill">{visibilityLabel}</span>
+                           <span class="status-pill">{tournament.id}</span>
+                        </div>
+                     </div>
+                  </div>
 
-   <div class="tournament-page-scope rounded-xl border p-6" style={scopeStyle}>
-      <div class="mb-6 flex items-center gap-4">
-         {#if activeLogo?.trim()}
-            <img
-               src={activeLogo}
-               alt={`${data.tournament.name} logo`}
-               class="h-16 w-16 rounded-lg border object-cover"
-            />
-         {:else}
-            <div class="tournament-logo-placeholder flex h-16 w-16 items-center justify-center rounded-lg border text-lg font-semibold">
-               {tournamentInitials}
+                  <div class="space-y-3">
+                     <h1 class="text-balance text-[clamp(2rem,4vw,3.75rem)] font-semibold leading-none tracking-[-0.04em]">
+                        {tournament.name}
+                     </h1>
+                     <p class="max-w-3xl text-base leading-7 text-[hsl(var(--t-mutedForeground))] sm:text-lg">
+                        {tournament.description?.trim() ||
+                           "The tournament page is live. Staff can use the dashboard to add rules, schedule notes, branding, and registration guidance."}
+                     </p>
+                  </div>
+               </div>
+
+               <div class="flex flex-wrap items-center gap-3">
+                  {#if canManage}
+                     <Button
+                        href={`/tournament/${tournament.id}/dashboard`}
+                        variant="outline"
+                        class="min-w-36 border-[hsl(var(--t-border))] bg-[hsl(var(--t-background))]/80"
+                     >
+                        Open dashboard
+                     </Button>
+                  {/if}
+               </div>
             </div>
-         {/if}
+         </section>
 
-         <div>
-            <p class="text-sm uppercase tracking-wide">Tournament Page</p>
-            <p class="text-muted-foreground text-sm">{data.tournament.id}</p>
-         </div>
-      </div>
-
-      {#if editing}
-         <div class="space-y-4">
-            <div class="grid gap-4 sm:grid-cols-2">
-               <div class="space-y-2">
-                  <label class="text-sm font-medium" for="font-family">Google Font</label>
-                  <select
-                     id="font-family"
-                     class="border-input bg-background ring-offset-background flex h-10 w-full rounded-md border px-3 py-2 text-sm"
-                     bind:value={fontFamilyDraft}
-                  >
-                     <option value="">{m.common_optional()}</option>
-                     {#each GOOGLE_FONT_OPTIONS as font (font)}
-                        <option value={font}>{font}</option>
+         <Accordion.Root
+            type="multiple"
+            value={["overview", "guide"]}
+            class="rounded-[1.5rem] border px-5 py-2 sm:px-6"
+         >
+            <Accordion.Item value="overview" class="border-b border-[hsl(var(--t-border))]">
+               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+                  <div class="space-y-1">
+                     <p>Overview</p>
+                     <p class="text-sm font-normal text-[hsl(var(--t-mutedForeground))]">
+                        The essentials players need before they scroll any deeper.
+                     </p>
+                  </div>
+               </Accordion.Trigger>
+               <Accordion.Content class="pb-6">
+                  <div class="grid gap-4 sm:grid-cols-2">
+                     {#each infoItems as item (item.label)}
+                        <div class="info-tile">
+                           <div class="info-icon">
+                              <HugeiconsIcon icon={item.icon} size={18} strokeWidth={1.7} />
+                           </div>
+                           <div class="space-y-1">
+                              <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+                                 {item.label}
+                              </p>
+                              <p class="text-base font-medium">{item.value}</p>
+                           </div>
+                        </div>
                      {/each}
-                  </select>
-               </div>
+                  </div>
+               </Accordion.Content>
+            </Accordion.Item>
 
-               <div class="space-y-2">
-                  <label class="text-sm font-medium" for="logo-url">Logo URL</label>
-                  <Input
-                     id="logo-url"
-                     type="url"
-                     placeholder="https://cdn.example.com/logo.png"
-                     bind:value={logoDraft}
-                  />
-               </div>
-            </div>
+            <Accordion.Item value="format" class="border-b border-[hsl(var(--t-border))]">
+               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+                  <div class="space-y-1">
+                     <p>Format</p>
+                     <p class="text-sm font-normal text-[hsl(var(--t-mutedForeground))]">
+                        Team sizing, lobby expectations, and tournament timing.
+                     </p>
+                  </div>
+               </Accordion.Trigger>
+               <Accordion.Content class="pb-6">
+                  <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                     <div class="space-y-2">
+                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+                           Competition setup
+                        </p>
+                        <p class="text-base leading-7">
+                           Teams field <strong>{tournament.teamSize}</strong> players,
+                           and each lobby supports up to <strong>{tournament.lobbySize}</strong>
+                           players at a time.
+                        </p>
+                     </div>
+                     <div class="space-y-2">
+                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+                           Calendar
+                        </p>
+                        <p class="text-base leading-7">
+                           The event runs <strong>{dateRange}</strong>.
+                        </p>
+                     </div>
+                  </div>
+               </Accordion.Content>
+            </Accordion.Item>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-               {#each THEME_KEYS as key (key)}
-                  <div class="space-y-2">
-                     <label class="text-sm font-medium" for={`theme-${key}`}>{key}</label>
-                     <Input
-                        id={`theme-${key}`}
-                        placeholder="222.2 47.4% 11.2%"
-                        bind:value={themeDraft[key]}
-                     />
+            <Accordion.Item value="guide">
+               <Accordion.Trigger class="py-5 text-base font-semibold no-underline hover:no-underline">
+                  <div class="space-y-1">
+                     <p>Tournament guide</p>
+                     <p class="text-sm font-normal text-[hsl(var(--t-mutedForeground))]">
+                        Rules, registration instructions, schedule notes, and everything else staff publish.
+                     </p>
+                  </div>
+               </Accordion.Trigger>
+               <Accordion.Content class="pb-6">
+                  {#if content.renderedBody.trim()}
+                     <article class="prose-content">
+                        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                        {@html content.renderedBody}
+                     </article>
+                  {:else}
+                     <div class="empty-state">
+                        <p class="text-base font-medium">Nothing published yet.</p>
+                        <p class="text-sm text-[hsl(var(--t-mutedForeground))]">
+                           This tournament page is ready, but staff have not published the guide content yet.
+                        </p>
+                        {#if canManage}
+                           <Button
+                              href={`/tournament/${tournament.id}/dashboard#public-page`}
+                              variant="outline"
+                              class="mt-2 border-[hsl(var(--t-border))] bg-transparent"
+                           >
+                              Add public page content
+                           </Button>
+                        {/if}
+                     </div>
+                  {/if}
+               </Accordion.Content>
+            </Accordion.Item>
+         </Accordion.Root>
+      </div>
+
+      <aside class="space-y-4 lg:pt-4">
+         <section class="aside-panel rounded-[1.5rem] border p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+               Snapshot
+            </p>
+            <div class="mt-4 space-y-4">
+               {#each infoItems as item (item.label)}
+                  <div class="space-y-1">
+                     <p class="text-sm text-[hsl(var(--t-mutedForeground))]">
+                        {item.label}
+                     </p>
+                     <p class="font-medium">{item.value}</p>
                   </div>
                {/each}
             </div>
+         </section>
 
-            <div class="space-y-2">
-               <label class="text-sm font-medium" for="body-markdown">Body Markdown</label>
-               <Textarea id="body-markdown" rows={14} bind:value={bodyDraft} />
-            </div>
-
-            <div class="space-y-2">
-               <label class="text-sm font-medium" for={mediaInputId}>Upload Media (max 4 MB)</label>
-               <Input
-                  id={mediaInputId}
-                  type="file"
-                  accept="image/*,video/*,audio/*"
-                  onchange={handleMediaUpload}
-               />
-            </div>
-
-            <div class="flex items-center justify-end gap-2">
-               <Button variant="outline" onclick={cancelEditing} disabled={saving || uploading}>
-                  {m.common_cancel()}
+         {#if canManage}
+            <section class="aside-panel rounded-[1.5rem] border p-5">
+               <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[hsl(var(--t-mutedForeground))]">
+                  Staff controls
+               </p>
+               <p class="mt-3 text-sm leading-6 text-[hsl(var(--t-mutedForeground))]">
+                  Manage tournament details, publishing, screening rules, and page branding from the dedicated dashboard.
+               </p>
+               <Button
+                  href={`/tournament/${tournament.id}/dashboard`}
+                  class="mt-4 w-full"
+               >
+                  Manage tournament
                </Button>
-               <Button onclick={savePage} disabled={saving || uploading}>
-                  {#if saving || uploading}
-                     {m.common_loading()}
-                  {:else}
-                     {m.common_save()}
-                  {/if}
-               </Button>
-            </div>
-         </div>
-      {:else}
-         <article class="tournament-markdown prose-content">
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html renderedBody}
-         </article>
-      {/if}
+            </section>
+         {/if}
+      </aside>
    </div>
 </div>
 
@@ -387,14 +306,86 @@
       --t-ring: var(--ring);
       background: hsl(var(--t-background));
       color: hsl(var(--t-foreground));
-      border-color: hsl(var(--t-border));
       font-family: var(--t-font, inherit);
+   }
+
+   .hero-panel,
+   .aside-panel {
+      border-color: hsl(var(--t-border));
+      background:
+         linear-gradient(
+            180deg,
+            hsl(var(--t-background) / 0.98),
+            hsl(var(--t-card) / 0.92)
+         );
+      box-shadow: 0 1px 0 hsl(var(--t-border) / 0.5);
+   }
+
+   .hero-panel {
+      position: relative;
+      isolation: isolate;
+   }
+
+   .hero-stripes {
+      position: absolute;
+      inset: 0;
+      background:
+         linear-gradient(180deg, transparent, hsl(var(--t-background) / 0.16)),
+         repeating-linear-gradient(
+            115deg,
+            hsl(var(--t-primary) / 0.08) 0,
+            hsl(var(--t-primary) / 0.08) 1px,
+            transparent 1px,
+            transparent 24px
+         );
+      opacity: 0.8;
+      pointer-events: none;
    }
 
    .tournament-logo-placeholder {
       background: hsl(var(--t-muted));
       color: hsl(var(--t-mutedForeground));
       border-color: hsl(var(--t-border));
+   }
+
+   .status-pill {
+      border: 1px solid hsl(var(--t-border));
+      border-radius: 999px;
+      background: hsl(var(--t-card) / 0.9);
+      padding: 0.38rem 0.8rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: hsl(var(--t-mutedForeground));
+   }
+
+   .info-tile {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      border: 1px solid hsl(var(--t-border));
+      border-radius: 1rem;
+      padding: 1rem;
+      background: hsl(var(--t-card) / 0.78);
+   }
+
+   .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.9rem;
+      background: hsl(var(--t-muted));
+      color: hsl(var(--t-foreground));
+   }
+
+   .empty-state {
+      border: 1px dashed hsl(var(--t-border));
+      border-radius: 1rem;
+      padding: 1.25rem;
+      background: hsl(var(--t-muted) / 0.45);
    }
 
    .prose-content :global(a) {
@@ -419,10 +410,11 @@
    .prose-content :global(img),
    .prose-content :global(video),
    .prose-content :global(audio) {
+      display: block;
       max-width: 100%;
-      border-radius: 0.5rem;
+      border-radius: 1rem;
       border: 1px solid hsl(var(--t-border));
-      margin: 1rem 0;
+      margin: 1.25rem 0;
    }
 
    .prose-content :global(table) {
@@ -444,5 +436,19 @@
       padding-left: 1rem;
       color: hsl(var(--t-mutedForeground));
       margin: 1rem 0;
+   }
+
+   .prose-content :global(h1),
+   .prose-content :global(h2),
+   .prose-content :global(h3) {
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+   }
+
+   .prose-content :global(p),
+   .prose-content :global(li) {
+      line-height: 1.8;
    }
 </style>

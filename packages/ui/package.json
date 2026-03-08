@@ -32,6 +32,7 @@
       "ui:update": "bunx shadcn-svelte@latest update"
    },
    "dependencies": {
+      "@jaames/iro": "^5.5.2",
       "class-variance-authority": "^0.7.1",
       "clsx": "^2.1.1",
       "color-space": "^2.3.2",
@@ -42,6 +43,7 @@
       "@hugeicons/core-free-icons": "catalog:",
       "@hugeicons/svelte": "catalog:",
       "@internationalized/date": "^3.11.0",
+      "@lucide/svelte": "^0.561.0",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
@@ -49,7 +51,7 @@
       "@sveltejs/kit": "catalog:",
       "@sveltejs/package": "^2.5.0",
       "@sveltejs/vite-plugin-svelte": "catalog:",
-      "bits-ui": "catalog:",
+      "bits-ui": "^2.14.4",
       "eslint": "catalog:",
       "formsnap": "catalog:",
       "mode-watcher": "catalog:",

@@ -153,7 +153,7 @@
          return;
       }
 
-      await goto(`/tournaments/${createdTournamentId}`);
+      await goto(`/tournament/${createdTournamentId}/dashboard`);
    }
 
    async function handleCustomizationSubmit(data: {

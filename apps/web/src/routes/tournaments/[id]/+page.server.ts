@@ -1,33 +1,31 @@
 import { error } from "@sveltejs/kit";
 
-import { orpc } from "@ota/api/client";
-
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({
-   cookies,
-   fetch,
-   locals,
-   params,
-   url,
-}) => {
-   const rpc = orpc({
-      provider: "server",
-      baseUrl: url.origin,
-      fetch,
-      cookie: cookies.get("session") ?? undefined,
-   });
+export const load: PageServerLoad = async ({ locals, params }) => {
+   const rpc = $client;
+   if (!rpc) {
+      return;
+   }
 
-   let canEdit = false;
-   let pageData = await rpc.tournament.getContent({ id: params.id });
+   let canManage = false;
+   let pageData = null;
 
    if (locals.user) {
       try {
-         pageData = await rpc.tournament.getContentForStaff({ id: params.id });
-         canEdit = true;
+         const dashboard = await rpc.tournament.getDashboard({ id: params.id });
+         pageData = {
+            tournament: dashboard.tournament,
+            content: dashboard.content,
+         };
+         canManage = true;
       } catch {
-         // Non-staff users can still view public tournaments.
+         pageData = null;
       }
+   }
+
+   if (!pageData) {
+      pageData = await rpc.tournament.getContent({ id: params.id });
    }
 
    if (!pageData) {
@@ -35,7 +33,7 @@ export const load: PageServerLoad = async ({
    }
 
    return {
-      canEdit,
+      canManage,
       tournament: pageData.tournament,
       content: pageData.content,
    };
