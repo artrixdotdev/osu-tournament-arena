@@ -112,7 +112,8 @@ export function resolveS3StorageConfig(
  * S3-compatible storage client abstraction.
  *
  * Bucket access is always done through logical keys (`replays`,
- * `tournamentMedia`) to keep call sites stable across providers/environments.
+ * `tournamentMedia`) to keep call sites stable across providers and
+ * environments.
  */
 export class S3Storage {
    public readonly config: S3StorageConfig;
@@ -120,7 +121,7 @@ export class S3Storage {
 
    /**
     * @param config resolved storage configuration
-    * @param client optional pre-configured S3 client (useful for tests)
+    * @param client optional pre-configured S3 client, useful for tests
     */
    constructor(config: S3StorageConfig, client?: S3Client) {
       this.config = config;
@@ -240,7 +241,7 @@ export class S3Storage {
    }
 
    /**
-    * Lists objects in a bucket with optional pagination/prefix filtering.
+    * Lists objects in a bucket with optional pagination and prefix filtering.
     */
    async listObjects(
       bucket: StorageBucketKey,
