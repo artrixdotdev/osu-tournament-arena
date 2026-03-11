@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
+import { PutBucketCorsCommand, S3Client } from "@aws-sdk/client-s3";
 
 const ROOT_DIR = resolve(import.meta.dirname, "..");
 const GARAGE_DIR = resolve(ROOT_DIR, "packages/storage/.garage");
@@ -10,11 +11,13 @@ const DATA_DIR = resolve(GARAGE_DIR, "data");
 const ENV_PATH = resolve(ROOT_DIR, ".env");
 
 const BUCKETS = ["tournament-media", "replays"];
+const TOURNAMENT_MEDIA_BUCKET = "tournament-media";
 const S3_API_PORT = 7279;
 const RPC_PORT = 7278;
 const WEB_PORT = 7277;
 const ADMIN_PORT = 7276;
 const S3_REGION = "garage";
+const TOURNAMENT_MEDIA_PUBLIC_URL = `http://${TOURNAMENT_MEDIA_BUCKET}.web.garage.localhost:${WEB_PORT}`;
 
 const AUTO_KILL = process.argv.includes("-k");
 
