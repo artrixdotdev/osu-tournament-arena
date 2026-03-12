@@ -44,6 +44,35 @@ async function generateRpcSecret(): Promise<string> {
    return result.trim();
 }
 
+async function configureBucketCors(
+   accessKeyId: string,
+   secretAccessKey: string,
+): Promise<void> {
+   const client = new S3Client({
+      endpoint: `http://127.0.0.1:${S3_API_PORT}`,
+      region: S3_REGION,
+      forcePathStyle: true,
+      credentials: { accessKeyId, secretAccessKey },
+   });
+
+   const corsRule = {
+      AllowedOrigins: ["*"],
+      AllowedMethods: ["*"],
+      AllowedHeaders: ["*"],
+      ExposeHeaders: ["ETag"],
+      MaxAgeSeconds: 3000,
+   };
+
+   for (const bucket of BUCKETS) {
+      await client.send(
+         new PutBucketCorsCommand({
+            Bucket: bucket,
+            CORSConfiguration: { CORSRules: [corsRule] },
+         }),
+      );
+   }
+}
+
 function writeConfig(rpcSecret: string) {
    const config = `metadata_dir = "${META_DIR}"
 data_dir = "${DATA_DIR}"
