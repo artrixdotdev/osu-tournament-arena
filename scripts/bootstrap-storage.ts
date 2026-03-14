@@ -206,6 +206,7 @@ async function main() {
       await run(
          garageCmd("layout", "assign", "-z", "dc1", "-c", "1G", shortId),
       );
+
       await run(garageCmd("layout", "apply", "--version", "1"));
       console.log("✅ Layout configured.\n");
 
@@ -262,7 +263,17 @@ async function main() {
       }
       console.log();
 
-      // 9. Write env vars
+      // 9. Configure CORS so browser uploads work against the local S3 endpoint
+      console.log("🌐 Configuring bucket CORS...");
+      await configureBucketCors(accessKeyId, secretAccessKey);
+      console.log("   ✅ CORS configured for local web uploads\n");
+
+      // 10. Expose tournament media through the Garage website endpoint
+      console.log("🔗 Enabling public website access for tournament media...");
+      await configurePublicBucketWebsite(TOURNAMENT_MEDIA_BUCKET);
+      console.log("   ✅ Tournament media bucket is publicly readable\n");
+
+      // 11. Write env vars
       console.log("📄 Writing environment variables to .env...");
       appendEnvVars({
          S3_ENDPOINT: `http://127.0.0.1:${S3_API_PORT}`,
