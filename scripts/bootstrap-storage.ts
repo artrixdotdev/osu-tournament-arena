@@ -73,6 +73,10 @@ async function configureBucketCors(
    }
 }
 
+async function configurePublicBucketWebsite(bucket: string): Promise<void> {
+   await run(garageCmd("bucket", "website", "--allow", bucket));
+}
+
 function writeConfig(rpcSecret: string) {
    const config = `metadata_dir = "${META_DIR}"
 data_dir = "${DATA_DIR}"
