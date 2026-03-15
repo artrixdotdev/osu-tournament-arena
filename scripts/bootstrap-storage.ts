@@ -282,6 +282,7 @@ async function main() {
          S3_SECRET_ACCESS_KEY: secretAccessKey,
          S3_BUCKET_TOURNAMENT_MEDIA: "tournament-media",
          S3_BUCKET_REPLAYS: "replays",
+         S3_PUBLIC_URL: TOURNAMENT_MEDIA_PUBLIC_URL,
          GARAGE_RPC_SECRET: rpcSecret,
          GARAGE_ADMIN_PORT: String(ADMIN_PORT),
       });
