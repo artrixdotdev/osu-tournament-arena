@@ -60,7 +60,7 @@ Optional:
 
 ```env
 S3_FORCE_PATH_STYLE=true
-S3_PUBLIC_URL=
+S3_PUBLIC_URL=http://tournament-media.web.garage.localhost:7277
 ```
 
 ## Usage
