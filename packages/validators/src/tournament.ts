@@ -1,10 +1,10 @@
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
+import { createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
 
+import type { TournamentDiscord } from "@ota/db/schema";
 import {
    StaffRole,
    TOURNAMENT_ACRONYM_MAX_LENGTH,
-   TournamentDiscord,
    tournament as tournamentTable,
 } from "@ota/db/schema";
 
