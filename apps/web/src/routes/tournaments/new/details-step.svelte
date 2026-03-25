@@ -9,6 +9,7 @@
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
+   import { client } from "$lib/orpc";
    import {
       numericInputAsStringSchema,
       parseOptionalInt,
