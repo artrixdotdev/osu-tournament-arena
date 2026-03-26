@@ -20,8 +20,10 @@
    import { z } from "zod/v4";
 
    import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
+   import { uploadFile } from "@ota/storage/client";
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
+   import { ImageUpload } from "@ota/ui/components/image-upload/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { Textarea } from "@ota/ui/components/textarea/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
