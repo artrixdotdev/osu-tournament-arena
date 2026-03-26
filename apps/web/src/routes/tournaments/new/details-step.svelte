@@ -39,6 +39,8 @@
          endDate: string;
          teamSize: number;
          lobbySize: number;
+         bannerUrl: string | null;
+         iconUrl: string | null;
       }) => Promise<void>;
       submitting?: boolean;
       error?: string | null;
