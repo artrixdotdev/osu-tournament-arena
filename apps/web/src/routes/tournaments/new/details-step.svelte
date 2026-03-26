@@ -99,6 +99,8 @@
             .min(1, m.tournamentCreate_errors_requiredEndDate()),
          teamSize: numericInputAsStringSchema,
          lobbySize: numericInputAsStringSchema,
+         bannerUrl: z.url().nullish(),
+         iconUrl: z.url().nullish(),
       })
       .refine(
          (data) => {
