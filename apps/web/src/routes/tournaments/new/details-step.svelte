@@ -160,6 +160,8 @@
             endDate: "",
             teamSize: "8",
             lobbySize: "16",
+            bannerUrl: null,
+            iconUrl: null,
          },
          zod4(detailsSchema),
       ),
