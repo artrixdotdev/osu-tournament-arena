@@ -441,6 +441,16 @@
       </Form.Control>
    </Form.Field>
 
+   <div class="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <ImageUpload
+         label="Banner"
+         hint="Optional tournament banner displayed on the tournament page"
+         variant="banner"
+         uploadFn={bannerUploadFn}
+         bind:value={$detailsFormData.bannerUrl}
+      />
+   </div>
+
    <div class="grid gap-4 sm:grid-cols-2">
       <Form.Field form={detailsForm} name="startDate">
          <Form.Control>
