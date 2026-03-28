@@ -202,6 +202,22 @@
       }
    }
 
+   async function uploadImage(file: File, mediaType: "banner" | "icon") {
+      const { uploadUrl, publicUrl, previewUrl } =
+         await client.storage.generateUploadUrl({
+         mediaType,
+         contentType: file.type,
+         public: true,
+      });
+
+      await uploadFile(uploadUrl, file);
+
+      return { publicUrl, previewUrl };
+   }
+
+   const bannerUploadFn = (file: File) => uploadImage(file, "banner");
+   const iconUploadFn = (file: File) => uploadImage(file, "icon");
+
    async function handleSubmit() {
       const validation = await validateDetailsForm({ update: true });
       if (!validation.valid) {
