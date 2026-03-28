@@ -249,6 +249,8 @@
          endDate: validation.data.endDate,
          teamSize: parsedTeamSize ?? 8,
          lobbySize: parsedLobbySize ?? 16,
+         bannerUrl: validation.data.bannerUrl ?? null,
+         iconUrl: validation.data.iconUrl ?? null,
       });
    }
 
