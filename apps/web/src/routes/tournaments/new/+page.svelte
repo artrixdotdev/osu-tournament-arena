@@ -56,6 +56,8 @@
       endDate: string;
       teamSize: number;
       lobbySize: number;
+      bannerUrl: string | null;
+      iconUrl: string | null;
    }) {
       detailsError = null;
       detailsSubmitting = true;
