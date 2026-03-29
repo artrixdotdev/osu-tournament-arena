@@ -449,6 +449,15 @@
          uploadFn={bannerUploadFn}
          bind:value={$detailsFormData.bannerUrl}
       />
+
+      <ImageUpload
+         label="Icon"
+         hint="Optional tournament icon/logo"
+         variant="icon"
+         accept="image/jpeg,image/png,image/webp"
+         uploadFn={iconUploadFn}
+         bind:value={$detailsFormData.iconUrl}
+      />
    </div>
 
    <div class="grid gap-4 sm:grid-cols-2">
