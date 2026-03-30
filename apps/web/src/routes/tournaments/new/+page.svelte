@@ -66,9 +66,9 @@
          await client.tournament.create({
             id: data.id,
             name: data.name,
-            acronym: data.acronym,
-            rendition: data.rendition,
-            description: data.description,
+            acronym: data.acronym ?? undefined,
+            rendition: data.rendition ?? undefined,
+            description: data.description ?? undefined,
             startDate: parseISO(`${data.startDate}T00:00:00Z`),
             endDate: parseISO(`${data.endDate}T00:00:00Z`),
             isPublic: false,
