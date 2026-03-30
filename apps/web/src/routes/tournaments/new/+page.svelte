@@ -75,6 +75,8 @@
             isArchived: false,
             lobbySize: data.lobbySize,
             teamSize: data.teamSize,
+            bannerUrl: data.bannerUrl ?? undefined,
+            iconUrl: data.iconUrl ?? undefined,
          });
 
          createdTournamentId = data.id;
