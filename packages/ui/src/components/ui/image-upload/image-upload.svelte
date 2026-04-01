@@ -23,6 +23,7 @@
 
    interface Props {
       value?: string | null;
+      selectedFile?: File | null;
       onChange?: (url: string | null) => void;
       label: string;
       description?: string;
@@ -31,13 +32,15 @@
       aspectRatio?: AspectRatio;
       maxSizeBytes?: number;
       disabled?: boolean;
-      uploadFn: UploadFn;
+      uploadFn?: UploadFn;
+      uploadOnSelect?: boolean;
       variant?: ImageUploadVariant;
       iconSize?: IconSize;
    }
 
    let {
       value = $bindable(null),
+      selectedFile = $bindable(null),
       onChange,
       label,
       description,
@@ -47,6 +50,7 @@
       maxSizeBytes = 5 * 1024 * 1024,
       disabled = false,
       uploadFn,
+      uploadOnSelect = true,
       variant = "standard",
       iconSize = "md",
    }: Props = $props();
@@ -157,6 +161,21 @@
 
       cleanupPreviewUrl();
       previewUrl = URL.createObjectURL(file);
+      selectedFile = file;
+
+      if (!uploadOnSelect) {
+         value = null;
+         onChange?.(null);
+         return;
+      }
+
+      if (!uploadFn) {
+         cleanupPreviewUrl();
+         selectedFile = null;
+         toast.error("Upload is not configured for this field.");
+         return;
+      }
+
       isUploading = true;
       uploadProgress = 25;
 
@@ -166,6 +185,7 @@
          uploadProgress = 100;
 
          value = result.publicUrl;
+         selectedFile = null;
          onChange?.(result.publicUrl);
 
          if (result.previewUrl) {
@@ -187,6 +207,7 @@
 
    function handleRemove() {
       cleanupPreviewUrl();
+      selectedFile = null;
       value = null;
       onChange?.(null);
    }
@@ -204,7 +225,9 @@
 
       {#if hint}
          <Tooltip.Root>
-            <Tooltip.Trigger class="text-muted-foreground inline-flex items-center">
+            <Tooltip.Trigger
+               class="text-muted-foreground inline-flex items-center"
+            >
                <HugeiconsIcon
                   icon={HelpCircleIcon}
                   size={14}
