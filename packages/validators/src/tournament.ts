@@ -124,7 +124,7 @@ export const createTournamentSchema = z
       path: ["endDate"],
    });
 
-export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
+const updateTournamentSchemaBase = createUpdateSchema(tournamentTable, {
    id: () => tournamentIdValueSchema.describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
    acronym: (schema) =>
@@ -154,6 +154,11 @@ export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
       .describe("Discord bot integration settings"),
 });
 
+export const updateTournamentSchema = updateTournamentSchemaBase.extend({
+   bannerUrl: z.string().url().optional().describe("Tournament banner URL"),
+   iconUrl: z.string().url().optional().describe("Tournament icon URL"),
+});
+
 export const tournamentIdSchema = baseIdSchema;
 
 export const tournamentListSchema = basePaginationSchema;
@@ -165,6 +170,8 @@ export const updateTournamentDetailsSchema = updateTournamentSchema
       acronym: true,
       rendition: true,
       description: true,
+      bannerUrl: true,
+      iconUrl: true,
    })
    .required({ id: true });
 

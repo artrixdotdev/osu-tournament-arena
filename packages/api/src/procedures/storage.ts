@@ -22,15 +22,35 @@ const generateUploadUrlSchema = z.object({
 });
 export type GenerateUploadUrlInput = z.infer<typeof generateUploadUrlSchema>;
 
+function getFileExtension(contentType: string): string {
+   switch (contentType.toLowerCase()) {
+      case "image/jpeg":
+         return "jpg";
+      case "image/png":
+         return "png";
+      case "image/webp":
+         return "webp";
+      case "image/gif":
+         return "gif";
+      default:
+         throw new Error(`Unsupported content type: ${contentType}`);
+   }
+}
+
 function generateMediaKey(
    tournamentId: string | undefined,
    mediaType: MediaType,
+   contentType: string,
 ): string {
    const timestamp = Date.now();
-   const extension = mediaType === "icon" ? "png" : "webp";
+   const extension = getFileExtension(contentType);
 
    if (tournamentId) {
-      return `${tournamentId}/${mediaType}-${timestamp}.${extension}`;
+      if (mediaType === "icon") {
+         return `${tournamentId}/${tournamentId}.${extension}`;
+      }
+
+      return `${tournamentId}/${mediaType}.${extension}`;
    }
 
    return `temp/${mediaType}-${timestamp}-${crypto.randomUUID()}.${extension}`;
@@ -40,7 +60,11 @@ export const storageProcedures = {
    generateUploadUrl: base
       .input(generateUploadUrlSchema)
       .handler(async ({ input }) => {
-         const key = generateMediaKey(input.tournamentId, input.mediaType);
+         const key = generateMediaKey(
+            input.tournamentId,
+            input.mediaType,
+            input.contentType,
+         );
 
          const presignedUrl = await storage.createPresignedPutUrl(
             "tournamentMedia",
