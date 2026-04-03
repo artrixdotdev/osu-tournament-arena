@@ -5,6 +5,7 @@
    import { parseISO } from "date-fns";
    import { toast } from "svelte-sonner";
 
+   import { uploadFile } from "@ota/storage/client";
    import { Stepper } from "@ota/ui/components/stepper/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
 
@@ -46,6 +47,26 @@
       }
    }
 
+   async function uploadTournamentMedia(
+      tournamentId: string,
+      file: File,
+      mediaType: "banner" | "icon",
+   ) {
+      const { uploadUrl, publicUrl } = await client.storage.generateUploadUrl({
+         tournamentId,
+         mediaType,
+         contentType: file.type,
+         public: true,
+      });
+      const response = await uploadFile(uploadUrl, file);
+
+      if (!response.ok) {
+         throw new Error(`Failed to upload ${mediaType}`);
+      }
+
+      return publicUrl;
+   }
+
    async function handleDetailsSubmit(data: {
       id: string;
       name: string;
@@ -56,14 +77,14 @@
       endDate: string;
       teamSize: number;
       lobbySize: number;
-      bannerUrl: string | null;
-      iconUrl: string | null;
+      bannerFile: File | null;
+      iconFile: File | null;
    }) {
       detailsError = null;
       detailsSubmitting = true;
 
       try {
-         await client.tournament.create({
+         const tournament = await client.tournament.create({
             id: data.id,
             name: data.name,
             acronym: data.acronym ?? undefined,
@@ -75,13 +96,65 @@
             isArchived: false,
             lobbySize: data.lobbySize,
             teamSize: data.teamSize,
-            bannerUrl: data.bannerUrl ?? undefined,
-            iconUrl: data.iconUrl ?? undefined,
          });
 
-         createdTournamentId = data.id;
+         const mediaUploads = await Promise.allSettled([
+            data.bannerFile
+               ? uploadTournamentMedia(tournament.id, data.bannerFile, "banner")
+               : Promise.resolve(null),
+            data.iconFile
+               ? uploadTournamentMedia(tournament.id, data.iconFile, "icon")
+               : Promise.resolve(null),
+         ]);
+
+         const mediaFields: { bannerUrl?: string; iconUrl?: string } = {};
+         let mediaUploadFailed = false;
+
+         const [bannerUpload, iconUpload] = mediaUploads;
+
+         if (bannerUpload.status === "fulfilled") {
+            if (bannerUpload.value) {
+               mediaFields.bannerUrl = bannerUpload.value;
+            }
+         } else {
+            mediaUploadFailed = true;
+            console.error(
+               "Failed to upload tournament banner:",
+               bannerUpload.reason,
+            );
+         }
+
+         if (iconUpload.status === "fulfilled") {
+            if (iconUpload.value) {
+               mediaFields.iconUrl = iconUpload.value;
+            }
+         } else {
+            mediaUploadFailed = true;
+            console.error(
+               "Failed to upload tournament icon:",
+               iconUpload.reason,
+            );
+         }
+
+         if (mediaFields.bannerUrl || mediaFields.iconUrl) {
+            try {
+               await client.tournament.updateDetails({
+                  id: tournament.id,
+                  ...mediaFields,
+               });
+            } catch (error) {
+               mediaUploadFailed = true;
+               console.error("Failed to attach tournament media:", error);
+            }
+         }
+
+         createdTournamentId = tournament.id;
          currentStepIndex = 1;
          toast.success(m.tournamentCreate_success_created());
+
+         if (mediaUploadFailed) {
+            toast.error(m.tournamentCreate_errors_mediaUploadFailed());
+         }
       } catch (error) {
          console.error("Failed to create tournament:", error);
 

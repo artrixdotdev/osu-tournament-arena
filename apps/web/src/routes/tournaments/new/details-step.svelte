@@ -9,7 +9,6 @@
    } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
    import { m } from "$i18n/messages";
-   import { client } from "$lib/orpc";
    import {
       numericInputAsStringSchema,
       parseOptionalInt,
@@ -20,7 +19,6 @@
    import { z } from "zod/v4";
 
    import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
-   import { uploadFile } from "@ota/storage/client";
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
    import { ImageUpload } from "@ota/ui/components/image-upload/index.ts";
@@ -39,8 +37,8 @@
          endDate: string;
          teamSize: number;
          lobbySize: number;
-         bannerUrl: string | null;
-         iconUrl: string | null;
+         bannerFile: File | null;
+         iconFile: File | null;
       }) => Promise<void>;
       submitting?: boolean;
       error?: string | null;
@@ -99,8 +97,6 @@
             .min(1, m.tournamentCreate_errors_requiredEndDate()),
          teamSize: numericInputAsStringSchema,
          lobbySize: numericInputAsStringSchema,
-         bannerUrl: z.url().nullish(),
-         iconUrl: z.url().nullish(),
       })
       .refine(
          (data) => {
@@ -160,8 +156,6 @@
             endDate: "",
             teamSize: "8",
             lobbySize: "16",
-            bannerUrl: null,
-            iconUrl: null,
          },
          zod4(detailsSchema),
       ),
@@ -175,6 +169,8 @@
       detailsForm;
 
    let idLocked = $state(true);
+   let bannerFile = $state<File | null>(null);
+   let iconFile = $state<File | null>(null);
 
    $effect(() => {
       if (idLocked) {
@@ -201,22 +197,6 @@
          $detailsFormData.id = slugify($detailsFormData.name);
       }
    }
-
-   async function uploadImage(file: File, mediaType: "banner" | "icon") {
-      const { uploadUrl, publicUrl, previewUrl } =
-         await client.storage.generateUploadUrl({
-         mediaType,
-         contentType: file.type,
-         public: true,
-      });
-
-      await uploadFile(uploadUrl, file);
-
-      return { publicUrl, previewUrl };
-   }
-
-   const bannerUploadFn = (file: File) => uploadImage(file, "banner");
-   const iconUploadFn = (file: File) => uploadImage(file, "icon");
 
    async function handleSubmit() {
       const validation = await validateDetailsForm({ update: true });
@@ -249,8 +229,8 @@
          endDate: validation.data.endDate,
          teamSize: parsedTeamSize ?? 8,
          lobbySize: parsedLobbySize ?? 16,
-         bannerUrl: validation.data.bannerUrl ?? null,
-         iconUrl: validation.data.iconUrl ?? null,
+         bannerFile,
+         iconFile,
       });
    }
 
@@ -446,8 +426,8 @@
          label="Banner"
          hint="Optional tournament banner displayed on the tournament page"
          variant="banner"
-         uploadFn={bannerUploadFn}
-         bind:value={$detailsFormData.bannerUrl}
+         uploadOnSelect={false}
+         bind:selectedFile={bannerFile}
       />
 
       <ImageUpload
@@ -455,8 +435,8 @@
          hint="Optional tournament icon/logo"
          variant="icon"
          accept="image/jpeg,image/png,image/webp"
-         uploadFn={iconUploadFn}
-         bind:value={$detailsFormData.iconUrl}
+         uploadOnSelect={false}
+         bind:selectedFile={iconFile}
       />
    </div>
 

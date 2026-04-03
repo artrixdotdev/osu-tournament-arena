@@ -82,6 +82,7 @@
    "tournamentCreate_errors_lobbySizeTooSmall": "Lobby size must be at least as large as team size.",
    "tournamentCreate_errors_createFailed": "Failed to create tournament. Please try again.",
    "tournamentCreate_errors_idInUse": "This ID is already in use. Please choose a different one.",
+   "tournamentCreate_errors_mediaUploadFailed": "Tournament created, but the banner or icon could not be attached. You can retry later.",
    "tournamentCreate_errors_settingsFailed": "Failed to save rank and screening settings. Please try again.",
    "tournamentCreate_success_created": "Tournament created.",
    "tournamentCreate_success_settingsSaved": "Rank and screening settings saved.",
