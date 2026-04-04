@@ -163,16 +163,11 @@
       previewUrl = URL.createObjectURL(file);
       selectedFile = file;
 
-      if (!uploadOnSelect) {
+      const canUpload = uploadOnSelect && typeof uploadFn === "function";
+
+      if (!canUpload) {
          value = null;
          onChange?.(null);
-         return;
-      }
-
-      if (!uploadFn) {
-         cleanupPreviewUrl();
-         selectedFile = null;
-         toast.error("Upload is not configured for this field.");
          return;
       }
 
