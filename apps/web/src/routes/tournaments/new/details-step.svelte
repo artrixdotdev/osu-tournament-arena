@@ -171,6 +171,27 @@
    let idLocked = $state(true);
    let bannerFile = $state<File | null>(null);
    let iconFile = $state<File | null>(null);
+   const defaultImageMaxSizeBytes = 5 * 1024 * 1024;
+   const defaultImageMaxSizeLabel = `${Math.round(defaultImageMaxSizeBytes / 1024 / 1024)}MB`;
+   const imageUploadMessages = {
+      invalidFileType: m.common_invalidFileTypeImageJpegPngWebp(),
+      fileTooLarge: m.common_fileTooLargeMaximumSize({
+         size: defaultImageMaxSizeLabel,
+      }),
+      uploadSuccess: m.common_imageUploadSuccess(),
+      uploadFailed: m.common_imageUploadFailed(),
+      uploadImage: m.common_uploadImage(),
+      imageFormats: m.common_imageFormatsPngJpgWebpWithMaxSize({
+         size: defaultImageMaxSizeLabel,
+      }),
+      change: m.common_change(),
+      remove: m.common_remove(),
+      uploadingImage: m.common_uploadingImage(),
+      uploadBannerImage: m.common_uploadBannerImage(),
+      dragAndDropOrClickToChooseFile:
+         m.common_dragAndDropOrClickToChooseFile(),
+      clickToUploadOrDragAndDrop: m.common_clickToUploadOrDragAndDrop(),
+   };
 
    $effect(() => {
       if (idLocked) {
@@ -413,7 +434,7 @@
                </Tooltip.Root>
             </div>
             <Textarea
-               placeholder="A short summary of the tournament."
+               placeholder={m.tournamentCreate_placeholders_description()}
                bind:value={$detailsFormData.description}
             />
             <Form.FieldErrors />
@@ -423,16 +444,18 @@
 
    <div class="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
       <ImageUpload
-         label="Banner"
-         hint="Optional tournament banner displayed on the tournament page"
+         label={m.common_banner()}
+         hint={m.tournamentCreate_media_bannerHint()}
+         messages={imageUploadMessages}
          variant="banner"
          uploadOnSelect={false}
          bind:selectedFile={bannerFile}
       />
 
       <ImageUpload
-         label="Icon"
-         hint="Optional tournament icon/logo"
+         label={m.common_icon()}
+         hint={m.tournamentCreate_media_iconHint()}
+         messages={imageUploadMessages}
          variant="icon"
          accept="image/jpeg,image/png,image/webp"
          uploadOnSelect={false}

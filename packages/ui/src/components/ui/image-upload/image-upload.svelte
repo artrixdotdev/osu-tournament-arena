@@ -20,6 +20,20 @@
    type ImageUploadVariant = "standard" | "icon" | "banner";
    type AspectRatio = "square" | "video" | "wide";
    type IconSize = "sm" | "md" | "lg";
+   interface ImageUploadMessages {
+      invalidFileType: string;
+      fileTooLarge: string;
+      uploadSuccess: string;
+      uploadFailed: string;
+      uploadImage: string;
+      imageFormats: string;
+      change: string;
+      remove: string;
+      uploadingImage: string;
+      uploadBannerImage: string;
+      dragAndDropOrClickToChooseFile: string;
+      clickToUploadOrDragAndDrop: string;
+   }
 
    interface Props {
       value?: string | null;
@@ -36,6 +50,7 @@
       uploadOnSelect?: boolean;
       variant?: ImageUploadVariant;
       iconSize?: IconSize;
+      messages: ImageUploadMessages;
    }
 
    let {
@@ -53,6 +68,7 @@
       uploadOnSelect = true,
       variant = "standard",
       iconSize = "md",
+      messages,
    }: Props = $props();
 
    let fileInput = $state<HTMLInputElement | null>(null);
@@ -95,10 +111,6 @@
          if (rule.endsWith("/*")) return mimeType.startsWith(rule.slice(0, -1));
          return mimeType === rule;
       });
-   }
-
-   function formatMaxSize(bytes: number): string {
-      return `${Math.round(bytes / 1024 / 1024)}MB`;
    }
 
    function cleanupPreviewUrl() {
@@ -146,16 +158,12 @@
 
    async function handleFile(file: File) {
       if (!isAcceptedFile(file, accept)) {
-         toast.error(
-            "Invalid file type. Please upload a JPEG, PNG, or WebP image.",
-         );
+         toast.error(messages.invalidFileType);
          return;
       }
 
       if (file.size > maxSizeBytes) {
-         toast.error(
-            `File is too large. Maximum size is ${formatMaxSize(maxSizeBytes)}.`,
-         );
+         toast.error(messages.fileTooLarge);
          return;
       }
 
@@ -189,11 +197,11 @@
          } else {
             cleanupPreviewUrl();
          }
-         toast.success("Image uploaded successfully.");
+         toast.success(messages.uploadSuccess);
       } catch (error) {
          console.error("Upload failed:", error);
          cleanupPreviewUrl();
-         toast.error("Failed to upload image. Please try again.");
+         toast.error(messages.uploadFailed);
       } finally {
          isUploading = false;
          uploadProgress = 0;
@@ -272,6 +280,8 @@
                         variant="secondary"
                         class="rounded-full"
                         onclick={openFilePicker}
+                        aria-label={messages.change}
+                        title={messages.change}
                         disabled={disabled || isUploading}
                      >
                         <HugeiconsIcon icon={ImageAdd01Icon} size={16} />
@@ -283,6 +293,8 @@
                         variant="destructive"
                         class="rounded-full"
                         onclick={handleRemove}
+                        aria-label={messages.remove}
+                        title={messages.remove}
                         disabled={disabled || isUploading}
                      >
                         <HugeiconsIcon icon={Delete02Icon} size={16} />
@@ -328,13 +340,13 @@
          {/if}
 
          <div class="space-y-1">
-            <p class="text-sm font-medium">Upload image</p>
+            <p class="text-sm font-medium">{messages.uploadImage}</p>
             {#if isUploading}
                <div class="w-28">
                   <Progress value={uploadProgress} class="h-2 w-full" />
                </div>
             {:else}
-               <p class="text-muted-foreground text-xs">PNG, JPG, WebP</p>
+               <p class="text-muted-foreground text-xs">{messages.imageFormats}</p>
             {/if}
          </div>
       </div>
@@ -364,7 +376,7 @@
                   disabled={disabled || isUploading}
                >
                   <HugeiconsIcon icon={ImageAdd01Icon} size={16} />
-                  Change
+                  {messages.change}
                </Button>
 
                <Button
@@ -374,7 +386,7 @@
                   disabled={disabled || isUploading}
                >
                   <HugeiconsIcon icon={Delete02Icon} size={16} />
-                  Remove
+                  {messages.remove}
                </Button>
             </div>
          </div>
@@ -417,7 +429,9 @@
                   </div>
 
                   <div class="space-y-2">
-                     <p class="text-sm font-medium">Uploading image...</p>
+                     <p class="text-sm font-medium">
+                        {messages.uploadingImage}
+                     </p>
                      <Progress value={uploadProgress} class="w-full" />
                   </div>
                </div>
@@ -436,12 +450,14 @@
                   </div>
 
                   <div class="space-y-1">
-                     <p class="text-base font-medium">Upload a banner image</p>
+                     <p class="text-base font-medium">
+                        {messages.uploadBannerImage}
+                     </p>
                      <p class="text-muted-foreground text-sm">
-                        Drag and drop, or click to choose a file
+                        {messages.dragAndDropOrClickToChooseFile}
                      </p>
                      <p class="text-muted-foreground text-xs">
-                        PNG, JPG or WebP, max {formatMaxSize(maxSizeBytes)}
+                        {messages.imageFormats}
                      </p>
                   </div>
                </div>
@@ -461,10 +477,10 @@
 
                   <div class="space-y-1">
                      <p class="text-sm font-medium">
-                        Click to upload or drag and drop
+                        {messages.clickToUploadOrDragAndDrop}
                      </p>
                      <p class="text-muted-foreground text-xs">
-                        PNG, JPG or WebP, max {formatMaxSize(maxSizeBytes)}
+                        {messages.imageFormats}
                      </p>
                   </div>
                </div>
