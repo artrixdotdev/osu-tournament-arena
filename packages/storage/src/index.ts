@@ -112,7 +112,8 @@ export function resolveS3StorageConfig(
  * S3-compatible storage client abstraction.
  *
  * Bucket access is always done through logical keys (`replays`,
- * `tournamentMedia`) to keep call sites stable across providers/environments.
+ * `tournamentMedia`) to keep call sites stable across providers and
+ * environments.
  */
 export class S3Storage {
    public readonly config: S3StorageConfig;
@@ -120,7 +121,7 @@ export class S3Storage {
 
    /**
     * @param config resolved storage configuration
-    * @param client optional pre-configured S3 client (useful for tests)
+    * @param client optional pre-configured S3 client, useful for tests
     */
    constructor(config: S3StorageConfig, client?: S3Client) {
       this.config = config;
@@ -134,6 +135,8 @@ export class S3Storage {
                accessKeyId: config.accessKeyId,
                secretAccessKey: config.secretAccessKey,
             },
+            requestChecksumCalculation: "WHEN_REQUIRED",
+            responseChecksumValidation: "WHEN_REQUIRED",
          });
    }
 
@@ -160,6 +163,34 @@ export class S3Storage {
             CacheControl: input.cacheControl,
             ContentDisposition: input.contentDisposition,
             Metadata: input.metadata,
+         }),
+      );
+   }
+
+   /**
+    * Uploads an object and makes it publicly readable.
+    *
+    * Use this for files that need a stable URL you can store in a database.
+    * The returned URL stays valid as long as the object exists and the public
+    * base URL does not change.
+    *
+    * This method uses `ACL: "public-read"`. Some S3-compatible providers
+    * disable ACLs. In that case, use a bucket policy instead.
+    */
+   async putPublicObject(
+      bucket: StorageBucketKey,
+      input: PutObjectInput,
+   ): Promise<PutObjectCommandOutput> {
+      return this.client.send(
+         new PutObjectCommand({
+            Bucket: this.getBucketName(bucket),
+            Key: input.key,
+            Body: input.body,
+            ContentType: input.contentType,
+            CacheControl: input.cacheControl,
+            ContentDisposition: input.contentDisposition,
+            Metadata: input.metadata,
+            ACL: "public-read",
          }),
       );
    }
@@ -210,7 +241,7 @@ export class S3Storage {
    }
 
    /**
-    * Lists objects in a bucket with optional pagination/prefix filtering.
+    * Lists objects in a bucket with optional pagination and prefix filtering.
     */
    async listObjects(
       bucket: StorageBucketKey,
@@ -223,6 +254,32 @@ export class S3Storage {
             ContinuationToken: input.continuationToken,
             MaxKeys: input.maxKeys,
          }),
+      );
+   }
+
+   /**
+    * Creates a time-limited presigned URL for object uploads.
+    *
+    * Use this when a client needs to upload directly to S3 without exposing
+    * long-lived credentials.
+    */
+   async createPresignedPutUrl(
+      bucket: StorageBucketKey,
+      key: string,
+      options: PresignOptions & { contentType?: string } = {},
+   ): Promise<string> {
+      return getSignedUrl(
+         this.client,
+         new PutObjectCommand({
+            Bucket: this.getBucketName(bucket),
+            Key: key,
+            ...(options.contentType
+               ? { ContentType: options.contentType }
+               : {}),
+         }),
+         {
+            expiresIn: options.expiresIn,
+         },
       );
    }
 
@@ -247,35 +304,28 @@ export class S3Storage {
    }
 
    /**
-    * Creates a time-limited presigned URL for object uploads.
-    */
-   async createPresignedPutUrl(
-      bucket: StorageBucketKey,
-      key: string,
-      options: PresignOptions = {},
-   ): Promise<string> {
-      return getSignedUrl(
-         this.client,
-         new PutObjectCommand({
-            Bucket: this.getBucketName(bucket),
-            Key: key,
-         }),
-         {
-            expiresIn: options.expiresIn,
-         },
-      );
-   }
-
-   /**
     * Returns a public URL for an object.
     *
     * Uses `publicUrl` when provided, otherwise derives from the S3 endpoint.
+    * This is intended for objects that are publicly readable.
     */
    getPublicUrl(bucket: StorageBucketKey, key: string): string {
       const bucketName = this.getBucketName(bucket);
 
       if (this.config.publicUrl) {
          const base = this.config.publicUrl.replace(/\/$/, "");
+         try {
+            const url = new URL(base);
+            if (
+               url.hostname === bucketName ||
+               url.hostname.startsWith(`${bucketName}.`)
+            ) {
+               return `${base}/${key}`;
+            }
+         } catch {
+            // Ignore invalid absolute URL parsing and fall back to path-style.
+         }
+
          return `${base}/${bucketName}/${key}`;
       }
 

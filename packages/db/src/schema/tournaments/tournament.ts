@@ -94,6 +94,9 @@ export const tournament = sqliteTable(
       /** Discord bot integration settings */
       discord: json<TournamentDiscord>(),
 
+      bannerUrl: text(),
+      iconUrl: text(),
+
       ...auditTimestamps,
    },
    (table) => [

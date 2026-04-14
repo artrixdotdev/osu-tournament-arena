@@ -27,6 +27,7 @@
  */
 
 import { router } from "./orpc";
+import { storageProcedures } from "./procedures/storage";
 import { tournamentProcedures } from "./procedures/tournament";
 import { userProcedures } from "./procedures/user";
 
@@ -49,12 +50,14 @@ import { userProcedures } from "./procedures/user";
  * - `tournament.updateVisibility` - Update visibility (requires HOST)
  * - `tournament.updateDiscord` - Update Discord integration (requires ADMIN)
  * - `tournament.archive` - Archive tournament (requires ADMIN)
+ * - `storage.generateUploadUrl` - Generate presigned URL for media upload
  * - `user.completeSignup` - Complete user signup
  * - `user.getSignupStatus` - Get signup status
  */
 export const appRouter = router({
    tournament: tournamentProcedures,
    user: userProcedures,
+   storage: storageProcedures,
 });
 
 export type AppRouter = typeof appRouter;

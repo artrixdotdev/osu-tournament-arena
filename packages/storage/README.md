@@ -29,7 +29,8 @@ This runs [`scripts/bootstrap-storage.ts`](../../scripts/bootstrap-storage.ts), 
 3. Configures single-node layout
 4. Creates buckets `replays` and `tournament-media`
 5. Creates S3 key `app-key` and grants permissions
-6. Writes env vars into `.env`
+6. Publishes `tournament-media` through Garage's website endpoint
+7. Writes env vars into `.env`
 
 To keep Garage running manually after bootstrap:
 
@@ -59,7 +60,7 @@ Optional:
 
 ```env
 S3_FORCE_PATH_STYLE=true
-S3_PUBLIC_URL=
+S3_PUBLIC_URL=http://tournament-media.web.garage.localhost:7277
 ```
 
 ## Usage

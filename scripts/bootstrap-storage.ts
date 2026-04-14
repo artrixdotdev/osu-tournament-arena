@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
+import { PutBucketCorsCommand, S3Client } from "@aws-sdk/client-s3";
 
 const ROOT_DIR = resolve(import.meta.dirname, "..");
 const GARAGE_DIR = resolve(ROOT_DIR, "packages/storage/.garage");
@@ -10,11 +11,13 @@ const DATA_DIR = resolve(GARAGE_DIR, "data");
 const ENV_PATH = resolve(ROOT_DIR, ".env");
 
 const BUCKETS = ["tournament-media", "replays"];
+const TOURNAMENT_MEDIA_BUCKET = "tournament-media";
 const S3_API_PORT = 7279;
 const RPC_PORT = 7278;
 const WEB_PORT = 7277;
 const ADMIN_PORT = 7276;
 const S3_REGION = "garage";
+const TOURNAMENT_MEDIA_PUBLIC_URL = `http://${TOURNAMENT_MEDIA_BUCKET}.web.garage.localhost:${WEB_PORT}`;
 
 const AUTO_KILL = process.argv.includes("-k");
 
@@ -39,6 +42,39 @@ function garageCmd(...args: string[]): string[] {
 async function generateRpcSecret(): Promise<string> {
    const result = await run(["openssl", "rand", "-hex", "32"]);
    return result.trim();
+}
+
+async function configureBucketCors(
+   accessKeyId: string,
+   secretAccessKey: string,
+): Promise<void> {
+   const client = new S3Client({
+      endpoint: `http://127.0.0.1:${S3_API_PORT}`,
+      region: S3_REGION,
+      forcePathStyle: true,
+      credentials: { accessKeyId, secretAccessKey },
+   });
+
+   const corsRule = {
+      AllowedOrigins: ["*"],
+      AllowedMethods: ["*"],
+      AllowedHeaders: ["*"],
+      ExposeHeaders: ["ETag"],
+      MaxAgeSeconds: 3000,
+   };
+
+   for (const bucket of BUCKETS) {
+      await client.send(
+         new PutBucketCorsCommand({
+            Bucket: bucket,
+            CORSConfiguration: { CORSRules: [corsRule] },
+         }),
+      );
+   }
+}
+
+async function configurePublicBucketWebsite(bucket: string): Promise<void> {
+   await run(garageCmd("bucket", "website", "--allow", bucket));
 }
 
 function writeConfig(rpcSecret: string) {
@@ -170,6 +206,7 @@ async function main() {
       await run(
          garageCmd("layout", "assign", "-z", "dc1", "-c", "1G", shortId),
       );
+
       await run(garageCmd("layout", "apply", "--version", "1"));
       console.log("✅ Layout configured.\n");
 
@@ -226,7 +263,17 @@ async function main() {
       }
       console.log();
 
-      // 9. Write env vars
+      // 9. Configure CORS so browser uploads work against the local S3 endpoint
+      console.log("🌐 Configuring bucket CORS...");
+      await configureBucketCors(accessKeyId, secretAccessKey);
+      console.log("   ✅ CORS configured for local web uploads\n");
+
+      // 10. Expose tournament media through the Garage website endpoint
+      console.log("🔗 Enabling public website access for tournament media...");
+      await configurePublicBucketWebsite(TOURNAMENT_MEDIA_BUCKET);
+      console.log("   ✅ Tournament media bucket is publicly readable\n");
+
+      // 11. Write env vars
       console.log("📄 Writing environment variables to .env...");
       appendEnvVars({
          S3_ENDPOINT: `http://127.0.0.1:${S3_API_PORT}`,
@@ -235,6 +282,7 @@ async function main() {
          S3_SECRET_ACCESS_KEY: secretAccessKey,
          S3_BUCKET_TOURNAMENT_MEDIA: "tournament-media",
          S3_BUCKET_REPLAYS: "replays",
+         S3_PUBLIC_URL: TOURNAMENT_MEDIA_PUBLIC_URL,
          GARAGE_RPC_SECRET: rpcSecret,
          GARAGE_ADMIN_PORT: String(ADMIN_PORT),
       });

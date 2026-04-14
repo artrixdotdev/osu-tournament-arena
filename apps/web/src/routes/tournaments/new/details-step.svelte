@@ -21,6 +21,7 @@
    import { TOURNAMENT_ACRONYM_MAX_LENGTH } from "@ota/db/schema";
    import { Button } from "@ota/ui/components/button/index.ts";
    import * as Form from "@ota/ui/components/form/index.ts";
+   import { ImageUpload } from "@ota/ui/components/image-upload/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { Textarea } from "@ota/ui/components/textarea/index.ts";
    import * as Tooltip from "@ota/ui/components/tooltip/index.ts";
@@ -36,6 +37,8 @@
          endDate: string;
          teamSize: number;
          lobbySize: number;
+         bannerFile: File | null;
+         iconFile: File | null;
       }) => Promise<void>;
       submitting?: boolean;
       error?: string | null;
@@ -166,6 +169,29 @@
       detailsForm;
 
    let idLocked = $state(true);
+   let bannerFile = $state<File | null>(null);
+   let iconFile = $state<File | null>(null);
+   const defaultImageMaxSizeBytes = 5 * 1024 * 1024;
+   const defaultImageMaxSizeLabel = `${Math.round(defaultImageMaxSizeBytes / 1024 / 1024)}MB`;
+   const imageUploadMessages = {
+      invalidFileType: m.common_invalidFileTypeImageJpegPngWebp(),
+      fileTooLarge: m.common_fileTooLargeMaximumSize({
+         size: defaultImageMaxSizeLabel,
+      }),
+      uploadSuccess: m.common_imageUploadSuccess(),
+      uploadFailed: m.common_imageUploadFailed(),
+      uploadImage: m.common_uploadImage(),
+      imageFormats: m.common_imageFormatsPngJpgWebpWithMaxSize({
+         size: defaultImageMaxSizeLabel,
+      }),
+      change: m.common_change(),
+      remove: m.common_remove(),
+      uploadingImage: m.common_uploadingImage(),
+      uploadBannerImage: m.common_uploadBannerImage(),
+      dragAndDropOrClickToChooseFile:
+         m.common_dragAndDropOrClickToChooseFile(),
+      clickToUploadOrDragAndDrop: m.common_clickToUploadOrDragAndDrop(),
+   };
 
    $effect(() => {
       if (idLocked) {
@@ -224,6 +250,8 @@
          endDate: validation.data.endDate,
          teamSize: parsedTeamSize ?? 8,
          lobbySize: parsedLobbySize ?? 16,
+         bannerFile,
+         iconFile,
       });
    }
 
@@ -406,13 +434,34 @@
                </Tooltip.Root>
             </div>
             <Textarea
-               placeholder="A short summary of the tournament."
+               placeholder={m.tournamentCreate_placeholders_description()}
                bind:value={$detailsFormData.description}
             />
             <Form.FieldErrors />
          </div>
       </Form.Control>
    </Form.Field>
+
+   <div class="grid items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <ImageUpload
+         label={m.common_banner()}
+         hint={m.tournamentCreate_media_bannerHint()}
+         messages={imageUploadMessages}
+         variant="banner"
+         uploadOnSelect={false}
+         bind:selectedFile={bannerFile}
+      />
+
+      <ImageUpload
+         label={m.common_icon()}
+         hint={m.tournamentCreate_media_iconHint()}
+         messages={imageUploadMessages}
+         variant="icon"
+         accept="image/jpeg,image/png,image/webp"
+         uploadOnSelect={false}
+         bind:selectedFile={iconFile}
+      />
+   </div>
 
    <div class="grid gap-4 sm:grid-cols-2">
       <Form.Field form={detailsForm} name="startDate">

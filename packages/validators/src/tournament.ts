@@ -1,10 +1,10 @@
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
+import { createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
 
+import type { TournamentDiscord } from "@ota/db/schema";
 import {
    StaffRole,
    TOURNAMENT_ACRONYM_MAX_LENGTH,
-   TournamentDiscord,
    tournament as tournamentTable,
 } from "@ota/db/schema";
 
@@ -81,36 +81,50 @@ const baseRatingSchema = z.object({
       .describe("Maximum OTR (osu! Tournament Rating) allowed (inclusive)"),
 });
 
-export const createTournamentSchema = createInsertSchema(tournamentTable, {
-   id: () => tournamentIdValueSchema.describe("Unique tournament identifier"),
-   name: (schema) => schema.min(1).describe("Full tournament name"),
-   acronym: (schema) =>
-      schema
+export const createTournamentSchema = z
+   .object({
+      id: tournamentIdValueSchema.describe("Unique tournament identifier"),
+      name: z.string().min(1).describe("Full tournament name"),
+      acronym: z
+         .string()
          .max(TOURNAMENT_ACRONYM_MAX_LENGTH)
+         .optional()
          .describe(
             `Short acronym (up to ${TOURNAMENT_ACRONYM_MAX_LENGTH} characters)`,
          ),
-   rendition: (schema) =>
-      schema.int().positive().optional().describe("Edition number"),
-   description: (schema) => schema.max(255).describe("Brief description"),
-   startDate: (schema) => schema.describe("Tournament start date"),
-   endDate: (schema) => schema.describe("Tournament end date"),
-   isPublic: (schema) =>
-      schema.describe("Whether tournament is visible to public"),
-   isArchived: (schema) => schema.describe("Whether tournament is archived"),
-   lobbySize: (schema) =>
-      schema.int().positive().describe("Maximum players per lobby"),
-   teamSize: (schema) =>
-      schema.int().positive().describe("Maximum players per team"),
-   discord: baseDiscordSchema
-      .optional()
-      .describe("Discord bot integration settings"),
-}).refine((data) => data.startDate <= data.endDate, {
-   message: "startDate must be less than or equal to endDate",
-   path: ["endDate"],
-});
+      rendition: z
+         .number()
+         .int()
+         .positive()
+         .optional()
+         .describe("Edition number"),
+      description: z.string().max(255).optional().describe("Brief description"),
+      startDate: z.coerce.date().describe("Tournament start date"),
+      endDate: z.coerce.date().describe("Tournament end date"),
+      isPublic: z.boolean().describe("Whether tournament is visible to public"),
+      isArchived: z.boolean().describe("Whether tournament is archived"),
+      lobbySize: z
+         .number()
+         .int()
+         .positive()
+         .describe("Maximum players per lobby"),
+      teamSize: z
+         .number()
+         .int()
+         .positive()
+         .describe("Maximum players per team"),
+      discord: baseDiscordSchema
+         .optional()
+         .describe("Discord bot integration settings"),
+      bannerUrl: z.string().url().optional().describe("Tournament banner URL"),
+      iconUrl: z.string().url().optional().describe("Tournament icon URL"),
+   })
+   .refine((data) => data.startDate <= data.endDate, {
+      message: "startDate must be less than or equal to endDate",
+      path: ["endDate"],
+   });
 
-export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
+const updateTournamentSchemaBase = createUpdateSchema(tournamentTable, {
    id: () => tournamentIdValueSchema.describe("Tournament ID to update"),
    name: (schema) => schema.min(1).optional().describe("Full tournament name"),
    acronym: (schema) =>
@@ -140,6 +154,11 @@ export const updateTournamentSchema = createUpdateSchema(tournamentTable, {
       .describe("Discord bot integration settings"),
 });
 
+export const updateTournamentSchema = updateTournamentSchemaBase.extend({
+   bannerUrl: z.string().url().optional().describe("Tournament banner URL"),
+   iconUrl: z.string().url().optional().describe("Tournament icon URL"),
+});
+
 export const tournamentIdSchema = baseIdSchema;
 
 export const tournamentListSchema = basePaginationSchema;
@@ -151,6 +170,8 @@ export const updateTournamentDetailsSchema = updateTournamentSchema
       acronym: true,
       rendition: true,
       description: true,
+      bannerUrl: true,
+      iconUrl: true,
    })
    .required({ id: true });
 
