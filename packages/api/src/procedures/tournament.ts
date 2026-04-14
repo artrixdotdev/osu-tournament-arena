@@ -794,6 +794,9 @@ export const tournamentProcedures = {
          return {
             tournament,
             content,
+            renderedHtml: await renderSafeTournamentMarkdown(
+               content?.body ?? "",
+            ),
             screeningRequirements,
             roles: context.staff.roles,
             permissions: {

@@ -173,6 +173,8 @@
                   <Badge variant="secondary">
                      {#if data.tournament.isArchived}
                         {m.common_archived()}
+                     {:else if data.isStaffView && !data.tournament.isPublic}
+                        {m.common_private()}
                      {:else}
                         {m.common_public()}
                      {/if}
