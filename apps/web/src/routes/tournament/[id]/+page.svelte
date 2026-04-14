@@ -171,7 +171,7 @@
 
 <div class="tournament-page min-h-full" style={wrapperStyle}>
    <div
-      class="grid w-full gap-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
+      class="grid min-h-full w-full gap-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
    >
       <section class="tournament-shell min-w-0 space-y-6">
          <section
@@ -203,13 +203,11 @@
             >
                <div class="max-w-4xl space-y-5">
                   <div class="flex flex-wrap items-center gap-2">
-                     <Badge class="bg-background/72 text-foreground border-0">
+                     <Badge>
                         {m.tournamentPage_eyebrow()}
                      </Badge>
                      <Badge variant="secondary">{status}</Badge>
-                     <Badge
-                        class="bg-secondary/85 text-secondary-foreground border-0"
-                     >
+                     <Badge>
                         {#if data.tournament.isArchived}
                            {m.common_archived()}
                         {:else if data.isStaffView && !data.tournament.isPublic}
@@ -285,7 +283,7 @@
 
             {#if data.pageContent?.renderedHtml.trim()}
                <div
-                  class="prose-content prose prose-a:text-[hsl(var(--tp-primary-current))] prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
+                  class="prose-content prose prose-a:text-[hsl(var(--tp-primary-current))] prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden min-h-[75vh] max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
                >
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html data.pageContent.renderedHtml}
@@ -300,7 +298,9 @@
          </Card>
       </section>
 
-      <aside class="space-y-4 pt-2 lg:sticky lg:top-6 lg:self-start lg:pt-24">
+      <aside
+         class="tournament-shell space-y-4 pt-2 lg:sticky lg:top-6 lg:self-start lg:pt-24"
+      >
          <Card as="article" variant="secondary" class="space-y-4 p-5">
             <div class="space-y-2">
                <p
@@ -479,22 +479,22 @@
       --radius: var(--tp-radius, var(--tp-site-radius));
       font-family: var(--tournament-body-font);
       color: hsl(var(--foreground));
-      --tw-prose-body: hsl(var(--tp-muted-foreground-current));
-      --tw-prose-headings: hsl(var(--tp-card-foreground-current));
-      --tw-prose-lead: hsl(var(--tp-muted-foreground-current));
-      --tw-prose-links: hsl(var(--tp-primary-current));
-      --tw-prose-bold: hsl(var(--tp-card-foreground-current));
-      --tw-prose-counters: hsl(var(--tp-muted-foreground-current));
-      --tw-prose-bullets: hsl(var(--tp-primary-current));
-      --tw-prose-hr: hsl(var(--tp-border-current));
-      --tw-prose-quotes: hsl(var(--tp-card-foreground-current));
-      --tw-prose-quote-borders: hsl(var(--tp-border-current));
-      --tw-prose-captions: hsl(var(--tp-muted-foreground-current));
-      --tw-prose-code: hsl(var(--tp-card-foreground-current));
-      --tw-prose-pre-code: hsl(var(--tp-card-foreground-current));
-      --tw-prose-pre-bg: hsl(var(--tp-muted-current));
-      --tw-prose-th-borders: hsl(var(--tp-border-current));
-      --tw-prose-td-borders: hsl(var(--tp-border-current));
+      --tw-prose-body: hsl(var(--muted-foreground));
+      --tw-prose-headings: hsl(var(--foreground));
+      --tw-prose-lead: hsl(var(--muted-foreground));
+      --tw-prose-links: hsl(var(--primary));
+      --tw-prose-bold: hsl(var(--foreground));
+      --tw-prose-counters: hsl(var(--muted-foreground));
+      --tw-prose-bullets: hsl(var(--primary));
+      --tw-prose-hr: hsl(var(--border));
+      --tw-prose-quotes: hsl(var(--foreground));
+      --tw-prose-quote-borders: hsl(var(--border));
+      --tw-prose-captions: hsl(var(--muted-foreground));
+      --tw-prose-code: hsl(var(--foreground));
+      --tw-prose-pre-code: hsl(var(--foreground));
+      --tw-prose-pre-bg: hsl(var(--muted));
+      --tw-prose-th-borders: hsl(var(--border));
+      --tw-prose-td-borders: hsl(var(--border));
    }
 
    :global(.dark) .tournament-page {
