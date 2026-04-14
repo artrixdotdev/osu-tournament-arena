@@ -7,17 +7,24 @@
       variants: {
          variant: {
             default:
-               "bg-card/94 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)] rounded-[2rem]",
+               "rounded-[2rem] bg-card shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]",
             secondary:
-               "bg-gradient-to-br from-card/95 to-secondary/14 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)] rounded-[2rem]",
+               "rounded-[2rem] bg-gradient-to-br from-card to-secondary/18 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]",
             accent:
-               "bg-gradient-to-br from-card/95 to-accent/10 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)] rounded-[1.9rem]",
+               "rounded-[1.9rem] bg-gradient-to-br from-card to-accent/14 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]",
             chart2:
-               "bg-gradient-to-br from-card/95 to-chart-2/8 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)] rounded-[2rem]",
+               "rounded-[2rem] bg-gradient-to-br from-card to-chart-2/12 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]",
+            chart3:
+               "rounded-[2rem] bg-gradient-to-br from-card to-chart-3/12 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]",
             chart5:
-               "bg-gradient-to-br from-card/95 to-chart-5/8 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)] rounded-[2rem]",
+               "rounded-[2rem] bg-gradient-to-br from-card to-chart-5/12 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]",
             spotlight:
-               "bg-gradient-to-br from-card/96 to-secondary/10 shadow-[0_26px_60px_rgb(0_0_0_/_0.18)] rounded-[2rem]",
+               "rounded-[2rem] bg-gradient-to-br from-card to-secondary/14 shadow-[0_26px_60px_rgb(0_0_0_/_0.18)]",
+            inset: "rounded-[1.25rem] bg-muted px-4 py-3 shadow-none",
+            metricSecondary:
+               "rounded-[1.35rem] bg-secondary px-4 py-3 shadow-none",
+            metricChart3:
+               "rounded-[1.35rem] bg-chart-3/15 px-4 py-3 shadow-none",
          },
       },
       defaultVariants: {

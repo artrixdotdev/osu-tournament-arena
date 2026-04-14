@@ -357,8 +357,9 @@
 
                            <div class="grid gap-3">
                               {#each data.dashboard.metrics.staffRoleCounts as item, index (item.role)}
-                                 <div
-                                    class="bg-background/50 grid gap-2 rounded-[1.3rem] px-4 py-3"
+                                 <Card
+                                    variant="inset"
+                                    class="grid gap-2 rounded-[1.3rem]"
                                  >
                                     <div
                                        class="flex items-center justify-between gap-4"
@@ -381,7 +382,7 @@
                                           style={`width: ${Math.max(10, Math.min(100, item.total * 16))}%`}
                                        ></div>
                                     </div>
-                                 </div>
+                                 </Card>
                               {/each}
                            </div>
                         </Card>
@@ -490,9 +491,7 @@
                            </div>
 
                            <dl class="grid gap-3">
-                              <div
-                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
-                              >
+                              <Card variant="inset" class="grid gap-2">
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
                                  >
@@ -503,10 +502,8 @@
                                        ?.minimumRank ??
                                        m.tournamentDashboard_screeningAny()}
                                  </dd>
-                              </div>
-                              <div
-                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
-                              >
+                              </Card>
+                              <Card variant="inset" class="grid gap-2">
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
                                  >
@@ -517,10 +514,8 @@
                                        ?.maximumRank ??
                                        m.tournamentDashboard_screeningAny()}
                                  </dd>
-                              </div>
-                              <div
-                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
-                              >
+                              </Card>
+                              <Card variant="inset" class="grid gap-2">
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
                                  >
@@ -532,7 +527,7 @@
                                        ? m.common_enabled()
                                        : m.tournamentDashboard_screeningUnset()}
                                  </dd>
-                              </div>
+                              </Card>
                            </dl>
                         </Card>
                      {/if}
@@ -665,8 +660,9 @@
                         </div>
 
                         <div class="space-y-3">
-                           <div
-                              class="bg-background/60 inline-flex rounded-full p-1 shadow-inner"
+                           <Card
+                              variant="inset"
+                              class="inline-flex rounded-full p-1 shadow-inner"
                            >
                               <Button
                                  variant={themeMode === "light"
@@ -696,7 +692,7 @@
                               >
                                  {m.common_dark()}
                               </Button>
-                           </div>
+                           </Card>
 
                            {#if themeMode === "light"}
                               <TournamentThemeFields bind:value={lightTheme} />
