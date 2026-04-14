@@ -259,10 +259,7 @@
             </div>
          </section>
 
-         <Card
-            as="article"
-            class="bg-card/86 space-y-6 rounded-[2.2rem] p-6 sm:p-8"
-         >
+         <Card as="article" variant="default" class="space-y-6 p-6 sm:p-8">
             <div
                class="from-secondary/18 to-chart-3/10 pointer-events-none absolute inset-x-0 top-0 h-36 rounded-t-[2.2rem] bg-gradient-to-r via-transparent"
                aria-hidden="true"
@@ -312,9 +309,7 @@
                   {m.tournamentPage_section_quickFacts()}
                </p>
                <div class="grid grid-cols-2 gap-3">
-                  <div
-                     class="bg-secondary/34 rounded-[1.35rem] px-4 py-3 shadow-sm"
-                  >
+                  <Card variant="metricSecondary">
                      <p
                         class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
@@ -323,10 +318,8 @@
                      <p class="mt-2 text-2xl font-semibold">
                         {data.tournament.teamSize}
                      </p>
-                  </div>
-                  <div
-                     class="rounded-[1.35rem] bg-[hsl(var(--chart-3)/0.2)] px-4 py-3 shadow-sm"
-                  >
+                  </Card>
+                  <Card variant="metricChart3">
                      <p
                         class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
@@ -335,13 +328,13 @@
                      <p class="mt-2 text-2xl font-semibold">
                         {data.tournament.lobbySize}
                      </p>
-                  </div>
+                  </Card>
                </div>
             </div>
 
             <dl class="space-y-3">
                {#each quickFacts as fact (fact.label)}
-                  <div class="bg-background/46 rounded-[1.25rem] px-4 py-3">
+                  <Card variant="inset">
                      <dt
                         class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
@@ -350,7 +343,7 @@
                      <dd class="mt-1 font-semibold break-all">
                         {fact.value}
                      </dd>
-                  </div>
+                  </Card>
                {/each}
             </dl>
          </Card>
@@ -363,8 +356,9 @@
             </p>
             <dl class="space-y-3">
                {#each scheduleItems as item (item.label)}
-                  <div
-                     class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
+                  <Card
+                     variant="inset"
+                     class="flex items-start justify-between gap-4"
                   >
                      <dt class="text-muted-foreground text-sm">
                         {item.label}
@@ -372,7 +366,7 @@
                      <dd class="text-right font-semibold">
                         {item.value}
                      </dd>
-                  </div>
+                  </Card>
                {/each}
             </dl>
          </Card>
@@ -385,8 +379,9 @@
             </p>
             <dl class="space-y-3">
                {#each formatItems as item (item.label)}
-                  <div
-                     class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
+                  <Card
+                     variant="inset"
+                     class="flex items-start justify-between gap-4"
                   >
                      <dt class="text-muted-foreground text-sm">
                         {item.label}
@@ -394,7 +389,7 @@
                      <dd class="text-right font-semibold">
                         {item.value}
                      </dd>
-                  </div>
+                  </Card>
                {/each}
             </dl>
          </Card>
@@ -437,7 +432,19 @@
          --tp-light-primaryForeground,
          var(--primary-foreground)
       );
+      --tp-secondary-current: var(--tp-light-secondary, var(--secondary));
+      --tp-secondary-foreground-current: var(
+         --tp-light-secondaryForeground,
+         var(--secondary-foreground)
+      );
+      --tp-accent-current: var(--tp-light-accent, var(--accent));
+      --tp-accent-foreground-current: var(
+         --tp-light-accentForeground,
+         var(--accent-foreground)
+      );
       --tp-border-current: var(--tp-light-border, var(--border));
+      --tp-input-current: var(--tp-light-input, var(--input));
+      --tp-ring-current: var(--tp-light-ring, var(--ring));
       --tp-radius-current: var(--tp-radius, 1rem);
       background:
          radial-gradient(
@@ -454,36 +461,21 @@
    }
 
    .tournament-shell {
-      --background: var(--tp-light-background, var(--tp-site-background));
-      --foreground: var(--tp-light-foreground, var(--tp-site-foreground));
-      --card: var(--tp-light-card, var(--tp-site-card));
-      --card-foreground: var(
-         --tp-light-cardForeground,
-         var(--tp-site-card-foreground)
-      );
-      --muted: var(--tp-light-muted, var(--tp-site-muted));
-      --muted-foreground: var(
-         --tp-light-mutedForeground,
-         var(--tp-site-muted-foreground)
-      );
-      --primary: var(--tp-light-primary, var(--tp-site-primary));
-      --primary-foreground: var(
-         --tp-light-primaryForeground,
-         var(--tp-site-primary-foreground)
-      );
-      --secondary: var(--tp-light-secondary, var(--tp-site-secondary));
-      --secondary-foreground: var(
-         --tp-light-secondaryForeground,
-         var(--tp-site-secondary-foreground)
-      );
-      --accent: var(--tp-light-accent, var(--tp-site-accent));
-      --accent-foreground: var(
-         --tp-light-accentForeground,
-         var(--tp-site-accent-foreground)
-      );
-      --border: var(--tp-light-border, var(--tp-site-border));
-      --input: var(--tp-light-input, var(--tp-site-input));
-      --ring: var(--tp-light-ring, var(--tp-site-ring));
+      --background: var(--tp-background-current);
+      --foreground: var(--tp-foreground-current);
+      --card: var(--tp-card-current);
+      --card-foreground: var(--tp-card-foreground-current);
+      --muted: var(--tp-muted-current);
+      --muted-foreground: var(--tp-muted-foreground-current);
+      --primary: var(--tp-primary-current);
+      --primary-foreground: var(--tp-primary-foreground-current);
+      --secondary: var(--tp-secondary-current);
+      --secondary-foreground: var(--tp-secondary-foreground-current);
+      --accent: var(--tp-accent-current);
+      --accent-foreground: var(--tp-accent-foreground-current);
+      --border: var(--tp-border-current);
+      --input: var(--tp-input-current);
+      --ring: var(--tp-ring-current);
       --radius: var(--tp-radius, var(--tp-site-radius));
       font-family: var(--tournament-body-font);
       color: hsl(var(--foreground));
@@ -535,70 +527,31 @@
          --tp-dark-primaryForeground,
          var(--tp-light-primaryForeground, var(--primary-foreground))
       );
+      --tp-secondary-current: var(
+         --tp-dark-secondary,
+         var(--tp-light-secondary, var(--secondary))
+      );
+      --tp-secondary-foreground-current: var(
+         --tp-dark-secondaryForeground,
+         var(--tp-light-secondaryForeground, var(--secondary-foreground))
+      );
+      --tp-accent-current: var(
+         --tp-dark-accent,
+         var(--tp-light-accent, var(--accent))
+      );
+      --tp-accent-foreground-current: var(
+         --tp-dark-accentForeground,
+         var(--tp-light-accentForeground, var(--accent-foreground))
+      );
       --tp-border-current: var(
          --tp-dark-border,
          var(--tp-light-border, var(--border))
       );
-   }
-
-   :global(.dark) .tournament-shell {
-      --background: var(
-         --tp-dark-background,
-         var(--tp-light-background, var(--tp-site-background))
-      );
-      --foreground: var(
-         --tp-dark-foreground,
-         var(--tp-light-foreground, var(--tp-site-foreground))
-      );
-      --card: var(--tp-dark-card, var(--tp-light-card, var(--tp-site-card)));
-      --card-foreground: var(
-         --tp-dark-cardForeground,
-         var(--tp-light-cardForeground, var(--tp-site-card-foreground))
-      );
-      --muted: var(
-         --tp-dark-muted,
-         var(--tp-light-muted, var(--tp-site-muted))
-      );
-      --muted-foreground: var(
-         --tp-dark-mutedForeground,
-         var(--tp-light-mutedForeground, var(--tp-site-muted-foreground))
-      );
-      --primary: var(
-         --tp-dark-primary,
-         var(--tp-light-primary, var(--tp-site-primary))
-      );
-      --primary-foreground: var(
-         --tp-dark-primaryForeground,
-         var(--tp-light-primaryForeground, var(--tp-site-primary-foreground))
-      );
-      --secondary: var(
-         --tp-dark-secondary,
-         var(--tp-light-secondary, var(--tp-site-secondary))
-      );
-      --secondary-foreground: var(
-         --tp-dark-secondaryForeground,
-         var(
-            --tp-light-secondaryForeground,
-            var(--tp-site-secondary-foreground)
-         )
-      );
-      --accent: var(
-         --tp-dark-accent,
-         var(--tp-light-accent, var(--tp-site-accent))
-      );
-      --accent-foreground: var(
-         --tp-dark-accentForeground,
-         var(--tp-light-accentForeground, var(--tp-site-accent-foreground))
-      );
-      --border: var(
-         --tp-dark-border,
-         var(--tp-light-border, var(--tp-site-border))
-      );
-      --input: var(
+      --tp-input-current: var(
          --tp-dark-input,
-         var(--tp-light-input, var(--tp-site-input))
+         var(--tp-light-input, var(--input))
       );
-      --ring: var(--tp-dark-ring, var(--tp-light-ring, var(--tp-site-ring)));
+      --tp-ring-current: var(--tp-dark-ring, var(--tp-light-ring, var(--ring)));
    }
 
    .prose-content {
