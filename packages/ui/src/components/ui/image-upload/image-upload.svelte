@@ -201,6 +201,8 @@
       } catch (error) {
          console.error("Upload failed:", error);
          cleanupPreviewUrl();
+         selectedFile = null;
+         onChange?.(null);
          toast.error(messages.uploadFailed);
       } finally {
          isUploading = false;
