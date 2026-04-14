@@ -17,7 +17,6 @@
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { MarkdownEditor } from "@ota/ui/components/markdown-editor/index.ts";
-   import { Separator } from "@ota/ui/components/separator/index.ts";
 
    import type { PageProps } from "./$types";
 
@@ -83,18 +82,30 @@
          id: "players",
          label: m.tournamentDashboard_metric_players(),
          value: data.dashboard.metrics.playerCount,
+         tone: "from-chart-1/18 to-chart-1/5",
       },
       {
          id: "teams",
          label: m.tournamentDashboard_metric_teams(),
          value: data.dashboard.metrics.teamCount,
+         tone: "from-chart-3/18 to-chart-3/5",
       },
       {
          id: "staff",
          label: m.tournamentDashboard_metric_staff(),
          value: data.dashboard.metrics.staffCount,
+         tone: "from-chart-5/18 to-chart-5/5",
       },
    ]);
+
+   const roleChartTones = [
+      "bg-chart-1",
+      "bg-chart-2",
+      "bg-chart-3",
+      "bg-chart-4",
+      "bg-chart-5",
+      "bg-secondary",
+   ] as const;
 
    function roleLabel(role: StaffRole) {
       switch (role) {
@@ -209,13 +220,11 @@
 
 <div class="bg-background min-h-full">
    <div
-      class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8"
+      class="mx-auto flex w-full max-w-none flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8 2xl:px-12"
    >
-      <section
-         class="bg-background overflow-hidden rounded-3xl border shadow-sm"
-      >
+      <section class="overflow-hidden">
          <div
-            class="bg-card/60 flex flex-wrap justify-between gap-4 border-b px-6 py-6"
+            class="from-secondary/45 via-card/92 to-card/74 flex flex-wrap justify-between gap-5 rounded-[2.2rem] bg-gradient-to-br px-6 py-6 shadow-[0_28px_90px_rgb(0_0_0_/_0.2)] sm:px-7"
          >
             <div class="space-y-3">
                <p
@@ -232,7 +241,11 @@
                   </h1>
                   <Badge variant="secondary">{visibilityLabel}</Badge>
                   {#each data.dashboard.roles as role (role)}
-                     <Badge variant="outline">{roleLabel(role)}</Badge>
+                     <Badge
+                        class="bg-background/60 text-foreground border-0 shadow-none"
+                     >
+                        {roleLabel(role)}
+                     </Badge>
                   {/each}
                </div>
                <p
@@ -244,7 +257,8 @@
 
             <div class="flex flex-wrap items-center gap-3">
                <Button
-                  variant="outline"
+                  variant="secondary"
+                  class="bg-background/70 hover:bg-background text-foreground shadow-none"
                   onclick={async () => {
                      await goto(previewPath);
                   }}
@@ -261,40 +275,46 @@
             </div>
          </div>
 
-         <div class="flex gap-2 border-b px-5 pt-3">
-            <Button
-               variant={activeTab === "overview" ? "secondary" : "ghost"}
-               class="rounded-t-xl rounded-b-none"
-               onclick={() => {
-                  activeTab = "overview";
-               }}
-            >
-               {m.tournamentDashboard_metrics_title()}
-            </Button>
-
-            {#if canCustomize}
+         <div class="mt-5 flex">
+            <div class="bg-muted/60 inline-flex rounded-full p-1 shadow-inner">
                <Button
-                  variant={activeTab === "page" ? "secondary" : "ghost"}
-                  class="rounded-t-xl rounded-b-none"
+                  variant={activeTab === "overview" ? "secondary" : "ghost"}
+                  class={activeTab === "overview"
+                     ? "bg-background text-foreground rounded-full shadow-sm"
+                     : "text-muted-foreground rounded-full"}
                   onclick={() => {
-                     activeTab = "page";
+                     activeTab = "overview";
                   }}
                >
-                  {m.tournamentDashboard_customization_title()}
+                  {m.tournamentDashboard_metrics_title()}
                </Button>
-            {/if}
+
+               {#if canCustomize}
+                  <Button
+                     variant={activeTab === "page" ? "secondary" : "ghost"}
+                     class={activeTab === "page"
+                        ? "bg-background text-foreground rounded-full shadow-sm"
+                        : "text-muted-foreground rounded-full"}
+                     onclick={() => {
+                        activeTab = "page";
+                     }}
+                  >
+                     {m.tournamentDashboard_customization_title()}
+                  </Button>
+               {/if}
+            </div>
          </div>
 
          {#if activeTab === "overview"}
-            <div class="p-5">
+            <div class="pt-4">
                <section
-                  class="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(22rem,0.9fr)]"
+                  class="grid gap-5 xl:grid-cols-[minmax(0,1.38fr)_minmax(24rem,0.82fr)]"
                >
                   <div class="grid gap-4">
                      <div class="grid gap-4 md:grid-cols-3">
                         {#each statCards as item (item.id)}
                            <article
-                              class="bg-card rounded-2xl border px-5 py-5 shadow-sm"
+                              class={`rounded-[1.75rem] bg-gradient-to-br ${item.tone} px-5 py-5 shadow-[0_20px_44px_rgb(0_0_0_/_0.16)]`}
                            >
                               <p
                                  class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
@@ -312,7 +332,7 @@
 
                      {#if showOperationsCard}
                         <article
-                           class="bg-card space-y-5 rounded-2xl border p-6 shadow-sm"
+                           class="from-card/94 to-secondary/10 space-y-5 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                         >
                            <div class="space-y-2">
                               <p
@@ -333,9 +353,9 @@
                            </div>
 
                            <div class="grid gap-3">
-                              {#each data.dashboard.metrics.staffRoleCounts as item (item.role)}
+                              {#each data.dashboard.metrics.staffRoleCounts as item, index (item.role)}
                                  <div
-                                    class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                                    class="bg-background/50 grid gap-2 rounded-[1.3rem] px-4 py-3"
                                  >
                                     <div
                                        class="flex items-center justify-between gap-4"
@@ -354,7 +374,7 @@
                                        class="bg-muted h-2 overflow-hidden rounded-full"
                                     >
                                        <div
-                                          class="bg-foreground h-full rounded-full"
+                                          class={`${roleChartTones[index % roleChartTones.length]} h-full rounded-full`}
                                           style={`width: ${Math.max(10, Math.min(100, item.total * 16))}%`}
                                        ></div>
                                     </div>
@@ -367,7 +387,7 @@
 
                   <div class="grid gap-4">
                      <article
-                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                        class="from-background via-card/95 to-secondary/18 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                      >
                         <div class="space-y-2">
                            <p
@@ -402,7 +422,7 @@
                      </article>
 
                      <article
-                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                        class="from-card/95 to-accent/8 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                      >
                         <div class="space-y-2">
                            <p
@@ -433,7 +453,7 @@
                                     class="bg-muted h-2 overflow-hidden rounded-full"
                                  >
                                     <div
-                                       class="bg-foreground h-full rounded-full"
+                                       class="bg-chart-1 h-full rounded-full"
                                        style={`width: ${item.percent}%`}
                                     ></div>
                                  </div>
@@ -444,7 +464,7 @@
 
                      {#if showEligibilityCard}
                         <article
-                           class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                           class="from-card/95 to-chart-5/7 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                         >
                            <div class="space-y-2">
                               <p
@@ -466,7 +486,7 @@
 
                            <dl class="grid gap-3">
                               <div
-                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
                               >
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
@@ -480,7 +500,7 @@
                                  </dd>
                               </div>
                               <div
-                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
                               >
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
@@ -494,7 +514,7 @@
                                  </dd>
                               </div>
                               <div
-                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                                 class="bg-background/50 grid gap-2 rounded-[1.25rem] px-4 py-3"
                               >
                                  <dt
                                     class="text-muted-foreground text-xs uppercase"
@@ -515,14 +535,14 @@
                </section>
             </div>
          {:else}
-            <div class="p-5">
+            <div class="pt-4">
                <section
-                  class="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(24rem,0.8fr)]"
+                  class="grid gap-5 xl:grid-cols-[minmax(0,1.75fr)_minmax(25rem,0.78fr)]"
                >
                   <article
-                     class="bg-card overflow-hidden rounded-2xl border shadow-sm"
+                     class="from-card/96 to-secondary/10 overflow-hidden rounded-[2rem] bg-gradient-to-br shadow-[0_26px_60px_rgb(0_0_0_/_0.18)]"
                   >
-                     <div class="px-5 py-5">
+                     <div class="px-5 py-5 sm:px-6">
                         <div class="space-y-2">
                            <p
                               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
@@ -538,9 +558,7 @@
                         </div>
                      </div>
 
-                     <Separator />
-
-                     <div class="p-4 sm:p-5">
+                     <div class="px-4 pb-4 sm:px-6 sm:pb-6">
                         <MarkdownEditor
                            bind:value={body}
                            class="[--tw-prose-body:hsl(var(--foreground)_/_0.9)] [--tw-prose-bold:hsl(var(--foreground))] [--tw-prose-bullets:hsl(var(--muted-foreground))] [--tw-prose-code:hsl(var(--foreground))] [--tw-prose-headings:hsl(var(--foreground))] [--tw-prose-hr:hsl(var(--border))] [--tw-prose-links:hsl(var(--foreground))] [--tw-prose-pre-bg:hsl(var(--muted))] [--tw-prose-pre-code:hsl(var(--foreground))] [--tw-prose-quote-borders:hsl(var(--border))] [--tw-prose-quotes:hsl(var(--foreground))] [--tw-prose-td-borders:hsl(var(--border))] [--tw-prose-th-borders:hsl(var(--border))]"
@@ -561,7 +579,7 @@
 
                   <div class="grid gap-4">
                      <article
-                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                        class="from-background via-card/95 to-secondary/18 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                      >
                         <div class="space-y-2">
                            <p
@@ -577,14 +595,18 @@
                         <div class="flex flex-wrap gap-2">
                            <Badge variant="secondary">{visibilityLabel}</Badge>
                            {#each data.dashboard.roles as role (role)}
-                              <Badge variant="outline">{roleLabel(role)}</Badge>
+                              <Badge
+                                 class="bg-background/60 text-foreground border-0 shadow-none"
+                              >
+                                 {roleLabel(role)}
+                              </Badge>
                            {/each}
                         </div>
 
                         <Input value={previewPath} readonly />
 
                         <Button
-                           variant="outline"
+                           variant="secondary"
                            class="w-full"
                            onclick={async () => {
                               await goto(previewPath);
@@ -595,7 +617,7 @@
                      </article>
 
                      <article
-                        class="bg-card space-y-5 rounded-2xl border p-6 shadow-sm"
+                        class="from-card/95 to-accent/10 space-y-5 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                      >
                         <div class="space-y-2">
                            <p
@@ -615,7 +637,7 @@
                            <select
                               id="font-family"
                               bind:value={fontFamily}
-                              class="bg-background h-11 w-full rounded-2xl border px-4 text-sm outline-none"
+                              class="bg-background/75 h-11 w-full rounded-2xl px-4 text-sm ring-1 ring-white/8 transition outline-none focus:ring-white/16"
                            >
                               <option value="">{m.locale_system()}</option>
                               {#each TOURNAMENT_FONT_OPTIONS as font (font)}
@@ -640,12 +662,17 @@
                         </div>
 
                         <div class="space-y-3">
-                           <div class="bg-muted inline-flex rounded-xl p-1">
+                           <div
+                              class="bg-background/60 inline-flex rounded-full p-1 shadow-inner"
+                           >
                               <Button
                                  variant={themeMode === "light"
                                     ? "secondary"
                                     : "ghost"}
                                  size="sm"
+                                 class={themeMode === "light"
+                                    ? "bg-chart-3 hover:bg-chart-3/90 text-black"
+                                    : ""}
                                  onclick={() => {
                                     themeMode = "light";
                                  }}
@@ -657,6 +684,9 @@
                                     ? "secondary"
                                     : "ghost"}
                                  size="sm"
+                                 class={themeMode === "dark"
+                                    ? "bg-chart-5 hover:bg-chart-5/90 text-black"
+                                    : ""}
                                  onclick={() => {
                                     themeMode = "dark";
                                  }}
@@ -674,7 +704,7 @@
                      </article>
 
                      <article
-                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                        class="from-card/95 to-chart-2/7 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
                      >
                         <div class="space-y-2">
                            <p
@@ -702,7 +732,7 @@
                                     class="bg-muted h-2 overflow-hidden rounded-full"
                                  >
                                     <div
-                                       class="bg-foreground h-full rounded-full"
+                                       class="bg-chart-2 h-full rounded-full"
                                        style={`width: ${item.percent}%`}
                                     ></div>
                                  </div>

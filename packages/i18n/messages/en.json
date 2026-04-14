@@ -147,7 +147,7 @@
    "tournamentDashboard_roles_title": "Your access",
    "tournamentDashboard_roles_description": "Visible cards adapt to your staff roles.",
    "tournamentDashboard_customization_title": "Page customization",
-   "tournamentDashboard_customization_description": "Edit the markdown, font, and shadcn-style theme JSON for the public tournament page.",
+   "tournamentDashboard_customization_description": "Edit the markdown, font, and theme tokens for the public tournament page.",
    "tournamentDashboard_field_font": "Font family",
    "tournamentDashboard_field_themeJson": "Theme JSON",
    "tournamentDashboard_field_themeJsonDescription": "Store shadcn-style theme tokens as JSON. Leave blank to use the default site theme.",

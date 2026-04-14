@@ -7,8 +7,12 @@
       getTournamentThemeStyle,
    } from "$lib/tournament-page";
 
+   import {
+      Avatar,
+      AvatarFallback,
+      AvatarImage,
+   } from "@ota/ui/components/avatar/index.ts";
    import { Badge } from "@ota/ui/components/badge/index.ts";
-   import { Separator } from "@ota/ui/components/separator/index.ts";
 
    import type { PageProps } from "./$types";
 
@@ -141,6 +145,14 @@
          value: status,
       },
    ]);
+
+   const bannerStyle = $derived.by(() => {
+      if (!media.bannerUrl) {
+         return "";
+      }
+
+      return `background-image: linear-gradient(180deg, rgb(12 10 18 / 0.08) 0%, rgb(12 10 18 / 0.55) 50%, rgb(12 10 18 / 0.96) 100%), url(${media.bannerUrl});`;
+   });
 </script>
 
 <svelte:head>
@@ -157,218 +169,238 @@
 </svelte:head>
 
 <div class="tournament-page min-h-full" style={wrapperStyle}>
-   <div
-      class="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8"
+   <section
+      class="relative isolate min-h-[24rem] overflow-hidden sm:min-h-[30rem]"
    >
-      <section class="hero overflow-hidden">
+      {#if media.bannerUrl}
          <div
-            class="hero-grid grid gap-6 p-6 md:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.9fr)] md:p-10"
-         >
-            <div class="space-y-6">
-               <div class="flex flex-wrap items-center gap-3">
-                  <span class="hero-eyebrow">
-                     {m.tournamentPage_eyebrow()}
-                  </span>
+            class="absolute inset-0 bg-cover bg-center"
+            style={bannerStyle}
+            aria-hidden="true"
+         ></div>
+      {:else}
+         <div
+            class="from-primary/24 via-secondary/14 to-background absolute inset-0 bg-gradient-to-br"
+            aria-hidden="true"
+         ></div>
+      {/if}
+      <div
+         class="from-background/10 via-background/45 to-background absolute inset-0 bg-gradient-to-t"
+         aria-hidden="true"
+      ></div>
 
-                  <Badge variant="secondary">
-                     {#if data.tournament.isArchived}
-                        {m.common_archived()}
-                     {:else if data.isStaffView && !data.tournament.isPublic}
-                        {m.common_private()}
-                     {:else}
-                        {m.common_public()}
-                     {/if}
-                  </Badge>
-               </div>
+      <div
+         class="relative flex min-h-[24rem] items-end px-4 py-8 sm:min-h-[30rem] sm:px-6 lg:px-8 2xl:px-12"
+      >
+         <div class="max-w-4xl space-y-5">
+            <div class="flex flex-wrap items-center gap-2">
+               <Badge class="bg-background/70 text-foreground border-0">
+                  {m.tournamentPage_eyebrow()}
+               </Badge>
+               <Badge variant="secondary">{status}</Badge>
+               <Badge
+                  class="bg-secondary/85 text-secondary-foreground border-0"
+               >
+                  {#if data.tournament.isArchived}
+                     {m.common_archived()}
+                  {:else if data.isStaffView && !data.tournament.isPublic}
+                     {m.common_private()}
+                  {:else}
+                     {m.common_public()}
+                  {/if}
+               </Badge>
+            </div>
 
-               <div class="space-y-4">
-                  <h1 class="hero-title">
+            <div class="flex items-end gap-4 sm:gap-5">
+               <Avatar
+                  class="bg-card/80 size-24 rounded-[1.8rem] shadow-[0_18px_45px_rgb(0_0_0_/_0.25)] sm:size-32"
+               >
+                  <AvatarImage
+                     src={media.iconUrl ?? media.logo ?? undefined}
+                     alt={m.tournamentPage_iconAlt({
+                        name: data.tournament.name,
+                     })}
+                     class="object-cover"
+                  />
+                  <AvatarFallback
+                     class="rounded-[1.8rem] text-2xl font-semibold uppercase"
+                  >
+                     {data.tournament.acronym ??
+                        data.tournament.name.slice(0, 2)}
+                  </AvatarFallback>
+               </Avatar>
+
+               <div class="space-y-3 pb-1">
+                  <h1
+                     class="text-4xl font-[family:var(--tournament-display-font)] font-semibold tracking-[-0.05em] text-white drop-shadow-[0_8px_24px_rgb(0_0_0_/_0.35)] sm:text-6xl"
+                  >
                      {data.tournament.name}
                   </h1>
-
-                  <p class="hero-copy">
+                  <p
+                     class="max-w-3xl text-sm leading-7 text-white/78 sm:text-lg"
+                  >
                      {data.tournament.description ??
                         m.tournamentPage_descriptionFallback()}
                   </p>
                </div>
-
-               <div class="flex flex-wrap items-center gap-3 text-sm">
-                  <div class="status-pill">
-                     {status}
-                  </div>
-                  <div class="info-pill">
-                     {scheduleWindow}
-                  </div>
-               </div>
-            </div>
-
-            <div class="space-y-4">
-               <div class="side-panel p-4">
-                  <div class="flex items-center gap-4">
-                     <div class="brand-lockup">
-                        {#if media.iconUrl ?? media.logo}
-                           <img
-                              src={media.iconUrl ?? media.logo ?? undefined}
-                              alt={m.tournamentPage_iconAlt({
-                                 name: data.tournament.name,
-                              })}
-                              class="size-full object-cover"
-                           />
-                        {:else}
-                           <span
-                              class="text-center text-lg font-semibold tracking-[0.12em] uppercase"
-                           >
-                              {data.tournament.acronym ??
-                                 data.tournament.name.slice(0, 2)}
-                           </span>
-                        {/if}
-                     </div>
-
-                     <div class="min-w-0">
-                        <p class="section-kicker">
-                           {m.tournamentPage_section_quickFacts()}
-                        </p>
-                        <p class="truncate text-xl font-semibold">
-                           {data.tournament.id}
-                        </p>
-                        <p class="text-sm opacity-70">
-                           {m.common_branding()}
-                        </p>
-                     </div>
-                  </div>
-
-                  {#if media.bannerUrl}
-                     <div class="banner-frame mt-4">
-                        <img
-                           src={media.bannerUrl}
-                           alt={m.tournamentPage_bannerAlt({
-                              name: data.tournament.name,
-                           })}
-                           class="h-44 w-full object-cover"
-                        />
-                     </div>
-                  {:else}
-                     <div class="empty-branding mt-4">
-                        {m.tournamentPage_noBranding()}
-                     </div>
-                  {/if}
-               </div>
             </div>
          </div>
-      </section>
+      </div>
+   </section>
 
-      <section
-         class="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,0.85fr)]"
-      >
-         <article class="t-card space-y-4 p-6">
-            <div class="space-y-2">
-               <p class="section-kicker">
-                  {m.tournamentPage_section_overview()}
-               </p>
-               <h2 class="section-title text-3xl">
-                  {data.tournament.name}
-               </h2>
+   <div
+      class="-mt-10 grid w-full gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
+   >
+      <section class="space-y-5">
+         <article
+            class="bg-card/86 relative space-y-6 rounded-[2.2rem] p-6 shadow-[0_28px_70px_rgb(0_0_0_/_0.18)] sm:p-8"
+         >
+            <div
+               class="from-secondary/18 to-chart-3/10 pointer-events-none absolute inset-x-0 top-0 h-36 rounded-t-[2.2rem] bg-gradient-to-r via-transparent"
+               aria-hidden="true"
+            ></div>
+
+            <div class="relative flex flex-wrap items-center gap-3">
+               <Badge
+                  class="bg-background/82 text-foreground border-0 shadow-none"
+               >
+                  {scheduleWindow}
+               </Badge>
+               <Badge
+                  class="bg-secondary/82 text-secondary-foreground border-0 shadow-none"
+               >
+                  {formattedDuration}
+               </Badge>
+               <Badge
+                  class="text-foreground border-0 bg-[hsl(var(--chart-3)/0.16)] shadow-none"
+               >
+                  {status}
+               </Badge>
             </div>
 
-            <Separator />
-
-            <p class="section-copy">
-               {data.tournament.description ??
-                  m.tournamentPage_descriptionFallback()}
-            </p>
+            {#if data.pageContent?.renderedHtml.trim()}
+               <div
+                  class="prose-content prose prose-a:text-[hsl(var(--tp-primary-current))] prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
+               >
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html data.pageContent.renderedHtml}
+               </div>
+            {:else}
+               <p
+                  class="max-w-3xl leading-8 text-[hsl(var(--tp-muted-foreground-current))]"
+               >
+                  {m.tournamentPage_customContentEmpty()}
+               </p>
+            {/if}
          </article>
+      </section>
 
-         <article class="t-card space-y-4 p-6">
-            <p class="section-kicker">
-               {m.tournamentPage_section_quickFacts()}
-            </p>
+      <aside class="space-y-4 lg:sticky lg:top-6 lg:self-start">
+         <article
+            class="from-card/95 to-secondary/14 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
+         >
+            <div class="space-y-2">
+               <p
+                  class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+               >
+                  {m.tournamentPage_section_quickFacts()}
+               </p>
+               <div class="grid grid-cols-2 gap-3">
+                  <div
+                     class="bg-secondary/34 rounded-[1.35rem] px-4 py-3 shadow-sm"
+                  >
+                     <p
+                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                     >
+                        {m.tournamentPage_label_teamSize()}
+                     </p>
+                     <p class="mt-2 text-2xl font-semibold">
+                        {data.tournament.teamSize}
+                     </p>
+                  </div>
+                  <div
+                     class="rounded-[1.35rem] bg-[hsl(var(--chart-3)/0.2)] px-4 py-3 shadow-sm"
+                  >
+                     <p
+                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                     >
+                        {m.tournamentPage_label_lobbySize()}
+                     </p>
+                     <p class="mt-2 text-2xl font-semibold">
+                        {data.tournament.lobbySize}
+                     </p>
+                  </div>
+               </div>
+            </div>
 
-            <dl class="grid gap-3">
+            <dl class="space-y-3">
                {#each quickFacts as fact (fact.label)}
-                  <div class="t-muted-block">
-                     <dt class="text-xs uppercase opacity-70">
+                  <div class="bg-background/46 rounded-[1.25rem] px-4 py-3">
+                     <dt
+                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                     >
                         {fact.label}
                      </dt>
-                     <dd class="mt-1 text-base font-semibold break-all">
+                     <dd class="mt-1 font-semibold break-all">
                         {fact.value}
                      </dd>
                   </div>
                {/each}
             </dl>
          </article>
-      </section>
 
-      <section class="grid gap-4 xl:grid-cols-2">
-         <article class="t-card space-y-4 p-6">
-            <div class="space-y-2">
-               <p class="section-kicker">
-                  {m.tournamentPage_section_schedule()}
-               </p>
-               <h2 class="section-title text-2xl">
-                  {scheduleWindow}
-               </h2>
-            </div>
-
-            <dl class="grid gap-3 sm:grid-cols-2">
-               {#each scheduleItems as item (item.label)}
-                  <div class="t-block">
-                     <dt class="text-xs uppercase opacity-70">
-                        {item.label}
-                     </dt>
-                     <dd class="mt-2 text-base font-semibold">
-                        {item.value}
-                     </dd>
-                  </div>
-               {/each}
-            </dl>
-         </article>
-
-         <article class="t-card space-y-4 p-6">
-            <div class="space-y-2">
-               <p class="section-kicker">
-                  {m.tournamentPage_section_format()}
-               </p>
-               <h2 class="section-title text-2xl">
-                  {m.tournamentPage_section_format()}
-               </h2>
-            </div>
-
-            <dl class="grid gap-3">
-               {#each formatItems as item (item.label)}
-                  <div class="t-block flex items-center justify-between gap-4">
-                     <dt class="text-sm opacity-70">
-                        {item.label}
-                     </dt>
-                     <dd class="text-right text-lg font-semibold">
-                        {item.value}
-                     </dd>
-                  </div>
-               {/each}
-            </dl>
-         </article>
-      </section>
-
-      <section class="t-card space-y-4 p-6">
-         <div class="space-y-2">
-            <p class="section-kicker">{m.labels_content()}</p>
-            <h2 class="section-title text-3xl">{m.labels_content()}</h2>
-         </div>
-
-         <Separator />
-
-         {#if data.pageContent?.renderedHtml.trim()}
-            <div
-               class="prose-content prose prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
+         <article
+            class="from-card/95 to-chart-2/8 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
+         >
+            <p
+               class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
             >
-               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-               {@html data.pageContent.renderedHtml}
-            </div>
-         {:else}
-            <p class="section-copy">
-               {m.tournamentPage_customContentEmpty()}
+               {m.tournamentPage_section_schedule()}
             </p>
-         {/if}
-      </section>
+            <dl class="space-y-3">
+               {#each scheduleItems as item (item.label)}
+                  <div
+                     class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
+                  >
+                     <dt
+                        class="text-sm text-[hsl(var(--tp-muted-foreground-current))]"
+                     >
+                        {item.label}
+                     </dt>
+                     <dd class="text-right font-semibold">
+                        {item.value}
+                     </dd>
+                  </div>
+               {/each}
+            </dl>
+         </article>
+
+         <article
+            class="from-card/95 to-chart-5/8 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
+         >
+            <p
+               class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+            >
+               {m.tournamentPage_section_format()}
+            </p>
+            <dl class="space-y-3">
+               {#each formatItems as item (item.label)}
+                  <div
+                     class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
+                  >
+                     <dt
+                        class="text-sm text-[hsl(var(--tp-muted-foreground-current))]"
+                     >
+                        {item.label}
+                     </dt>
+                     <dd class="text-right font-semibold">
+                        {item.value}
+                     </dd>
+                  </div>
+               {/each}
+            </dl>
+         </article>
+      </aside>
    </div>
 </div>
 
@@ -458,128 +490,6 @@
          --tp-dark-border,
          var(--tp-light-border, var(--border))
       );
-   }
-
-   .hero,
-   .t-card,
-   .side-panel {
-      border: 1px solid hsl(var(--tp-border-current) / 0.6);
-      border-radius: calc(var(--tp-radius-current) + 0.5rem);
-      background: hsl(var(--tp-card-current) / 0.94);
-      color: hsl(var(--tp-card-foreground-current));
-   }
-
-   .hero {
-      overflow: hidden;
-      box-shadow:
-         0 1px 0 rgb(0 0 0 / 0.02),
-         0 18px 40px rgb(24 32 52 / 0.08);
-   }
-
-   .hero-grid {
-      background:
-         linear-gradient(
-            135deg,
-            hsl(var(--tp-primary-current) / 0.12),
-            transparent 45%
-         ),
-         linear-gradient(
-            180deg,
-            hsl(var(--tp-card-current) / 0.8),
-            hsl(var(--tp-card-current) / 0.96)
-         );
-   }
-
-   .hero-title,
-   .section-title {
-      font-family: var(--tournament-display-font);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-   }
-
-   .hero-title {
-      max-width: 48rem;
-      font-size: clamp(2.75rem, 6vw, 5.5rem);
-      font-weight: 700;
-   }
-
-   .hero-copy,
-   .section-copy {
-      max-width: 44rem;
-      color: hsl(var(--tp-muted-foreground-current));
-      line-height: 1.8;
-   }
-
-   .hero-eyebrow,
-   .section-kicker {
-      color: hsl(var(--tp-muted-foreground-current));
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-   }
-
-   .hero-eyebrow {
-      border: 1px solid hsl(var(--tp-border-current) / 0.7);
-      border-radius: 999px;
-      padding: 0.45rem 0.8rem;
-      font-weight: 700;
-   }
-
-   .status-pill {
-      border-radius: 999px;
-      padding: 0.65rem 1rem;
-      background: hsl(var(--tp-primary-current));
-      color: hsl(var(--tp-primary-foreground-current));
-      font-weight: 600;
-   }
-
-   .info-pill {
-      border-radius: 999px;
-      padding: 0.65rem 1rem;
-      border: 1px solid hsl(var(--tp-border-current) / 0.7);
-      background: hsl(var(--tp-card-current) / 0.55);
-      color: hsl(var(--tp-card-foreground-current));
-      font-weight: 500;
-   }
-
-   .brand-lockup {
-      display: grid;
-      place-items: center;
-      width: 4.5rem;
-      height: 4.5rem;
-      border-radius: calc(var(--tp-radius-current) + 0.15rem);
-      border: 1px solid hsl(var(--tp-border-current) / 0.7);
-      background: hsl(var(--tp-card-current));
-      overflow: hidden;
-   }
-
-   .banner-frame,
-   .empty-branding,
-   .t-block,
-   .t-muted-block {
-      border-radius: calc(var(--tp-radius-current) + 0.1rem);
-   }
-
-   .banner-frame,
-   .t-block {
-      border: 1px solid hsl(var(--tp-border-current) / 0.6);
-      background: hsl(var(--tp-card-current) / 0.6);
-   }
-
-   .t-block {
-      padding: 1rem;
-   }
-
-   .t-muted-block,
-   .empty-branding {
-      background: hsl(var(--tp-muted-current) / 0.62);
-      color: hsl(var(--tp-card-foreground-current));
-      padding: 0.95rem 1rem;
-   }
-
-   .empty-branding {
-      border: 1px dashed hsl(var(--tp-border-current) / 0.75);
-      font-size: 0.95rem;
    }
 
    .prose-content {
