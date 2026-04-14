@@ -68,8 +68,11 @@
                      label={field.label}
                      variant="pill"
                      value={hslTokenToHex(value[field.key])}
-                     onValueChange={(nextValue: `#${string}`) => {
-                        setThemeColor(field.key, hexToHslToken(nextValue));
+                     onValueChange={(nextValue?: `#${string}`) => {
+                        setThemeColor(
+                           field.key,
+                           nextValue ? hexToHslToken(nextValue) : undefined,
+                        );
                      }}
                      {disabled}
                      class="h-14 w-full rounded-2xl"

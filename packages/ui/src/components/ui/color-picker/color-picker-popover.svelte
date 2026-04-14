@@ -24,6 +24,8 @@
       DEFAULT_COLOR,
       DEFAULT_SWATCHES,
       normalizeHex,
+      TRANSPARENT_LABEL,
+      TRANSPARENT_PREVIEW,
    } from "./color-picker.shared.js";
 
    const colorPickerTriggerVariants = tv({
@@ -77,13 +79,13 @@
       showAlpha?: boolean;
       contentClass?: string;
       pickerOptions?: Record<string, unknown>;
-      onValueChange?: (value: ColorPickerValue) => void;
+      onValueChange?: (value?: ColorPickerValue) => void;
       type?: "button" | "submit" | "reset";
    };
 
    let {
       ref = $bindable(null),
-      value = $bindable(DEFAULT_COLOR),
+      value = $bindable(),
       open = $bindable(false),
       label = "Color",
       name,
@@ -101,17 +103,18 @@
       ...restProps
    }: Props = $props();
 
-   let inputValue = $state(value);
+   let inputValue = $state(value ?? "");
    let hsv = $state({ h: 217, s: 76, v: 96 });
    let pickerHost = $state<HTMLDivElement | null>(null);
    let picker = $state<PickerInstance | null>(null);
    let syncingFromPicker = $state(false);
 
-   const previewColor = $derived(normalizeHex(value) ?? DEFAULT_COLOR);
+   const previewColor = $derived(normalizeHex(value));
+   const pickerColor = $derived(previewColor ?? DEFAULT_COLOR);
 
-   function setColor(nextValue: ColorPickerValue) {
+   function setColor(nextValue?: ColorPickerValue) {
       value = nextValue;
-      inputValue = nextValue;
+      inputValue = nextValue ?? "";
       onValueChange?.(nextValue);
    }
 
@@ -119,7 +122,7 @@
       const normalized = normalizeHex(inputValue);
 
       if (!normalized) {
-         inputValue = previewColor;
+         inputValue = previewColor ?? "";
          return;
       }
 
@@ -127,7 +130,11 @@
    }
 
    async function copyValue() {
-      if (typeof navigator === "undefined" || !navigator.clipboard) {
+      if (
+         typeof navigator === "undefined" ||
+         !navigator.clipboard ||
+         !previewColor
+      ) {
          return;
       }
 
@@ -135,7 +142,9 @@
    }
 
    function resetValue() {
-      setColor(DEFAULT_COLOR);
+      value = undefined;
+      inputValue = "";
+      onValueChange?.(undefined);
       picker?.reset();
    }
 
@@ -204,7 +213,7 @@
 
          const nextPicker = iro.ColorPicker(pickerHost, {
             width: getPickerWidth(),
-            color: previewColor,
+            color: pickerColor,
             borderWidth: 1,
             borderColor: "var(--color-border)",
             handleRadius: 9,
@@ -242,7 +251,7 @@
    });
 
    $effect(() => {
-      inputValue = value;
+      inputValue = value ?? "";
 
       if (!picker || syncingFromPicker) {
          return;
@@ -269,7 +278,7 @@
 </script>
 
 {#if name}
-   <input type="hidden" {name} value={previewColor} />
+   <input type="hidden" {name} value={previewColor ?? ""} />
 {/if}
 
 <Popover bind:open>
@@ -284,15 +293,15 @@
       {#if variant === "pill"}
          <span class="flex h-full w-full flex-col items-center gap-1">
             <span
-               class="block h-full w-full rounded-full border shadow-inner"
-               style={`background:${previewColor}`}
+               class="block h-full w-full rounded-full shadow-inner ring-1 ring-black/10"
+               style={`background:${previewColor ?? TRANSPARENT_PREVIEW}; background-size: 20px 20px;`}
             ></span>
          </span>
       {:else}
          <span class="flex min-w-0 items-center gap-3">
             <span
-               class="size-6 shrink-0 rounded-lg border shadow-inner"
-               style={`background:${previewColor}`}
+               class="size-6 shrink-0 rounded-lg shadow-inner ring-1 ring-black/10"
+               style={`background:${previewColor ?? TRANSPARENT_PREVIEW}; background-size: 20px 20px;`}
             ></span>
             <span class="min-w-0 text-left leading-none">
                <span
@@ -301,7 +310,7 @@
                   {label}
                </span>
                <span class="block truncate font-mono text-sm"
-                  >{previewColor}</span
+                  >{previewColor ?? TRANSPARENT_LABEL}</span
                >
             </span>
          </span>
@@ -314,10 +323,13 @@
    </PopoverTrigger>
 
    <PopoverContent
-      class={cn("w-96 overflow-hidden rounded-[1.25rem] p-0", contentClass)}
+      class={cn(
+         "bg-popover/98 w-96 overflow-hidden rounded-[1.5rem] border-0 p-0 shadow-2xl shadow-black/25",
+         contentClass,
+      )}
       align="start"
    >
-      <div class="border-b px-4 py-4">
+      <div class="bg-muted/35 px-4 py-4">
          <div class="flex items-center justify-between gap-3">
             <div>
                <p class="text-sm font-medium tracking-[0.01em]">{label}</p>
@@ -326,7 +338,7 @@
                </p>
             </div>
             <div
-               class="bg-muted flex items-center gap-1 rounded-full border px-2.5 py-1.5 font-mono text-[11px]"
+               class="bg-background/75 flex items-center gap-1 rounded-full px-2.5 py-1.5 font-mono text-[11px] shadow-sm"
             >
                <span>H {hsv.h}</span>
                <span class="text-border">/</span>
@@ -338,7 +350,9 @@
       </div>
 
       <div class="space-y-4 p-4">
-         <div class="rounded-[1.1rem] p-3">
+         <div
+            class="from-muted/45 to-background rounded-[1.25rem] bg-gradient-to-br p-3"
+         >
             {#if open}
                <div bind:this={pickerHost} class="iro-picker-host"></div>
             {/if}
@@ -354,11 +368,12 @@
                <div class="flex items-center gap-1">
                   <Button
                      type="button"
-                     variant="outline"
+                     variant="ghost"
                      size="icon-sm"
-                     class="size-8"
+                     class="bg-background/70 hover:bg-background size-8"
                      onclick={copyValue}
                      aria-label="Copy color value"
+                     disabled={!previewColor}
                   >
                      <HugeiconsIcon
                         icon={Copy01Icon}
@@ -368,9 +383,9 @@
                   </Button>
                   <Button
                      type="button"
-                     variant="outline"
+                     variant="ghost"
                      size="icon-sm"
-                     class="size-8"
+                     class="bg-background/70 hover:bg-background size-8"
                      onclick={resetValue}
                      aria-label="Reset color value"
                   >
@@ -388,8 +403,8 @@
                   class="pointer-events-none absolute inset-y-0 left-3 flex items-center"
                >
                   <span
-                     class="size-4 rounded-full border"
-                     style={`background:${previewColor}`}
+                     class="size-4 rounded-full shadow-inner ring-1 ring-black/10"
+                     style={`background:${previewColor ?? TRANSPARENT_PREVIEW}; background-size: 20px 20px;`}
                   ></span>
                </span>
                <Input

@@ -164,15 +164,22 @@
    }}
    ondrop={handleDrop}
 >
-   <div class="border-border bg-muted/20 overflow-hidden rounded-xl border">
+   <div
+      class="from-card/96 via-card/92 to-secondary/12 overflow-hidden rounded-[1.6rem] bg-gradient-to-br shadow-[0_22px_60px_rgb(0_0_0_/_0.16)]"
+   >
       <div
-         class="border-border bg-background/96 flex items-center justify-between gap-3 border-b px-3 py-2"
+         class="bg-background/72 flex items-center justify-between gap-3 px-3 py-2.5 backdrop-blur-sm"
       >
-         <div class="bg-muted inline-flex rounded-xl p-1">
+         <div class="bg-muted/72 inline-flex rounded-full p-1">
             <Button
                variant={activeTab === "write" ? "secondary" : "ghost"}
                size="sm"
-               class="min-w-18 rounded-lg"
+               class={cn(
+                  "min-w-18 rounded-full shadow-none",
+                  activeTab === "write"
+                     ? "bg-secondary text-secondary-foreground"
+                     : "text-muted-foreground",
+               )}
                onclick={() => {
                   activeTab = "write";
                }}
@@ -183,7 +190,12 @@
             <Button
                variant={activeTab === "preview" ? "secondary" : "ghost"}
                size="sm"
-               class="min-w-18 rounded-lg"
+               class={cn(
+                  "min-w-18 rounded-full shadow-none",
+                  activeTab === "preview"
+                     ? "bg-accent text-accent-foreground"
+                     : "text-muted-foreground",
+               )}
                onclick={() => {
                   activeTab = "preview";
                }}
@@ -211,8 +223,9 @@
                      onchange={handleFileInputChange}
                   />
                   <Button
-                     variant="outline"
+                     variant="secondary"
                      size="sm"
+                     class="shadow-none"
                      onclick={() => {
                         fileInputRef?.click();
                      }}
@@ -228,8 +241,8 @@
       {#if activeTab === "write"}
          <div
             class={cn(
-               "bg-background relative transition-colors",
-               dragDepth > 0 ? "bg-primary/5 ring-primary/20 ring-4" : "",
+               "bg-background/88 relative transition-colors",
+               dragDepth > 0 ? "bg-accent/20 ring-accent/35 ring-4" : "",
             )}
          >
             <CodeMirror
@@ -248,7 +261,7 @@
                      backgroundColor: "transparent",
                   },
                   ".cm-gutters": {
-                     backgroundColor: "hsl(var(--muted) / 0.35)",
+                     backgroundColor: "hsl(var(--secondary) / 0.55)",
                      border: "0",
                      color: "hsl(var(--muted-foreground))",
                   },
@@ -260,14 +273,14 @@
                      padding: "1.25rem 1rem",
                   },
                   ".cm-activeLine": {
-                     backgroundColor: "hsl(var(--muted) / 0.45)",
+                     backgroundColor: "hsl(var(--accent) / 0.24)",
                   },
                   ".cm-activeLineGutter": {
-                     backgroundColor: "hsl(var(--muted) / 0.65)",
+                     backgroundColor: "hsl(var(--secondary) / 0.85)",
                   },
                   ".cm-selectionBackground, &.cm-focused .cm-selectionBackground":
                      {
-                        backgroundColor: "hsl(var(--foreground) / 0.16)",
+                        backgroundColor: "hsl(var(--accent) / 0.3)",
                      },
                }}
             />
@@ -282,21 +295,21 @@
 
             {#if dragDepth > 0}
                <div
-                  class="bg-background/92 text-foreground absolute inset-3 flex items-center justify-center rounded-xl border text-center text-sm font-medium shadow-lg backdrop-blur-xs"
+                  class="bg-background/92 text-foreground absolute inset-3 flex items-center justify-center rounded-[1.1rem] text-center text-sm font-medium shadow-lg ring-1 ring-white/10 backdrop-blur-xs"
                >
                   {dropLabel}
                </div>
             {/if}
          </div>
       {:else}
-         <div class="bg-background min-h-[26rem] px-5 py-5">
+         <div class="bg-background/72 min-h-[26rem] px-5 py-5">
             {#if previewLoading}
                <p class="text-muted-foreground text-sm">{renderingLabel}</p>
             {:else if errorMessage}
                <p class="text-destructive text-sm">{errorMessage}</p>
             {:else if displayedPreviewHtml.trim()}
                <div
-                  class="prose prose-img:rounded-xl prose-pre:rounded-xl prose-code:before:hidden prose-code:after:hidden max-w-none"
+                  class="prose prose-a:text-primary prose-img:rounded-xl prose-pre:rounded-xl prose-code:before:hidden prose-code:after:hidden max-w-none"
                >
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html displayedPreviewHtml}

@@ -7,7 +7,12 @@
    import { cn } from "@ota/ui/utils.js";
 
    import type { ColorPickerProps } from "./color-picker.shared.ts";
-   import { DEFAULT_COLOR, normalizeHex } from "./color-picker.shared.js";
+   import {
+      DEFAULT_COLOR,
+      normalizeHex,
+      TRANSPARENT_LABEL,
+      TRANSPARENT_PREVIEW,
+   } from "./color-picker.shared.js";
 
    const colorPickerTriggerVariants = tv({
       base: "",
@@ -24,7 +29,7 @@
 
    let {
       ref = $bindable(null),
-      value = $bindable(DEFAULT_COLOR),
+      value = $bindable(),
       open = $bindable(false),
       label = "Color",
       name,
@@ -39,10 +44,11 @@
 
    let inputRef = $state<HTMLInputElement | null>(null);
 
-   const previewColor = $derived(normalizeHex(value) ?? DEFAULT_COLOR);
+   const previewColor = $derived(normalizeHex(value));
+   const pickerColor = $derived(previewColor ?? DEFAULT_COLOR);
 
    function setColor(nextValue: string) {
-      const normalized = normalizeHex(nextValue) ?? DEFAULT_COLOR;
+      const normalized = normalizeHex(nextValue) ?? undefined;
       value = normalized;
       onValueChange?.(normalized);
    }
@@ -79,14 +85,14 @@
 </script>
 
 {#if name}
-   <input type="hidden" {name} value={previewColor} />
+   <input type="hidden" {name} value={previewColor ?? ""} />
 {/if}
 
 <input
    bind:this={inputRef}
    class="sr-only"
    type="color"
-   value={previewColor}
+   value={pickerColor}
    tabindex={-1}
    aria-hidden="true"
    oninput={handleInput}
@@ -100,15 +106,15 @@
    {disabled}
    {type}
    class={cn(colorPickerTriggerVariants({ variant }), className)}
-   aria-label={`${label}: ${previewColor}`}
+   aria-label={`${label}: ${previewColor ?? TRANSPARENT_LABEL}`}
    onclick={openNativePicker}
    {...restProps}
 >
    {#if variant === "pill"}
       <span class="flex flex-col items-center gap-1">
          <span
-            class="block h-9 w-6 rounded-full border shadow-inner"
-            style={`background:${previewColor}`}
+            class="block h-9 w-6 rounded-full shadow-inner ring-1 ring-black/10"
+            style={`background:${previewColor ?? TRANSPARENT_PREVIEW}; background-size: 20px 20px;`}
          ></span>
          <HugeiconsIcon
             icon={ColorPickerIcon}
@@ -118,8 +124,8 @@
       </span>
    {:else}
       <span
-         class="flex size-8 items-center justify-center rounded-full border shadow-inner"
-         style={`background:${previewColor}`}
+         class="flex size-8 items-center justify-center rounded-full shadow-inner ring-1 ring-black/10"
+         style={`background:${previewColor ?? TRANSPARENT_PREVIEW}; background-size: 20px 20px;`}
       >
          <HugeiconsIcon
             icon={ColorPickerIcon}

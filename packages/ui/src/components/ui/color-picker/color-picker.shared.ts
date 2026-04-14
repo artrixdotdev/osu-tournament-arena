@@ -17,10 +17,13 @@ export type ColorPickerProps = WithElementRef<
    showAlpha?: boolean;
    contentClass?: string;
    pickerOptions?: Record<string, unknown>;
-   onValueChange?: (value: ColorPickerValue) => void;
+   onValueChange?: (value?: ColorPickerValue) => void;
 };
 
 export const DEFAULT_COLOR: ColorPickerValue = "#3b82f6";
+export const TRANSPARENT_PREVIEW =
+   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='20' height='20' fill='%23161521'/%3E%3Cpath d='M0 0h10v10H0zm10 10h10v10H10z' fill='%23272335'/%3E%3C/svg%3E\")";
+export const TRANSPARENT_LABEL = "transparent";
 
 export const DEFAULT_SWATCHES = [
    "#f97316",
