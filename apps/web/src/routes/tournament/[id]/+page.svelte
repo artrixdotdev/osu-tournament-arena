@@ -257,13 +257,8 @@
             </div>
          </section>
 
-         <Card as="article" variant="default" class="space-y-6 p-6 sm:p-8">
-            <div
-               class="from-secondary/18 to-chart-3/10 pointer-events-none absolute inset-x-0 top-0 h-36 rounded-t-[2.2rem] bg-gradient-to-r via-transparent"
-               aria-hidden="true"
-            ></div>
-
-            <div class="relative flex flex-wrap items-center gap-3">
+         <section class="space-y-6 px-1 py-2 sm:px-2">
+            <div class="flex flex-wrap items-center gap-3">
                <Badge
                   class="bg-background/82 text-foreground border-0 shadow-none"
                >
@@ -283,7 +278,7 @@
 
             {#if data.pageContent?.renderedHtml.trim()}
                <div
-                  class="prose-content prose prose-a:text-[hsl(var(--tp-primary-current))] prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden min-h-[75vh] max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
+                  class="prose-content prose prose-a:text-primary prose-strong:text-foreground prose-headings:text-foreground prose-code:text-foreground prose-blockquote:text-foreground prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_li]:text-muted-foreground [&_p]:text-muted-foreground [&_figcaption]:text-muted-foreground [&_td]:text-muted-foreground [&_th]:text-foreground min-h-[75vh] max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
                >
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html data.pageContent.renderedHtml}
@@ -295,7 +290,7 @@
                   {m.tournamentPage_customContentEmpty()}
                </p>
             {/if}
-         </Card>
+         </section>
       </section>
 
       <aside
