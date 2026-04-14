@@ -166,13 +166,13 @@
 >
    <div class="border-border bg-muted/20 overflow-hidden rounded-xl border">
       <div
-         class="border-border bg-background/90 flex items-center justify-between gap-3 border-b px-3 py-2"
+         class="border-border bg-background/96 flex items-center justify-between gap-3 border-b px-3 py-2"
       >
-         <div class="inline-flex rounded-lg border p-1">
+         <div class="bg-muted inline-flex rounded-xl p-1">
             <Button
-               variant={activeTab === "write" ? "default" : "ghost"}
+               variant={activeTab === "write" ? "secondary" : "ghost"}
                size="sm"
-               class="min-w-18"
+               class="min-w-18 rounded-lg"
                onclick={() => {
                   activeTab = "write";
                }}
@@ -181,9 +181,9 @@
                {writeLabel}
             </Button>
             <Button
-               variant={activeTab === "preview" ? "default" : "ghost"}
+               variant={activeTab === "preview" ? "secondary" : "ghost"}
                size="sm"
-               class="min-w-18"
+               class="min-w-18 rounded-lg"
                onclick={() => {
                   activeTab = "preview";
                }}
@@ -228,7 +228,7 @@
       {#if activeTab === "write"}
          <div
             class={cn(
-               "relative transition-colors",
+               "bg-background relative transition-colors",
                dragDepth > 0 ? "bg-primary/5 ring-primary/20 ring-4" : "",
             )}
          >
@@ -241,16 +241,34 @@
                {placeholder}
                styles={{
                   "&": {
-                     minHeight: "22rem",
+                     minHeight: "26rem",
                      fontSize: "0.95rem",
                   },
+                  ".cm-editor": {
+                     backgroundColor: "transparent",
+                  },
+                  ".cm-gutters": {
+                     backgroundColor: "hsl(var(--muted) / 0.35)",
+                     border: "0",
+                     color: "hsl(var(--muted-foreground))",
+                  },
                   ".cm-scroller": {
-                     minHeight: "22rem",
+                     minHeight: "26rem",
                      fontFamily: "var(--font-mono)",
                   },
                   ".cm-content": {
-                     padding: "1rem",
+                     padding: "1.25rem 1rem",
                   },
+                  ".cm-activeLine": {
+                     backgroundColor: "hsl(var(--muted) / 0.45)",
+                  },
+                  ".cm-activeLineGutter": {
+                     backgroundColor: "hsl(var(--muted) / 0.65)",
+                  },
+                  ".cm-selectionBackground, &.cm-focused .cm-selectionBackground":
+                     {
+                        backgroundColor: "hsl(var(--foreground) / 0.16)",
+                     },
                }}
             />
 
@@ -271,14 +289,14 @@
             {/if}
          </div>
       {:else}
-         <div class="bg-background min-h-[22rem] px-4 py-4">
+         <div class="bg-background min-h-[26rem] px-5 py-5">
             {#if previewLoading}
                <p class="text-muted-foreground text-sm">{renderingLabel}</p>
             {:else if errorMessage}
                <p class="text-destructive text-sm">{errorMessage}</p>
             {:else if displayedPreviewHtml.trim()}
                <div
-                  class="prose prose-zinc dark:prose-invert prose-img:rounded-xl prose-pre:rounded-xl prose-code:before:hidden prose-code:after:hidden max-w-none"
+                  class="prose prose-img:rounded-xl prose-pre:rounded-xl prose-code:before:hidden prose-code:after:hidden max-w-none"
                >
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html displayedPreviewHtml}
@@ -300,5 +318,9 @@
 
    :global(.markdown-editor .cm-focused) {
       outline: none;
+   }
+
+   :global(.markdown-editor .cm-lineNumbers .cm-gutterElement) {
+      padding: 0 0.6rem 0 0.8rem;
    }
 </style>
