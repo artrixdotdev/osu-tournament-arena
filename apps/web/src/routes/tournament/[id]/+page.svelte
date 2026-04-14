@@ -13,6 +13,7 @@
       AvatarImage,
    } from "@ota/ui/components/avatar/index.ts";
    import { Badge } from "@ota/ui/components/badge/index.ts";
+   import { Card } from "@ota/ui/components/card/index.ts";
 
    import type { PageProps } from "./$types";
 
@@ -169,91 +170,98 @@
 </svelte:head>
 
 <div class="tournament-page min-h-full" style={wrapperStyle}>
-   <section
-      class="relative isolate min-h-[24rem] overflow-hidden sm:min-h-[30rem]"
+   <div
+      class="grid w-full gap-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
    >
-      {#if media.bannerUrl}
-         <div
-            class="absolute inset-0 bg-cover bg-center"
-            style={bannerStyle}
-            aria-hidden="true"
-         ></div>
-      {:else}
-         <div
-            class="from-primary/24 via-secondary/14 to-background absolute inset-0 bg-gradient-to-br"
-            aria-hidden="true"
-         ></div>
-      {/if}
-      <div
-         class="from-background/10 via-background/45 to-background absolute inset-0 bg-gradient-to-t"
-         aria-hidden="true"
-      ></div>
+      <section class="tournament-shell min-w-0 space-y-6">
+         <section
+            class="relative isolate min-h-[26rem] overflow-hidden rounded-[2.25rem] sm:min-h-[32rem] lg:min-h-[36rem]"
+         >
+            {#if media.bannerUrl}
+               <div
+                  class="absolute inset-0 bg-cover bg-center"
+                  style={bannerStyle}
+                  aria-hidden="true"
+               ></div>
+            {:else}
+               <div
+                  class="from-primary/24 via-secondary/14 to-background absolute inset-0 bg-gradient-to-br"
+                  aria-hidden="true"
+               ></div>
+            {/if}
+            <div
+               class="from-background/0 via-background/28 to-background absolute inset-0 bg-gradient-to-b"
+               aria-hidden="true"
+            ></div>
+            <div
+               class="from-background/0 via-background/10 to-background absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t sm:h-56"
+               aria-hidden="true"
+            ></div>
 
-      <div
-         class="relative flex min-h-[24rem] items-end px-4 py-8 sm:min-h-[30rem] sm:px-6 lg:px-8 2xl:px-12"
-      >
-         <div class="max-w-4xl space-y-5">
-            <div class="flex flex-wrap items-center gap-2">
-               <Badge class="bg-background/70 text-foreground border-0">
-                  {m.tournamentPage_eyebrow()}
-               </Badge>
-               <Badge variant="secondary">{status}</Badge>
-               <Badge
-                  class="bg-secondary/85 text-secondary-foreground border-0"
-               >
-                  {#if data.tournament.isArchived}
-                     {m.common_archived()}
-                  {:else if data.isStaffView && !data.tournament.isPublic}
-                     {m.common_private()}
-                  {:else}
-                     {m.common_public()}
-                  {/if}
-               </Badge>
-            </div>
+            <div
+               class="relative flex min-h-[26rem] items-end px-4 pt-10 pb-10 sm:min-h-[32rem] sm:px-6 sm:pt-12 sm:pb-12 lg:min-h-[36rem] lg:px-8 lg:pb-16 2xl:px-12"
+            >
+               <div class="max-w-4xl space-y-5">
+                  <div class="flex flex-wrap items-center gap-2">
+                     <Badge class="bg-background/72 text-foreground border-0">
+                        {m.tournamentPage_eyebrow()}
+                     </Badge>
+                     <Badge variant="secondary">{status}</Badge>
+                     <Badge
+                        class="bg-secondary/85 text-secondary-foreground border-0"
+                     >
+                        {#if data.tournament.isArchived}
+                           {m.common_archived()}
+                        {:else if data.isStaffView && !data.tournament.isPublic}
+                           {m.common_private()}
+                        {:else}
+                           {m.common_public()}
+                        {/if}
+                     </Badge>
+                  </div>
 
-            <div class="flex items-end gap-4 sm:gap-5">
-               <Avatar
-                  class="bg-card/80 size-24 rounded-[1.8rem] shadow-[0_18px_45px_rgb(0_0_0_/_0.25)] sm:size-32"
-               >
-                  <AvatarImage
-                     src={media.iconUrl ?? media.logo ?? undefined}
-                     alt={m.tournamentPage_iconAlt({
-                        name: data.tournament.name,
-                     })}
-                     class="object-cover"
-                  />
-                  <AvatarFallback
-                     class="rounded-[1.8rem] text-2xl font-semibold uppercase"
+                  <div
+                     class="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-5"
                   >
-                     {data.tournament.acronym ??
-                        data.tournament.name.slice(0, 2)}
-                  </AvatarFallback>
-               </Avatar>
+                     <Avatar
+                        class="bg-card/82 size-20 rounded-[1.65rem] shadow-[0_18px_45px_rgb(0_0_0_/_0.25)] sm:size-28 lg:size-32"
+                     >
+                        <AvatarImage
+                           src={media.iconUrl ?? media.logo ?? undefined}
+                           alt={m.tournamentPage_iconAlt({
+                              name: data.tournament.name,
+                           })}
+                           class="object-cover"
+                        />
+                        <AvatarFallback
+                           class="rounded-[1.65rem] text-xl font-semibold uppercase sm:text-2xl"
+                        >
+                           {data.tournament.acronym ??
+                              data.tournament.name.slice(0, 2)}
+                        </AvatarFallback>
+                     </Avatar>
 
-               <div class="space-y-3 pb-1">
-                  <h1
-                     class="text-4xl font-[family:var(--tournament-display-font)] font-semibold tracking-[-0.05em] text-white drop-shadow-[0_8px_24px_rgb(0_0_0_/_0.35)] sm:text-6xl"
-                  >
-                     {data.tournament.name}
-                  </h1>
-                  <p
-                     class="max-w-3xl text-sm leading-7 text-white/78 sm:text-lg"
-                  >
-                     {data.tournament.description ??
-                        m.tournamentPage_descriptionFallback()}
-                  </p>
+                     <div class="space-y-3 sm:pb-1">
+                        <h1
+                           class="text-4xl font-[family:var(--tournament-display-font)] font-semibold tracking-[-0.05em] text-white drop-shadow-[0_8px_24px_rgb(0_0_0_/_0.35)] sm:text-5xl lg:text-6xl"
+                        >
+                           {data.tournament.name}
+                        </h1>
+                        <p
+                           class="max-w-3xl text-sm leading-7 text-white/78 sm:text-base lg:text-lg"
+                        >
+                           {data.tournament.description ??
+                              m.tournamentPage_descriptionFallback()}
+                        </p>
+                     </div>
+                  </div>
                </div>
             </div>
-         </div>
-      </div>
-   </section>
+         </section>
 
-   <div
-      class="-mt-10 grid w-full gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
-   >
-      <section class="space-y-5">
-         <article
-            class="bg-card/86 relative space-y-6 rounded-[2.2rem] p-6 shadow-[0_28px_70px_rgb(0_0_0_/_0.18)] sm:p-8"
+         <Card
+            as="article"
+            class="bg-card/86 space-y-6 rounded-[2.2rem] p-6 sm:p-8"
          >
             <div
                class="from-secondary/18 to-chart-3/10 pointer-events-none absolute inset-x-0 top-0 h-36 rounded-t-[2.2rem] bg-gradient-to-r via-transparent"
@@ -292,16 +300,14 @@
                   {m.tournamentPage_customContentEmpty()}
                </p>
             {/if}
-         </article>
+         </Card>
       </section>
 
-      <aside class="space-y-4 lg:sticky lg:top-6 lg:self-start">
-         <article
-            class="from-card/95 to-secondary/14 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
-         >
+      <aside class="space-y-4 pt-2 lg:sticky lg:top-6 lg:self-start lg:pt-24">
+         <Card as="article" variant="secondary" class="space-y-4 p-5">
             <div class="space-y-2">
                <p
-                  class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                  class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
                >
                   {m.tournamentPage_section_quickFacts()}
                </p>
@@ -310,7 +316,7 @@
                      class="bg-secondary/34 rounded-[1.35rem] px-4 py-3 shadow-sm"
                   >
                      <p
-                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
                         {m.tournamentPage_label_teamSize()}
                      </p>
@@ -322,7 +328,7 @@
                      class="rounded-[1.35rem] bg-[hsl(var(--chart-3)/0.2)] px-4 py-3 shadow-sm"
                   >
                      <p
-                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
                         {m.tournamentPage_label_lobbySize()}
                      </p>
@@ -337,7 +343,7 @@
                {#each quickFacts as fact (fact.label)}
                   <div class="bg-background/46 rounded-[1.25rem] px-4 py-3">
                      <dt
-                        class="text-[11px] tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
                      >
                         {fact.label}
                      </dt>
@@ -347,13 +353,11 @@
                   </div>
                {/each}
             </dl>
-         </article>
+         </Card>
 
-         <article
-            class="from-card/95 to-chart-2/8 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
-         >
+         <Card as="article" variant="chart2" class="space-y-4 p-5">
             <p
-               class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
             >
                {m.tournamentPage_section_schedule()}
             </p>
@@ -362,9 +366,7 @@
                   <div
                      class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
                   >
-                     <dt
-                        class="text-sm text-[hsl(var(--tp-muted-foreground-current))]"
-                     >
+                     <dt class="text-muted-foreground text-sm">
                         {item.label}
                      </dt>
                      <dd class="text-right font-semibold">
@@ -373,13 +375,11 @@
                   </div>
                {/each}
             </dl>
-         </article>
+         </Card>
 
-         <article
-            class="from-card/95 to-chart-5/8 space-y-4 rounded-[2rem] bg-gradient-to-br p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)]"
-         >
+         <Card as="article" variant="chart5" class="space-y-4 p-5">
             <p
-               class="text-xs tracking-[0.14em] text-[hsl(var(--tp-muted-foreground-current))] uppercase"
+               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
             >
                {m.tournamentPage_section_format()}
             </p>
@@ -388,9 +388,7 @@
                   <div
                      class="bg-background/46 flex items-start justify-between gap-4 rounded-[1.25rem] px-4 py-3"
                   >
-                     <dt
-                        class="text-sm text-[hsl(var(--tp-muted-foreground-current))]"
-                     >
+                     <dt class="text-muted-foreground text-sm">
                         {item.label}
                      </dt>
                      <dd class="text-right font-semibold">
@@ -399,13 +397,29 @@
                   </div>
                {/each}
             </dl>
-         </article>
+         </Card>
       </aside>
    </div>
 </div>
 
 <style>
    .tournament-page {
+      --tp-site-background: var(--background);
+      --tp-site-foreground: var(--foreground);
+      --tp-site-card: var(--card);
+      --tp-site-card-foreground: var(--card-foreground);
+      --tp-site-muted: var(--muted);
+      --tp-site-muted-foreground: var(--muted-foreground);
+      --tp-site-primary: var(--primary);
+      --tp-site-primary-foreground: var(--primary-foreground);
+      --tp-site-secondary: var(--secondary);
+      --tp-site-secondary-foreground: var(--secondary-foreground);
+      --tp-site-accent: var(--accent);
+      --tp-site-accent-foreground: var(--accent-foreground);
+      --tp-site-border: var(--border);
+      --tp-site-input: var(--input);
+      --tp-site-ring: var(--ring);
+      --tp-site-radius: var(--radius);
       --tp-background-current: var(--tp-light-background, var(--background));
       --tp-foreground-current: var(--tp-light-foreground, var(--foreground));
       --tp-card-current: var(--tp-light-card, var(--card));
@@ -425,7 +439,6 @@
       );
       --tp-border-current: var(--tp-light-border, var(--border));
       --tp-radius-current: var(--tp-radius, 1rem);
-      color: hsl(var(--tp-foreground-current));
       background:
          radial-gradient(
             circle at top left,
@@ -437,7 +450,43 @@
             hsl(var(--tp-background-current)),
             transparent 42%
          );
+      color: hsl(var(--tp-foreground-current));
+   }
+
+   .tournament-shell {
+      --background: var(--tp-light-background, var(--tp-site-background));
+      --foreground: var(--tp-light-foreground, var(--tp-site-foreground));
+      --card: var(--tp-light-card, var(--tp-site-card));
+      --card-foreground: var(
+         --tp-light-cardForeground,
+         var(--tp-site-card-foreground)
+      );
+      --muted: var(--tp-light-muted, var(--tp-site-muted));
+      --muted-foreground: var(
+         --tp-light-mutedForeground,
+         var(--tp-site-muted-foreground)
+      );
+      --primary: var(--tp-light-primary, var(--tp-site-primary));
+      --primary-foreground: var(
+         --tp-light-primaryForeground,
+         var(--tp-site-primary-foreground)
+      );
+      --secondary: var(--tp-light-secondary, var(--tp-site-secondary));
+      --secondary-foreground: var(
+         --tp-light-secondaryForeground,
+         var(--tp-site-secondary-foreground)
+      );
+      --accent: var(--tp-light-accent, var(--tp-site-accent));
+      --accent-foreground: var(
+         --tp-light-accentForeground,
+         var(--tp-site-accent-foreground)
+      );
+      --border: var(--tp-light-border, var(--tp-site-border));
+      --input: var(--tp-light-input, var(--tp-site-input));
+      --ring: var(--tp-light-ring, var(--tp-site-ring));
+      --radius: var(--tp-radius, var(--tp-site-radius));
       font-family: var(--tournament-body-font);
+      color: hsl(var(--foreground));
       --tw-prose-body: hsl(var(--tp-muted-foreground-current));
       --tw-prose-headings: hsl(var(--tp-card-foreground-current));
       --tw-prose-lead: hsl(var(--tp-muted-foreground-current));
@@ -490,6 +539,66 @@
          --tp-dark-border,
          var(--tp-light-border, var(--border))
       );
+   }
+
+   :global(.dark) .tournament-shell {
+      --background: var(
+         --tp-dark-background,
+         var(--tp-light-background, var(--tp-site-background))
+      );
+      --foreground: var(
+         --tp-dark-foreground,
+         var(--tp-light-foreground, var(--tp-site-foreground))
+      );
+      --card: var(--tp-dark-card, var(--tp-light-card, var(--tp-site-card)));
+      --card-foreground: var(
+         --tp-dark-cardForeground,
+         var(--tp-light-cardForeground, var(--tp-site-card-foreground))
+      );
+      --muted: var(
+         --tp-dark-muted,
+         var(--tp-light-muted, var(--tp-site-muted))
+      );
+      --muted-foreground: var(
+         --tp-dark-mutedForeground,
+         var(--tp-light-mutedForeground, var(--tp-site-muted-foreground))
+      );
+      --primary: var(
+         --tp-dark-primary,
+         var(--tp-light-primary, var(--tp-site-primary))
+      );
+      --primary-foreground: var(
+         --tp-dark-primaryForeground,
+         var(--tp-light-primaryForeground, var(--tp-site-primary-foreground))
+      );
+      --secondary: var(
+         --tp-dark-secondary,
+         var(--tp-light-secondary, var(--tp-site-secondary))
+      );
+      --secondary-foreground: var(
+         --tp-dark-secondaryForeground,
+         var(
+            --tp-light-secondaryForeground,
+            var(--tp-site-secondary-foreground)
+         )
+      );
+      --accent: var(
+         --tp-dark-accent,
+         var(--tp-light-accent, var(--tp-site-accent))
+      );
+      --accent-foreground: var(
+         --tp-dark-accentForeground,
+         var(--tp-light-accentForeground, var(--tp-site-accent-foreground))
+      );
+      --border: var(
+         --tp-dark-border,
+         var(--tp-light-border, var(--tp-site-border))
+      );
+      --input: var(
+         --tp-dark-input,
+         var(--tp-light-input, var(--tp-site-input))
+      );
+      --ring: var(--tp-dark-ring, var(--tp-light-ring, var(--tp-site-ring)));
    }
 
    .prose-content {
