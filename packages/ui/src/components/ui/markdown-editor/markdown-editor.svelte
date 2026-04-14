@@ -277,7 +277,9 @@
             {:else if errorMessage}
                <p class="text-destructive text-sm">{errorMessage}</p>
             {:else if displayedPreviewHtml.trim()}
-               <div class="prose-content">
+               <div
+                  class="prose prose-zinc dark:prose-invert prose-img:rounded-xl prose-pre:rounded-xl prose-code:before:hidden prose-code:after:hidden max-w-none"
+               >
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html displayedPreviewHtml}
                </div>
@@ -298,15 +300,5 @@
 
    :global(.markdown-editor .cm-focused) {
       outline: none;
-   }
-
-   .prose-content :global(img) {
-      max-width: 100%;
-      border-radius: 0.75rem;
-      margin: 1rem 0;
-   }
-
-   .prose-content :global(pre) {
-      overflow-x: auto;
    }
 </style>

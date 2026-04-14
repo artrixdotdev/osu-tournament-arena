@@ -825,7 +825,7 @@ export const tournamentProcedures = {
                ],
                staffRoleCounts: Object.entries(roleCounts).map(
                   ([role, total]) => ({
-                     role,
+                     role: role as StaffRole,
                      total,
                   }),
                ),

@@ -1,6 +1,11 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
    import { getLocale } from "$i18n/runtime";
+   import {
+      getTournamentFontStack,
+      getTournamentFontStylesheetHref,
+      getTournamentThemeStyle,
+   } from "$lib/tournament-page";
 
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Separator } from "@ota/ui/components/separator/index.ts";
@@ -14,10 +19,10 @@
    }
 
    let { data }: PageProps = $props();
+
    const media = $derived(
       data.tournament as typeof data.tournament & TournamentMediaShape,
    );
-
    const locale = $derived(getLocale());
    const dateFormatter = $derived(
       new Intl.DateTimeFormat(locale, {
@@ -25,6 +30,19 @@
       }),
    );
    const numberFormatter = $derived(new Intl.NumberFormat(locale));
+   const fontStylesheetHref = $derived(
+      getTournamentFontStylesheetHref(data.pageContent?.content?.fontFamily),
+   );
+   const wrapperStyle = $derived.by(() => {
+      const themeStyle = getTournamentThemeStyle(
+         data.pageContent?.content?.theme,
+      );
+      const fontStack = getTournamentFontStack(
+         data.pageContent?.content?.fontFamily,
+      );
+
+      return `${themeStyle} --tournament-display-font: ${fontStack}; --tournament-body-font: ${fontStack};`;
+   });
 
    const status = $derived.by(() => {
       if (data.tournament.isArchived) {
@@ -127,26 +145,28 @@
 
 <svelte:head>
    <title>{m.tournamentPage_pageTitle({ name: data.tournament.name })}</title>
+   {#if fontStylesheetHref}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+         rel="preconnect"
+         href="https://fonts.gstatic.com"
+         crossorigin="anonymous"
+      />
+      <link rel="stylesheet" href={fontStylesheetHref} />
+   {/if}
 </svelte:head>
 
-<div
-   class="tournament-page min-h-full"
-   style="--tournament-accent: oklch(0.62 0.16 192); --tournament-paper: oklch(0.982 0.012 95); --tournament-ink: oklch(0.2 0.03 220); --tournament-display-font: var(--font-serif); --tournament-body-font: var(--font-sans);"
->
+<div class="tournament-page min-h-full" style={wrapperStyle}>
    <div
       class="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8"
    >
-      <section
-         class="hero overflow-hidden rounded-[2rem] border border-black/10 bg-[var(--tournament-paper)]"
-      >
+      <section class="hero overflow-hidden">
          <div
             class="hero-grid grid gap-6 p-6 md:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.9fr)] md:p-10"
          >
             <div class="space-y-6">
                <div class="flex flex-wrap items-center gap-3">
-                  <span
-                     class="rounded-full border border-black/10 px-3 py-1 text-xs font-semibold tracking-[0.22em] uppercase"
-                  >
+                  <span class="hero-eyebrow">
                      {m.tournamentPage_eyebrow()}
                   </span>
 
@@ -160,44 +180,30 @@
                </div>
 
                <div class="space-y-4">
-                  <h1
-                     class="max-w-4xl text-4xl leading-none font-semibold tracking-[-0.04em] md:text-6xl"
-                     style="font-family: var(--tournament-display-font); color: var(--tournament-ink);"
-                  >
+                  <h1 class="hero-title">
                      {data.tournament.name}
                   </h1>
 
-                  <p
-                     class="max-w-3xl text-base leading-7 md:text-lg"
-                     style="color: color-mix(in oklch, var(--tournament-ink) 72%, white); font-family: var(--tournament-body-font);"
-                  >
+                  <p class="hero-copy">
                      {data.tournament.description ??
                         m.tournamentPage_descriptionFallback()}
                   </p>
                </div>
 
                <div class="flex flex-wrap items-center gap-3 text-sm">
-                  <div
-                     class="rounded-full bg-black px-4 py-2 font-medium text-white"
-                  >
+                  <div class="status-pill">
                      {status}
                   </div>
-                  <div
-                     class="rounded-full border border-black/10 px-4 py-2 font-medium"
-                  >
+                  <div class="info-pill">
                      {scheduleWindow}
                   </div>
                </div>
             </div>
 
             <div class="space-y-4">
-               <div
-                  class="relative overflow-hidden rounded-[1.5rem] border border-black/10 bg-white/70 p-4 backdrop-blur-sm"
-               >
+               <div class="side-panel p-4">
                   <div class="flex items-center gap-4">
-                     <div
-                        class="grid size-18 shrink-0 place-items-center overflow-hidden rounded-[1.25rem] border border-black/10 bg-white"
-                     >
+                     <div class="brand-lockup">
                         {#if media.iconUrl ?? media.logo}
                            <img
                               src={media.iconUrl ?? media.logo ?? undefined}
@@ -209,7 +215,6 @@
                         {:else}
                            <span
                               class="text-center text-lg font-semibold tracking-[0.12em] uppercase"
-                              style="font-family: var(--tournament-display-font);"
                            >
                               {data.tournament.acronym ??
                                  data.tournament.name.slice(0, 2)}
@@ -218,24 +223,20 @@
                      </div>
 
                      <div class="min-w-0">
-                        <p
-                           class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-                        >
+                        <p class="section-kicker">
                            {m.tournamentPage_section_quickFacts()}
                         </p>
                         <p class="truncate text-xl font-semibold">
                            {data.tournament.id}
                         </p>
-                        <p class="text-muted-foreground text-sm">
+                        <p class="text-sm opacity-70">
                            {m.common_branding()}
                         </p>
                      </div>
                   </div>
 
                   {#if media.bannerUrl}
-                     <div
-                        class="mt-4 overflow-hidden rounded-[1.25rem] border border-black/10"
-                     >
+                     <div class="banner-frame mt-4">
                         <img
                            src={media.bannerUrl}
                            alt={m.tournamentPage_bannerAlt({
@@ -245,9 +246,7 @@
                         />
                      </div>
                   {:else}
-                     <div
-                        class="mt-4 rounded-[1.25rem] border border-dashed border-black/10 px-4 py-8 text-sm"
-                     >
+                     <div class="empty-branding mt-4">
                         {m.tournamentPage_noBranding()}
                      </div>
                   {/if}
@@ -259,40 +258,33 @@
       <section
          class="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,0.85fr)]"
       >
-         <article class="bg-background space-y-4 rounded-[1.75rem] border p-6">
+         <article class="t-card space-y-4 p-6">
             <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-               >
+               <p class="section-kicker">
                   {m.tournamentPage_section_overview()}
                </p>
-               <h2
-                  class="text-3xl font-semibold tracking-[-0.03em]"
-                  style="font-family: var(--tournament-display-font);"
-               >
+               <h2 class="section-title text-3xl">
                   {data.tournament.name}
                </h2>
             </div>
 
             <Separator />
 
-            <p class="text-muted-foreground text-base leading-7">
+            <p class="section-copy">
                {data.tournament.description ??
                   m.tournamentPage_descriptionFallback()}
             </p>
          </article>
 
-         <article class="bg-background space-y-4 rounded-[1.75rem] border p-6">
-            <p
-               class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-            >
+         <article class="t-card space-y-4 p-6">
+            <p class="section-kicker">
                {m.tournamentPage_section_quickFacts()}
             </p>
 
             <dl class="grid gap-3">
                {#each quickFacts as fact (fact.label)}
-                  <div class="bg-muted/50 rounded-2xl px-4 py-3">
-                     <dt class="text-muted-foreground text-xs uppercase">
+                  <div class="t-muted-block">
+                     <dt class="text-xs uppercase opacity-70">
                         {fact.label}
                      </dt>
                      <dd class="mt-1 text-base font-semibold break-all">
@@ -305,25 +297,20 @@
       </section>
 
       <section class="grid gap-4 xl:grid-cols-2">
-         <article class="bg-background space-y-4 rounded-[1.75rem] border p-6">
+         <article class="t-card space-y-4 p-6">
             <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-               >
+               <p class="section-kicker">
                   {m.tournamentPage_section_schedule()}
                </p>
-               <h2
-                  class="text-2xl font-semibold tracking-[-0.03em]"
-                  style="font-family: var(--tournament-display-font);"
-               >
+               <h2 class="section-title text-2xl">
                   {scheduleWindow}
                </h2>
             </div>
 
             <dl class="grid gap-3 sm:grid-cols-2">
                {#each scheduleItems as item (item.label)}
-                  <div class="bg-muted/35 rounded-2xl border px-4 py-4">
-                     <dt class="text-muted-foreground text-xs uppercase">
+                  <div class="t-block">
+                     <dt class="text-xs uppercase opacity-70">
                         {item.label}
                      </dt>
                      <dd class="mt-2 text-base font-semibold">
@@ -334,27 +321,20 @@
             </dl>
          </article>
 
-         <article class="bg-background space-y-4 rounded-[1.75rem] border p-6">
+         <article class="t-card space-y-4 p-6">
             <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-               >
+               <p class="section-kicker">
                   {m.tournamentPage_section_format()}
                </p>
-               <h2
-                  class="text-2xl font-semibold tracking-[-0.03em]"
-                  style="font-family: var(--tournament-display-font);"
-               >
+               <h2 class="section-title text-2xl">
                   {m.tournamentPage_section_format()}
                </h2>
             </div>
 
             <dl class="grid gap-3">
                {#each formatItems as item (item.label)}
-                  <div
-                     class="flex items-center justify-between gap-4 rounded-2xl border px-4 py-4"
-                  >
-                     <dt class="text-muted-foreground text-sm">
+                  <div class="t-block flex items-center justify-between gap-4">
+                     <dt class="text-sm opacity-70">
                         {item.label}
                      </dt>
                      <dd class="text-right text-lg font-semibold">
@@ -365,25 +345,130 @@
             </dl>
          </article>
       </section>
+
+      <section class="t-card space-y-4 p-6">
+         <div class="space-y-2">
+            <p class="section-kicker">{m.labels_content()}</p>
+            <h2 class="section-title text-3xl">{m.labels_content()}</h2>
+         </div>
+
+         <Separator />
+
+         {#if data.pageContent?.renderedHtml.trim()}
+            <div
+               class="prose-content prose prose-zinc dark:prose-invert prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
+            >
+               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+               {@html data.pageContent.renderedHtml}
+            </div>
+         {:else}
+            <p class="section-copy">
+               {m.tournamentPage_customContentEmpty()}
+            </p>
+         {/if}
+      </section>
    </div>
 </div>
 
 <style>
    .tournament-page {
+      --tp-background-current: var(--tp-light-background, var(--background));
+      --tp-foreground-current: var(--tp-light-foreground, var(--foreground));
+      --tp-card-current: var(--tp-light-card, var(--card));
+      --tp-card-foreground-current: var(
+         --tp-light-cardForeground,
+         var(--card-foreground)
+      );
+      --tp-muted-current: var(--tp-light-muted, var(--muted));
+      --tp-muted-foreground-current: var(
+         --tp-light-mutedForeground,
+         var(--muted-foreground)
+      );
+      --tp-primary-current: var(--tp-light-primary, var(--primary));
+      --tp-primary-foreground-current: var(
+         --tp-light-primaryForeground,
+         var(--primary-foreground)
+      );
+      --tp-border-current: var(--tp-light-border, var(--border));
+      --tp-radius-current: var(--tp-radius, 1rem);
+      color: hsl(var(--tp-foreground-current));
       background:
          radial-gradient(
             circle at top left,
-            color-mix(in oklch, var(--tournament-accent) 14%, white),
+            hsl(var(--tp-primary-current) / 0.14),
             transparent 34%
          ),
          linear-gradient(
             180deg,
-            color-mix(in oklch, var(--tournament-paper) 72%, white),
-            transparent 38%
+            hsl(var(--tp-background-current)),
+            transparent 42%
          );
+      font-family: var(--tournament-body-font);
+      --tw-prose-body: hsl(var(--tp-muted-foreground-current));
+      --tw-prose-headings: hsl(var(--tp-card-foreground-current));
+      --tw-prose-lead: hsl(var(--tp-muted-foreground-current));
+      --tw-prose-links: hsl(var(--tp-primary-current));
+      --tw-prose-bold: hsl(var(--tp-card-foreground-current));
+      --tw-prose-counters: hsl(var(--tp-muted-foreground-current));
+      --tw-prose-bullets: hsl(var(--tp-primary-current));
+      --tw-prose-hr: hsl(var(--tp-border-current));
+      --tw-prose-quotes: hsl(var(--tp-card-foreground-current));
+      --tw-prose-quote-borders: hsl(var(--tp-border-current));
+      --tw-prose-captions: hsl(var(--tp-muted-foreground-current));
+      --tw-prose-code: hsl(var(--tp-card-foreground-current));
+      --tw-prose-pre-code: hsl(var(--tp-card-foreground-current));
+      --tw-prose-pre-bg: hsl(var(--tp-muted-current));
+      --tw-prose-th-borders: hsl(var(--tp-border-current));
+      --tw-prose-td-borders: hsl(var(--tp-border-current));
+   }
+
+   :global(.dark) .tournament-page {
+      --tp-background-current: var(
+         --tp-dark-background,
+         var(--tp-light-background, var(--background))
+      );
+      --tp-foreground-current: var(
+         --tp-dark-foreground,
+         var(--tp-light-foreground, var(--foreground))
+      );
+      --tp-card-current: var(--tp-dark-card, var(--tp-light-card, var(--card)));
+      --tp-card-foreground-current: var(
+         --tp-dark-cardForeground,
+         var(--tp-light-cardForeground, var(--card-foreground))
+      );
+      --tp-muted-current: var(
+         --tp-dark-muted,
+         var(--tp-light-muted, var(--muted))
+      );
+      --tp-muted-foreground-current: var(
+         --tp-dark-mutedForeground,
+         var(--tp-light-mutedForeground, var(--muted-foreground))
+      );
+      --tp-primary-current: var(
+         --tp-dark-primary,
+         var(--tp-light-primary, var(--primary))
+      );
+      --tp-primary-foreground-current: var(
+         --tp-dark-primaryForeground,
+         var(--tp-light-primaryForeground, var(--primary-foreground))
+      );
+      --tp-border-current: var(
+         --tp-dark-border,
+         var(--tp-light-border, var(--border))
+      );
+   }
+
+   .hero,
+   .t-card,
+   .side-panel {
+      border: 1px solid hsl(var(--tp-border-current) / 0.6);
+      border-radius: calc(var(--tp-radius-current) + 0.5rem);
+      background: hsl(var(--tp-card-current) / 0.94);
+      color: hsl(var(--tp-card-foreground-current));
    }
 
    .hero {
+      overflow: hidden;
       box-shadow:
          0 1px 0 rgb(0 0 0 / 0.02),
          0 18px 40px rgb(24 32 52 / 0.08);
@@ -393,13 +478,109 @@
       background:
          linear-gradient(
             135deg,
-            color-mix(in oklch, var(--tournament-accent) 10%, transparent),
+            hsl(var(--tp-primary-current) / 0.12),
             transparent 45%
          ),
          linear-gradient(
             180deg,
-            rgb(255 255 255 / 0.78),
-            rgb(255 255 255 / 0.92)
+            hsl(var(--tp-card-current) / 0.8),
+            hsl(var(--tp-card-current) / 0.96)
          );
+   }
+
+   .hero-title,
+   .section-title {
+      font-family: var(--tournament-display-font);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+   }
+
+   .hero-title {
+      max-width: 48rem;
+      font-size: clamp(2.75rem, 6vw, 5.5rem);
+      font-weight: 700;
+   }
+
+   .hero-copy,
+   .section-copy {
+      max-width: 44rem;
+      color: hsl(var(--tp-muted-foreground-current));
+      line-height: 1.8;
+   }
+
+   .hero-eyebrow,
+   .section-kicker {
+      color: hsl(var(--tp-muted-foreground-current));
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+   }
+
+   .hero-eyebrow {
+      border: 1px solid hsl(var(--tp-border-current) / 0.7);
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-weight: 700;
+   }
+
+   .status-pill {
+      border-radius: 999px;
+      padding: 0.65rem 1rem;
+      background: hsl(var(--tp-primary-current));
+      color: hsl(var(--tp-primary-foreground-current));
+      font-weight: 600;
+   }
+
+   .info-pill {
+      border-radius: 999px;
+      padding: 0.65rem 1rem;
+      border: 1px solid hsl(var(--tp-border-current) / 0.7);
+      background: hsl(var(--tp-card-current) / 0.55);
+      color: hsl(var(--tp-card-foreground-current));
+      font-weight: 500;
+   }
+
+   .brand-lockup {
+      display: grid;
+      place-items: center;
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: calc(var(--tp-radius-current) + 0.15rem);
+      border: 1px solid hsl(var(--tp-border-current) / 0.7);
+      background: hsl(var(--tp-card-current));
+      overflow: hidden;
+   }
+
+   .banner-frame,
+   .empty-branding,
+   .t-block,
+   .t-muted-block {
+      border-radius: calc(var(--tp-radius-current) + 0.1rem);
+   }
+
+   .banner-frame,
+   .t-block {
+      border: 1px solid hsl(var(--tp-border-current) / 0.6);
+      background: hsl(var(--tp-card-current) / 0.6);
+   }
+
+   .t-block {
+      padding: 1rem;
+   }
+
+   .t-muted-block,
+   .empty-branding {
+      background: hsl(var(--tp-muted-current) / 0.62);
+      color: hsl(var(--tp-card-foreground-current));
+      padding: 0.95rem 1rem;
+   }
+
+   .empty-branding {
+      border: 1px dashed hsl(var(--tp-border-current) / 0.75);
+      font-size: 0.95rem;
+   }
+
+   .prose-content {
+      max-width: 100%;
    }
 </style>
