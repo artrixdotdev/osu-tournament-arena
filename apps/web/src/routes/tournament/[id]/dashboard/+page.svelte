@@ -1,23 +1,23 @@
 <script lang="ts">
    import { untrack } from "svelte";
    import { goto } from "$app/navigation";
-   import { resolve } from "$app/paths";
    import { m } from "$i18n/messages";
+   import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
    import { client } from "$lib/orpc";
-   import {
-      parseTournamentTheme,
-      stringifyTournamentTheme,
-      TOURNAMENT_FONT_OPTIONS,
-   } from "$lib/tournament-page";
+   import { TOURNAMENT_FONT_OPTIONS } from "$lib/tournament-page";
    import { toast } from "svelte-sonner";
 
+   import type {
+      TournamentPageTheme,
+      TournamentThemeTokens,
+   } from "@ota/db/schema";
    import { StaffRole } from "@ota/db/schema";
    import { uploadFile } from "@ota/storage/client";
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { MarkdownEditor } from "@ota/ui/components/markdown-editor/index.ts";
-   import { Textarea } from "@ota/ui/components/textarea/index.ts";
+   import { Separator } from "@ota/ui/components/separator/index.ts";
 
    import type { PageProps } from "./$types";
 
@@ -26,11 +26,34 @@
 
    let body = $state(initialContent?.body ?? "");
    let fontFamily = $state(initialContent?.fontFamily ?? "");
-   let themeJson = $state(stringifyTournamentTheme(initialContent?.theme));
+   let radius = $state(initialContent?.theme?.radius?.toString() ?? "");
+   let lightTheme = $state<Partial<TournamentThemeTokens>>(
+      initialContent?.theme?.light ?? {},
+   );
+   let darkTheme = $state<Partial<TournamentThemeTokens>>(
+      initialContent?.theme?.dark ?? {},
+   );
+   const initialActiveTab = untrack(() =>
+      data.dashboard.permissions.canCustomizePage ? "page" : "overview",
+   );
+   let activeTab = $state<"overview" | "page">(initialActiveTab);
+   let themeMode = $state<"light" | "dark">("light");
    let saving = $state(false);
 
    const roleSet = $derived(new Set(data.dashboard.roles));
    const canCustomize = $derived(data.dashboard.permissions.canCustomizePage);
+   const previewPath = $derived(
+      `/tournament/${data.dashboard.tournament.id}` as `/tournament/${string}`,
+   );
+   const visibilityLabel = $derived.by(() => {
+      if (data.dashboard.tournament.isArchived) {
+         return m.common_archived();
+      }
+
+      return data.dashboard.tournament.isPublic
+         ? m.common_public()
+         : m.common_private();
+   });
    const showOperationsCard = $derived(
       roleSet.has(StaffRole.COMMENTATOR) ||
          roleSet.has(StaffRole.REFEREE) ||
@@ -43,10 +66,10 @@
          roleSet.has(StaffRole.ADMIN) ||
          roleSet.has(StaffRole.HOST),
    );
-
    const customizationCoverage = $derived(
       data.dashboard.metrics.customizationCoverage.map((item) => ({
          ...item,
+         percent: item.value === 1 ? 100 : 0,
          label:
             item.id === "body"
                ? m.tournamentDashboard_coverage_body()
@@ -55,6 +78,23 @@
                  : m.tournamentDashboard_coverage_font(),
       })),
    );
+   const statCards = $derived([
+      {
+         id: "players",
+         label: m.tournamentDashboard_metric_players(),
+         value: data.dashboard.metrics.playerCount,
+      },
+      {
+         id: "teams",
+         label: m.tournamentDashboard_metric_teams(),
+         value: data.dashboard.metrics.teamCount,
+      },
+      {
+         id: "staff",
+         label: m.tournamentDashboard_metric_staff(),
+         value: data.dashboard.metrics.staffCount,
+      },
+   ]);
 
    function roleLabel(role: StaffRole) {
       switch (role) {
@@ -73,6 +113,30 @@
       }
    }
 
+   function buildThemePayload(): TournamentPageTheme | null {
+      const nextRadius = Number(radius);
+      const normalizedRadius =
+         radius.trim() && Number.isFinite(nextRadius) ? nextRadius : null;
+      const normalizedLight =
+         Object.keys(lightTheme).length > 0 ? lightTheme : null;
+      const normalizedDark =
+         Object.keys(darkTheme).length > 0 ? darkTheme : null;
+
+      if (
+         normalizedRadius === null &&
+         normalizedLight === null &&
+         normalizedDark === null
+      ) {
+         return null;
+      }
+
+      return {
+         radius: normalizedRadius,
+         light: normalizedLight,
+         dark: normalizedDark,
+      };
+   }
+
    async function handleSave() {
       if (!canCustomize) {
          return;
@@ -81,24 +145,17 @@
       saving = true;
 
       try {
-         const theme = parseTournamentTheme(themeJson);
-
          await client.tournament.updateContent({
             id: data.dashboard.tournament.id,
             body,
             fontFamily: fontFamily || null,
-            theme,
+            theme: buildThemePayload(),
          });
 
          toast.success(m.tournamentDashboard_success_saved());
       } catch (cause) {
          console.error("Failed to save tournament page settings:", cause);
-
-         if (cause instanceof SyntaxError) {
-            toast.error(m.tournamentDashboard_error_invalidThemeJson());
-         } else {
-            toast.error(m.tournamentDashboard_error_saveFailed());
-         }
+         toast.error(m.tournamentDashboard_error_saveFailed());
       } finally {
          saving = false;
       }
@@ -150,316 +207,513 @@
    </title>
 </svelte:head>
 
-<div
-   class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8"
->
-   <section
-      class="dashboard-hero overflow-hidden rounded-[2rem] border p-6 sm:p-8"
+<div class="bg-background min-h-full">
+   <div
+      class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8"
    >
-      <div
-         class="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.9fr)]"
+      <section
+         class="bg-background overflow-hidden rounded-3xl border shadow-sm"
       >
-         <div class="space-y-4">
-            <div class="flex flex-wrap items-center gap-3">
-               {#each data.dashboard.roles as role (role)}
-                  <Badge variant="secondary">{roleLabel(role)}</Badge>
-               {/each}
-            </div>
-
+         <div
+            class="bg-card/60 flex flex-wrap justify-between gap-4 border-b px-6 py-6"
+         >
             <div class="space-y-3">
-               <h1
-                  class="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl"
+               <p
+                  class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
                >
-                  {m.tournamentDashboard_title()}
-               </h1>
-               <p class="text-muted-foreground max-w-3xl text-base leading-7">
+                  {m.navigation_tournaments()} / {data.dashboard.tournament
+                     .name}
+               </p>
+               <div class="flex flex-wrap items-center gap-3">
+                  <h1
+                     class="text-3xl font-semibold tracking-[-0.05em] sm:text-5xl"
+                  >
+                     {m.tournamentDashboard_title()}
+                  </h1>
+                  <Badge variant="secondary">{visibilityLabel}</Badge>
+                  {#each data.dashboard.roles as role (role)}
+                     <Badge variant="outline">{roleLabel(role)}</Badge>
+                  {/each}
+               </div>
+               <p
+                  class="text-muted-foreground max-w-3xl text-sm leading-6 sm:text-base"
+               >
                   {m.tournamentDashboard_description()}
                </p>
             </div>
-         </div>
 
-         <div class="bg-background/80 rounded-[1.5rem] border p-5">
-            <p
-               class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-            >
-               {m.tournamentDashboard_roles_title()}
-            </p>
-            <p class="text-muted-foreground mt-2 text-sm leading-6">
-               {m.tournamentDashboard_roles_description()}
-            </p>
-
-            <div class="mt-5 space-y-3">
-               <label class="text-sm font-medium" for="public-page-link">
-                  {m.tournamentDashboard_previewLink()}
-               </label>
-               <Input
-                  id="public-page-link"
-                  value={`/tournament/${data.dashboard.tournament.id}`}
-                  readonly
-               />
+            <div class="flex flex-wrap items-center gap-3">
                <Button
                   variant="outline"
-                  class="w-full"
                   onclick={async () => {
-                     await goto(
-                        resolve(`/tournament/${data.dashboard.tournament.id}`),
-                     );
+                     await goto(previewPath);
                   }}
                >
                   {m.tournamentDashboard_openPage()}
                </Button>
-               <p class="text-muted-foreground text-xs">
-                  {m.tournamentDashboard_openPageDescription()}
-               </p>
+               {#if canCustomize}
+                  <Button onclick={handleSave} disabled={saving}>
+                     {saving
+                        ? m.tournamentDashboard_savingChanges()
+                        : m.tournamentDashboard_saveChanges()}
+                  </Button>
+               {/if}
             </div>
          </div>
-      </div>
-   </section>
 
-   <section class="grid gap-4 sm:grid-cols-3">
-      <article class="dashboard-card p-5">
-         <p class="text-muted-foreground text-sm">
-            {m.tournamentDashboard_metric_players()}
-         </p>
-         <p class="mt-3 text-4xl font-semibold">
-            {data.dashboard.metrics.playerCount}
-         </p>
-      </article>
-      <article class="dashboard-card p-5">
-         <p class="text-muted-foreground text-sm">
-            {m.tournamentDashboard_metric_teams()}
-         </p>
-         <p class="mt-3 text-4xl font-semibold">
-            {data.dashboard.metrics.teamCount}
-         </p>
-      </article>
-      <article class="dashboard-card p-5">
-         <p class="text-muted-foreground text-sm">
-            {m.tournamentDashboard_metric_staff()}
-         </p>
-         <p class="mt-3 text-4xl font-semibold">
-            {data.dashboard.metrics.staffCount}
-         </p>
-      </article>
-   </section>
-
-   <section
-      class="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.9fr)]"
-   >
-      {#if canCustomize}
-         <article class="dashboard-card space-y-5 p-6">
-            <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-               >
-                  {m.tournamentDashboard_customization_title()}
-               </p>
-               <h2 class="text-2xl font-semibold tracking-[-0.03em]">
-                  {m.tournamentDashboard_customization_title()}
-               </h2>
-               <p class="text-muted-foreground text-sm leading-6">
-                  {m.tournamentDashboard_customization_description()}
-               </p>
-            </div>
-
-            <div
-               class="grid gap-4 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]"
+         <div class="flex gap-2 border-b px-5 pt-3">
+            <Button
+               variant={activeTab === "overview" ? "secondary" : "ghost"}
+               class="rounded-t-xl rounded-b-none"
+               onclick={() => {
+                  activeTab = "overview";
+               }}
             >
-               <div class="space-y-2">
-                  <label class="text-sm font-medium" for="font-family">
-                     {m.tournamentDashboard_field_font()}
-                  </label>
-                  <select
-                     id="font-family"
-                     bind:value={fontFamily}
-                     class="border-input bg-background h-10 w-full rounded-md border px-3 text-sm outline-none"
-                  >
-                     <option value="">{m.locale_system()}</option>
-                     {#each TOURNAMENT_FONT_OPTIONS as font (font)}
-                        <option value={font}>{font}</option>
-                     {/each}
-                  </select>
-               </div>
+               {m.tournamentDashboard_metrics_title()}
+            </Button>
 
-               <div class="space-y-2">
-                  <label class="text-sm font-medium" for="theme-json">
-                     {m.tournamentDashboard_field_themeJson()}
-                  </label>
-                  <Textarea id="theme-json" bind:value={themeJson} rows={8} />
-                  <p class="text-muted-foreground text-xs">
-                     {m.tournamentDashboard_field_themeJsonDescription()}
-                  </p>
-               </div>
-            </div>
-
-            <MarkdownEditor
-               bind:value={body}
-               placeholder={m.tournamentDashboard_markdownPlaceholder()}
-               previewPlaceholder={m.tournamentDashboard_markdownPreviewEmpty()}
-               writeLabel={m.common_write()}
-               previewLabel={m.common_preview()}
-               uploadLabel={m.tournamentDashboard_uploadImage()}
-               uploadingLabel={m.tournamentDashboard_uploadingImage()}
-               renderingLabel={m.tournamentDashboard_renderingPreview()}
-               dropLabel={m.tournamentDashboard_dropImages()}
-               emptyHint={m.tournamentDashboard_emptyHint()}
-               onPreviewRequest={handlePreviewRequest}
-               onUploadFiles={handleUploadFiles}
-            />
-
-            <div class="flex justify-end">
-               <Button onclick={handleSave} disabled={saving}>
-                  {saving
-                     ? m.tournamentDashboard_savingChanges()
-                     : m.tournamentDashboard_saveChanges()}
-               </Button>
-            </div>
-         </article>
-      {/if}
-
-      <div class="grid gap-4">
-         <article class="dashboard-card space-y-4 p-6">
-            <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
+            {#if canCustomize}
+               <Button
+                  variant={activeTab === "page" ? "secondary" : "ghost"}
+                  class="rounded-t-xl rounded-b-none"
+                  onclick={() => {
+                     activeTab = "page";
+                  }}
                >
-                  {m.tournamentDashboard_customizationCoverage_title()}
-               </p>
-               <h2 class="text-xl font-semibold tracking-[-0.03em]">
-                  {m.tournamentDashboard_customizationCoverage_title()}
-               </h2>
-               <p class="text-muted-foreground text-sm leading-6">
-                  {m.tournamentDashboard_customizationCoverage_description()}
-               </p>
-            </div>
+                  {m.tournamentDashboard_customization_title()}
+               </Button>
+            {/if}
+         </div>
 
-            <div class="space-y-3">
-               {#each customizationCoverage as item (item.id)}
-                  <div class="space-y-2">
-                     <div
-                        class="flex items-center justify-between gap-3 text-sm"
-                     >
-                        <span>{item.label}</span>
-                        <span class="text-muted-foreground">
-                           {item.value === 1 ? "100%" : "0%"}
-                        </span>
-                     </div>
-                     <div class="bg-muted h-2 rounded-full">
-                        <div
-                           class="bg-primary h-2 rounded-full transition-[width]"
-                           style={`width: ${item.value === 1 ? 100 : 18}%`}
-                        ></div>
-                     </div>
-                  </div>
-               {/each}
-            </div>
-         </article>
-
-         {#if showOperationsCard}
-            <article class="dashboard-card space-y-4 p-6">
-               <div class="space-y-2">
-                  <p
-                     class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-                  >
-                     {m.tournamentDashboard_operations_title()}
-                  </p>
-                  <h2 class="text-xl font-semibold tracking-[-0.03em]">
-                     {m.tournamentDashboard_operations_title()}
-                  </h2>
-                  <p class="text-muted-foreground text-sm leading-6">
-                     {m.tournamentDashboard_operations_description()}
-                  </p>
-               </div>
-
-               <div class="space-y-3">
-                  {#each data.dashboard.metrics.staffRoleCounts as item (item.role)}
-                     <div class="space-y-2">
-                        <div
-                           class="flex items-center justify-between gap-3 text-sm"
-                        >
-                           <span>{roleLabel(item.role as StaffRole)}</span>
-                           <span class="text-muted-foreground"
-                              >{item.total}</span
+         {#if activeTab === "overview"}
+            <div class="p-5">
+               <section
+                  class="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(22rem,0.9fr)]"
+               >
+                  <div class="grid gap-4">
+                     <div class="grid gap-4 md:grid-cols-3">
+                        {#each statCards as item (item.id)}
+                           <article
+                              class="bg-card rounded-2xl border px-5 py-5 shadow-sm"
                            >
+                              <p
+                                 class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                              >
+                                 {item.label}
+                              </p>
+                              <p
+                                 class="mt-3 text-4xl font-semibold tracking-[-0.05em]"
+                              >
+                                 {item.value}
+                              </p>
+                           </article>
+                        {/each}
+                     </div>
+
+                     {#if showOperationsCard}
+                        <article
+                           class="bg-card space-y-5 rounded-2xl border p-6 shadow-sm"
+                        >
+                           <div class="space-y-2">
+                              <p
+                                 class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                              >
+                                 {m.tournamentDashboard_operations_title()}
+                              </p>
+                              <h2
+                                 class="text-lg font-semibold tracking-[-0.03em]"
+                              >
+                                 {m.tournamentDashboard_operations_title()}
+                              </h2>
+                              <p
+                                 class="text-muted-foreground text-sm leading-6"
+                              >
+                                 {m.tournamentDashboard_operations_description()}
+                              </p>
+                           </div>
+
+                           <div class="grid gap-3">
+                              {#each data.dashboard.metrics.staffRoleCounts as item (item.role)}
+                                 <div
+                                    class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                                 >
+                                    <div
+                                       class="flex items-center justify-between gap-4"
+                                    >
+                                       <span class="font-medium"
+                                          >{roleLabel(
+                                             item.role as StaffRole,
+                                          )}</span
+                                       >
+                                       <span
+                                          class="text-muted-foreground text-sm"
+                                          >{item.total}</span
+                                       >
+                                    </div>
+                                    <div
+                                       class="bg-muted h-2 overflow-hidden rounded-full"
+                                    >
+                                       <div
+                                          class="bg-foreground h-full rounded-full"
+                                          style={`width: ${Math.max(10, Math.min(100, item.total * 16))}%`}
+                                       ></div>
+                                    </div>
+                                 </div>
+                              {/each}
+                           </div>
+                        </article>
+                     {/if}
+                  </div>
+
+                  <div class="grid gap-4">
+                     <article
+                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                     >
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_roles_title()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {m.tournamentDashboard_roles_title()}
+                           </h2>
+                           <p class="text-muted-foreground text-sm leading-6">
+                              {m.tournamentDashboard_roles_description()}
+                           </p>
                         </div>
-                        <div class="bg-muted h-2 rounded-full">
-                           <div
-                              class="bg-accent h-2 rounded-full transition-[width]"
-                              style={`width: ${Math.min(100, item.total * 18)}%`}
-                           ></div>
+
+                        <div class="space-y-3">
+                           <label
+                              class="text-sm font-medium"
+                              for="public-page-link"
+                           >
+                              {m.tournamentDashboard_previewLink()}
+                           </label>
+                           <Input
+                              id="public-page-link"
+                              value={previewPath}
+                              readonly
+                           />
+                           <p class="text-muted-foreground text-xs">
+                              {m.tournamentDashboard_openPageDescription()}
+                           </p>
+                        </div>
+                     </article>
+
+                     <article
+                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                     >
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_customizationCoverage_title()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {m.tournamentDashboard_customizationCoverage_title()}
+                           </h2>
+                           <p class="text-muted-foreground text-sm leading-6">
+                              {m.tournamentDashboard_customizationCoverage_description()}
+                           </p>
+                        </div>
+
+                        <div class="space-y-3">
+                           {#each customizationCoverage as item (item.id)}
+                              <div class="space-y-2">
+                                 <div
+                                    class="flex items-center justify-between gap-3 text-sm"
+                                 >
+                                    <span>{item.label}</span>
+                                    <span class="text-muted-foreground"
+                                       >{item.percent}%</span
+                                    >
+                                 </div>
+                                 <div
+                                    class="bg-muted h-2 overflow-hidden rounded-full"
+                                 >
+                                    <div
+                                       class="bg-foreground h-full rounded-full"
+                                       style={`width: ${item.percent}%`}
+                                    ></div>
+                                 </div>
+                              </div>
+                           {/each}
+                        </div>
+                     </article>
+
+                     {#if showEligibilityCard}
+                        <article
+                           class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                        >
+                           <div class="space-y-2">
+                              <p
+                                 class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                              >
+                                 {m.tournamentDashboard_eligibility_title()}
+                              </p>
+                              <h2
+                                 class="text-lg font-semibold tracking-[-0.03em]"
+                              >
+                                 {m.tournamentDashboard_eligibility_title()}
+                              </h2>
+                              <p
+                                 class="text-muted-foreground text-sm leading-6"
+                              >
+                                 {m.tournamentDashboard_eligibility_description()}
+                              </p>
+                           </div>
+
+                           <dl class="grid gap-3">
+                              <div
+                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                              >
+                                 <dt
+                                    class="text-muted-foreground text-xs uppercase"
+                                 >
+                                    {m.common_minimumRank()}
+                                 </dt>
+                                 <dd class="mt-1 font-semibold">
+                                    {data.dashboard.screeningRequirements
+                                       ?.minimumRank ??
+                                       m.tournamentDashboard_screeningAny()}
+                                 </dd>
+                              </div>
+                              <div
+                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                              >
+                                 <dt
+                                    class="text-muted-foreground text-xs uppercase"
+                                 >
+                                    {m.common_maximumRank()}
+                                 </dt>
+                                 <dd class="mt-1 font-semibold">
+                                    {data.dashboard.screeningRequirements
+                                       ?.maximumRank ??
+                                       m.tournamentDashboard_screeningAny()}
+                                 </dd>
+                              </div>
+                              <div
+                                 class="bg-muted/40 grid gap-2 rounded-2xl border px-4 py-3"
+                              >
+                                 <dt
+                                    class="text-muted-foreground text-xs uppercase"
+                                 >
+                                    {m.common_bws()}
+                                 </dt>
+                                 <dd class="mt-1 font-semibold">
+                                    {data.dashboard.screeningRequirements
+                                       ?.useBws
+                                       ? m.common_enabled()
+                                       : m.tournamentDashboard_screeningUnset()}
+                                 </dd>
+                              </div>
+                           </dl>
+                        </article>
+                     {/if}
+                  </div>
+               </section>
+            </div>
+         {:else}
+            <div class="p-5">
+               <section
+                  class="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(24rem,0.8fr)]"
+               >
+                  <article
+                     class="bg-card overflow-hidden rounded-2xl border shadow-sm"
+                  >
+                     <div class="px-5 py-5">
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_customization_title()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {m.tournamentDashboard_customization_title()}
+                           </h2>
+                           <p class="text-muted-foreground text-sm leading-6">
+                              {m.tournamentDashboard_customization_description()}
+                           </p>
                         </div>
                      </div>
-                  {/each}
-               </div>
-            </article>
-         {/if}
 
-         {#if showEligibilityCard}
-            <article class="dashboard-card space-y-4 p-6">
-               <div class="space-y-2">
-                  <p
-                     class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
-                  >
-                     {m.tournamentDashboard_eligibility_title()}
-                  </p>
-                  <h2 class="text-xl font-semibold tracking-[-0.03em]">
-                     {m.tournamentDashboard_eligibility_title()}
-                  </h2>
-                  <p class="text-muted-foreground text-sm leading-6">
-                     {m.tournamentDashboard_eligibility_description()}
-                  </p>
-               </div>
+                     <Separator />
 
-               <dl class="grid gap-3">
-                  <div class="bg-muted/45 rounded-2xl border px-4 py-3">
-                     <dt class="text-muted-foreground text-xs uppercase">
-                        {m.common_minimumRank()}
-                     </dt>
-                     <dd class="mt-1 font-semibold">
-                        {data.dashboard.screeningRequirements?.minimumRank ??
-                           m.tournamentDashboard_screeningAny()}
-                     </dd>
+                     <div class="p-4 sm:p-5">
+                        <MarkdownEditor
+                           bind:value={body}
+                           class="[--tw-prose-body:hsl(var(--foreground)_/_0.9)] [--tw-prose-bold:hsl(var(--foreground))] [--tw-prose-bullets:hsl(var(--muted-foreground))] [--tw-prose-code:hsl(var(--foreground))] [--tw-prose-headings:hsl(var(--foreground))] [--tw-prose-hr:hsl(var(--border))] [--tw-prose-links:hsl(var(--foreground))] [--tw-prose-pre-bg:hsl(var(--muted))] [--tw-prose-pre-code:hsl(var(--foreground))] [--tw-prose-quote-borders:hsl(var(--border))] [--tw-prose-quotes:hsl(var(--foreground))] [--tw-prose-td-borders:hsl(var(--border))] [--tw-prose-th-borders:hsl(var(--border))]"
+                           placeholder={m.tournamentDashboard_markdownPlaceholder()}
+                           previewPlaceholder={m.tournamentDashboard_markdownPreviewEmpty()}
+                           writeLabel={m.common_write()}
+                           previewLabel={m.common_preview()}
+                           uploadLabel={m.tournamentDashboard_uploadImage()}
+                           uploadingLabel={m.tournamentDashboard_uploadingImage()}
+                           renderingLabel={m.tournamentDashboard_renderingPreview()}
+                           dropLabel={m.tournamentDashboard_dropImages()}
+                           emptyHint={m.tournamentDashboard_emptyHint()}
+                           onPreviewRequest={handlePreviewRequest}
+                           onUploadFiles={handleUploadFiles}
+                        />
+                     </div>
+                  </article>
+
+                  <div class="grid gap-4">
+                     <article
+                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                     >
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_previewLink()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {data.dashboard.tournament.name}
+                           </h2>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2">
+                           <Badge variant="secondary">{visibilityLabel}</Badge>
+                           {#each data.dashboard.roles as role (role)}
+                              <Badge variant="outline">{roleLabel(role)}</Badge>
+                           {/each}
+                        </div>
+
+                        <Input value={previewPath} readonly />
+
+                        <Button
+                           variant="outline"
+                           class="w-full"
+                           onclick={async () => {
+                              await goto(previewPath);
+                           }}
+                        >
+                           {m.tournamentDashboard_openPage()}
+                        </Button>
+                     </article>
+
+                     <article
+                        class="bg-card space-y-5 rounded-2xl border p-6 shadow-sm"
+                     >
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_field_font()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {m.tournamentDashboard_field_font()}
+                           </h2>
+                        </div>
+
+                        <div class="space-y-2">
+                           <label class="text-sm font-medium" for="font-family">
+                              {m.tournamentDashboard_field_font()}
+                           </label>
+                           <select
+                              id="font-family"
+                              bind:value={fontFamily}
+                              class="bg-background h-11 w-full rounded-2xl border px-4 text-sm outline-none"
+                           >
+                              <option value="">{m.locale_system()}</option>
+                              {#each TOURNAMENT_FONT_OPTIONS as font (font)}
+                                 <option value={font}>{font}</option>
+                              {/each}
+                           </select>
+                        </div>
+
+                        <div class="space-y-2">
+                           <label
+                              class="text-sm font-medium"
+                              for="theme-radius"
+                           >
+                              {m.common_radius()}
+                           </label>
+                           <Input
+                              id="theme-radius"
+                              bind:value={radius}
+                              inputmode="decimal"
+                              placeholder="1"
+                           />
+                        </div>
+
+                        <div class="space-y-3">
+                           <div class="bg-muted inline-flex rounded-xl p-1">
+                              <Button
+                                 variant={themeMode === "light"
+                                    ? "secondary"
+                                    : "ghost"}
+                                 size="sm"
+                                 onclick={() => {
+                                    themeMode = "light";
+                                 }}
+                              >
+                                 {m.common_light()}
+                              </Button>
+                              <Button
+                                 variant={themeMode === "dark"
+                                    ? "secondary"
+                                    : "ghost"}
+                                 size="sm"
+                                 onclick={() => {
+                                    themeMode = "dark";
+                                 }}
+                              >
+                                 {m.common_dark()}
+                              </Button>
+                           </div>
+
+                           {#if themeMode === "light"}
+                              <TournamentThemeFields bind:value={lightTheme} />
+                           {:else}
+                              <TournamentThemeFields bind:value={darkTheme} />
+                           {/if}
+                        </div>
+                     </article>
+
+                     <article
+                        class="bg-card space-y-4 rounded-2xl border p-6 shadow-sm"
+                     >
+                        <div class="space-y-2">
+                           <p
+                              class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
+                           >
+                              {m.tournamentDashboard_customizationCoverage_title()}
+                           </p>
+                           <h2 class="text-lg font-semibold tracking-[-0.03em]">
+                              {m.tournamentDashboard_customizationCoverage_title()}
+                           </h2>
+                        </div>
+
+                        <div class="space-y-3">
+                           {#each customizationCoverage as item (item.id)}
+                              <div class="space-y-2">
+                                 <div
+                                    class="flex items-center justify-between gap-3 text-sm"
+                                 >
+                                    <span>{item.label}</span>
+                                    <span class="text-muted-foreground"
+                                       >{item.percent}%</span
+                                    >
+                                 </div>
+                                 <div
+                                    class="bg-muted h-2 overflow-hidden rounded-full"
+                                 >
+                                    <div
+                                       class="bg-foreground h-full rounded-full"
+                                       style={`width: ${item.percent}%`}
+                                    ></div>
+                                 </div>
+                              </div>
+                           {/each}
+                        </div>
+                     </article>
                   </div>
-                  <div class="bg-muted/45 rounded-2xl border px-4 py-3">
-                     <dt class="text-muted-foreground text-xs uppercase">
-                        {m.common_maximumRank()}
-                     </dt>
-                     <dd class="mt-1 font-semibold">
-                        {data.dashboard.screeningRequirements?.maximumRank ??
-                           m.tournamentDashboard_screeningAny()}
-                     </dd>
-                  </div>
-                  <div class="bg-muted/45 rounded-2xl border px-4 py-3">
-                     <dt class="text-muted-foreground text-xs uppercase">
-                        {m.common_bws()}
-                     </dt>
-                     <dd class="mt-1 font-semibold">
-                        {data.dashboard.screeningRequirements?.useBws
-                           ? m.common_enabled()
-                           : m.tournamentDashboard_screeningUnset()}
-                     </dd>
-                  </div>
-               </dl>
-            </article>
+               </section>
+            </div>
          {/if}
-      </div>
-   </section>
+      </section>
+   </div>
 </div>
-
-<style>
-   .dashboard-hero {
-      background:
-         linear-gradient(135deg, hsl(var(--primary) / 0.12), transparent 44%),
-         linear-gradient(180deg, hsl(var(--card) / 0.95), hsl(var(--card)));
-      box-shadow:
-         0 1px 0 rgb(0 0 0 / 0.02),
-         0 18px 40px rgb(24 32 52 / 0.08);
-   }
-
-   .dashboard-card {
-      border: 1px solid hsl(var(--border) / 0.7);
-      border-radius: 1.5rem;
-      background: hsl(var(--card));
-      box-shadow: 0 12px 28px rgb(15 23 42 / 0.05);
-   }
-</style>
