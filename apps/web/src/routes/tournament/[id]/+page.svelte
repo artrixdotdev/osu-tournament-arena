@@ -7,21 +7,8 @@
       getTournamentThemeStyle,
    } from "$lib/tournament-page";
 
-   import {
-      Avatar,
-      AvatarFallback,
-      AvatarImage,
-   } from "@ota/ui/components/avatar/index.ts";
-   import { Badge } from "@ota/ui/components/badge/index.ts";
-   import { Card } from "@ota/ui/components/card/index.ts";
-
    import type { PageProps } from "./$types";
-
-   interface TournamentMediaShape {
-      bannerUrl?: string | null;
-      iconUrl?: string | null;
-      logo?: string | null;
-   }
+   import type { TournamentMediaShape } from "./tournament-page.types";
 
    let { data }: PageProps = $props();
 
