@@ -1,9 +1,16 @@
 import { error } from "@sveltejs/kit";
 import { client } from "$lib/server/orpc";
 
+import { tournamentIdSchema } from "@ota/validators";
+
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
+   if (!tournamentIdSchema.safeParse({ id: params.id }).success) {
+      // Invalid tournament ID
+      error(404, "Tournament not found");
+   }
+
    const [tournament, pageContent] = await Promise.all([
       client.tournament.get({
          id: params.id,
