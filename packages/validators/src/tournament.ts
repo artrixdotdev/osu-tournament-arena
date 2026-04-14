@@ -5,8 +5,13 @@ import type { TournamentDiscord } from "@ota/db/schema";
 import {
    StaffRole,
    TOURNAMENT_ACRONYM_MAX_LENGTH,
+   TOURNAMENT_PAGE_BODY_MAX_LENGTH,
+   TOURNAMENT_PAGE_FONT_MAX_LENGTH,
    tournament as tournamentTable,
 } from "@ota/db/schema";
+
+const tournamentPageBodyMaxLength = Number(TOURNAMENT_PAGE_BODY_MAX_LENGTH);
+const tournamentPageFontMaxLength = Number(TOURNAMENT_PAGE_FONT_MAX_LENGTH);
 
 const staffRoleLiteral = z.union([
    z.literal(StaffRole.ADMIN),
@@ -37,6 +42,41 @@ const tournamentIdValueSchema = z
 
 const baseIdSchema = z.object({
    id: tournamentIdValueSchema,
+});
+
+const themeTokenSchema = z
+   .string()
+   .trim()
+   .regex(
+      /^\d{1,3}(?:\.\d+)?\s+\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/,
+      "Theme tokens must be valid HSL values such as 222.2 47.4% 11.2%",
+   );
+
+const tournamentThemeTokensSchema = z.object({
+   background: themeTokenSchema.optional(),
+   foreground: themeTokenSchema.optional(),
+   card: themeTokenSchema.optional(),
+   cardForeground: themeTokenSchema.optional(),
+   popover: themeTokenSchema.optional(),
+   popoverForeground: themeTokenSchema.optional(),
+   primary: themeTokenSchema.optional(),
+   primaryForeground: themeTokenSchema.optional(),
+   secondary: themeTokenSchema.optional(),
+   secondaryForeground: themeTokenSchema.optional(),
+   muted: themeTokenSchema.optional(),
+   mutedForeground: themeTokenSchema.optional(),
+   accent: themeTokenSchema.optional(),
+   accentForeground: themeTokenSchema.optional(),
+   destructive: themeTokenSchema.optional(),
+   border: themeTokenSchema.optional(),
+   input: themeTokenSchema.optional(),
+   ring: themeTokenSchema.optional(),
+});
+
+const tournamentPageThemeSchema = z.object({
+   radius: z.number().min(0).max(2).nullable().optional(),
+   light: tournamentThemeTokensSchema.nullable().optional(),
+   dark: tournamentThemeTokensSchema.nullable().optional(),
 });
 
 const basePaginationSchema = z.object({
@@ -244,6 +284,47 @@ export const updateTournamentScreeningRequirementsSchema = baseIdSchema
       { message: "minimumRating must be less than or equal to maximumRating" },
    );
 
+export const updateTournamentContentSchema = baseIdSchema.extend({
+   body: z
+      .string()
+      .max(tournamentPageBodyMaxLength)
+      .optional()
+      .describe("Tournament markdown body content"),
+   fontFamily: z
+      .string()
+      .trim()
+      .max(tournamentPageFontMaxLength)
+      .nullable()
+      .optional()
+      .describe("Tournament page font family"),
+   theme: tournamentPageThemeSchema
+      .nullable()
+      .optional()
+      .describe("Serialized shadcn-style theme tokens"),
+});
+
+export const previewTournamentMarkdownSchema = baseIdSchema.extend({
+   body: z
+      .string()
+      .max(tournamentPageBodyMaxLength)
+      .describe("Markdown body to render"),
+});
+
+export const createTournamentContentImageUploadSchema = baseIdSchema.extend({
+   fileName: z.string().trim().min(1).max(255).describe("Original file name"),
+   contentType: z
+      .string()
+      .trim()
+      .regex(/^image\/(jpeg|png|webp|gif)$/i, "Only image uploads are allowed")
+      .describe("Image MIME type"),
+   sizeBytes: z
+      .number()
+      .int()
+      .positive()
+      .max(5 * 1024 * 1024)
+      .describe("Image size in bytes"),
+});
+
 export type CreateTournamentInput = z.infer<typeof createTournamentSchema>;
 export type UpdateTournamentInput = z.infer<typeof updateTournamentSchema>;
 export type TournamentIdInput = z.infer<typeof tournamentIdSchema>;
@@ -265,4 +346,13 @@ export type UpdateTournamentDiscordInput = z.infer<
 >;
 export type UpdateTournamentScreeningRequirementsInput = z.infer<
    typeof updateTournamentScreeningRequirementsSchema
+>;
+export type UpdateTournamentContentInput = z.infer<
+   typeof updateTournamentContentSchema
+>;
+export type PreviewTournamentMarkdownInput = z.infer<
+   typeof previewTournamentMarkdownSchema
+>;
+export type CreateTournamentContentImageUploadInput = z.infer<
+   typeof createTournamentContentImageUploadSchema
 >;
