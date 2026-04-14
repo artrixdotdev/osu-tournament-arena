@@ -273,7 +273,7 @@
                />
 
                <div
-                  class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100"
+                  class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(pointer:coarse)]:opacity-100"
                >
                   <div class="flex items-center gap-2">
                      <Button
@@ -348,7 +348,9 @@
                   <Progress value={uploadProgress} class="h-2 w-full" />
                </div>
             {:else}
-               <p class="text-muted-foreground text-xs">{messages.imageFormats}</p>
+               <p class="text-muted-foreground text-xs">
+                  {messages.imageFormats}
+               </p>
             {/if}
          </div>
       </div>
@@ -368,7 +370,7 @@
          />
 
          <div
-            class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100"
+            class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 [@media(pointer:coarse)]:opacity-100"
          >
             <div class="flex flex-wrap items-center justify-center gap-2 p-3">
                <Button
