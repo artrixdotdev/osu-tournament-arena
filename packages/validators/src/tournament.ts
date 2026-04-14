@@ -116,8 +116,8 @@ export const createTournamentSchema = z
       discord: baseDiscordSchema
          .optional()
          .describe("Discord bot integration settings"),
-      bannerUrl: z.string().optional().describe("Tournament banner URL"),
-      iconUrl: z.string().optional().describe("Tournament icon URL"),
+      bannerUrl: z.string().url().optional().describe("Tournament banner URL"),
+      iconUrl: z.string().url().optional().describe("Tournament icon URL"),
    })
    .refine((data) => data.startDate <= data.endDate, {
       message: "startDate must be less than or equal to endDate",
