@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadcn Svelte UI"
+  short_description: "Add repo-local shadcn-svelte UI components"
+  default_prompt: "Use $shadcn-svelte-ui to add a shadcn-svelte component in packages/ui and convert any generated Lucide icons to Hugeicons."
