@@ -15,6 +15,7 @@
    import { uploadFile } from "@ota/storage/client";
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
+   import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
    import { MarkdownEditor } from "@ota/ui/components/markdown-editor/index.ts";
 
@@ -331,8 +332,10 @@
                      </div>
 
                      {#if showOperationsCard}
-                        <article
-                           class="from-card/94 to-secondary/10 space-y-5 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
+                        <Card
+                           as="article"
+                           variant="secondary"
+                           class="space-y-5 rounded-[1.9rem] p-6"
                         >
                            <div class="space-y-2">
                               <p
@@ -381,13 +384,15 @@
                                  </div>
                               {/each}
                            </div>
-                        </article>
+                        </Card>
                      {/if}
                   </div>
 
                   <div class="grid gap-4">
-                     <article
-                        class="from-background via-card/95 to-secondary/18 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
+                     <Card
+                        as="article"
+                        variant="secondary"
+                        class="from-background via-card/95 to-secondary/18 space-y-4 p-6"
                      >
                         <div class="space-y-2">
                            <p
@@ -419,11 +424,9 @@
                               {m.tournamentDashboard_openPageDescription()}
                            </p>
                         </div>
-                     </article>
+                     </Card>
 
-                     <article
-                        class="from-card/95 to-accent/8 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
-                     >
+                     <Card as="article" variant="accent" class="space-y-4 p-6">
                         <div class="space-y-2">
                            <p
                               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
@@ -460,11 +463,13 @@
                               </div>
                            {/each}
                         </div>
-                     </article>
+                     </Card>
 
                      {#if showEligibilityCard}
-                        <article
-                           class="from-card/95 to-chart-5/7 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
+                        <Card
+                           as="article"
+                           variant="chart5"
+                           class="space-y-4 p-6"
                         >
                            <div class="space-y-2">
                               <p
@@ -529,7 +534,7 @@
                                  </dd>
                               </div>
                            </dl>
-                        </article>
+                        </Card>
                      {/if}
                   </div>
                </section>
@@ -539,9 +544,7 @@
                <section
                   class="grid gap-5 xl:grid-cols-[minmax(0,1.75fr)_minmax(25rem,0.78fr)]"
                >
-                  <article
-                     class="from-card/96 to-secondary/10 overflow-hidden rounded-[2rem] bg-gradient-to-br shadow-[0_26px_60px_rgb(0_0_0_/_0.18)]"
-                  >
+                  <Card as="article" variant="spotlight">
                      <div class="px-5 py-5 sm:px-6">
                         <div class="space-y-2">
                            <p
@@ -575,11 +578,13 @@
                            onUploadFiles={handleUploadFiles}
                         />
                      </div>
-                  </article>
+                  </Card>
 
                   <div class="grid gap-4">
-                     <article
-                        class="from-background via-card/95 to-secondary/18 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
+                     <Card
+                        as="article"
+                        variant="secondary"
+                        class="from-background via-card/95 to-secondary/18 space-y-4 p-6"
                      >
                         <div class="space-y-2">
                            <p
@@ -614,11 +619,9 @@
                         >
                            {m.tournamentDashboard_openPage()}
                         </Button>
-                     </article>
+                     </Card>
 
-                     <article
-                        class="from-card/95 to-accent/10 space-y-5 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
-                     >
+                     <Card as="article" variant="accent" class="space-y-5 p-6">
                         <div class="space-y-2">
                            <p
                               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
@@ -701,11 +704,9 @@
                               <TournamentThemeFields bind:value={darkTheme} />
                            {/if}
                         </div>
-                     </article>
+                     </Card>
 
-                     <article
-                        class="from-card/95 to-chart-2/7 space-y-4 rounded-[1.9rem] bg-gradient-to-br p-6 shadow-[0_22px_48px_rgb(0_0_0_/_0.16)]"
-                     >
+                     <Card as="article" variant="chart2" class="space-y-4 p-6">
                         <div class="space-y-2">
                            <p
                               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
@@ -739,7 +740,7 @@
                               </div>
                            {/each}
                         </div>
-                     </article>
+                     </Card>
                   </div>
                </section>
             </div>
