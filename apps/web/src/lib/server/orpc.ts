@@ -23,3 +23,5 @@ const serverClient: RouterClient<typeof appRouter> = orpc({
 });
 
 globalThis.$client = serverClient;
+
+export const client = serverClient;

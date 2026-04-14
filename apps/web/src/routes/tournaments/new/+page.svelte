@@ -221,7 +221,7 @@
          return;
       }
 
-      await goto(`/tournaments/${createdTournamentId}`);
+      await goto(`/tournament/${createdTournamentId}`);
    }
 </script>
 
