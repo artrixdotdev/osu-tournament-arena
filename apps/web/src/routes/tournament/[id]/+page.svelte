@@ -7,8 +7,11 @@
       getTournamentThemeStyle,
    } from "$lib/tournament-page";
 
+   import { Badge } from "@ota/ui/components/badge/index.ts";
+   import { Card } from "@ota/ui/components/card/index.ts";
    import type { PageProps } from "./$types";
    import type { TournamentMediaShape } from "./tournament-page.types";
+   import TournamentHero from "./tournament-hero.svelte";
 
    let { data }: PageProps = $props();
 
@@ -134,13 +137,6 @@
       },
    ]);
 
-   const bannerStyle = $derived.by(() => {
-      if (!media.bannerUrl) {
-         return "";
-      }
-
-      return `background-image: linear-gradient(180deg, rgb(12 10 18 / 0.08) 0%, rgb(12 10 18 / 0.55) 50%, rgb(12 10 18 / 0.96) 100%), url(${media.bannerUrl});`;
-   });
 </script>
 
 <svelte:head>
@@ -161,88 +157,17 @@
       class="grid min-h-full w-full gap-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
    >
       <section class="tournament-shell min-w-0 space-y-6">
-         <section
-            class="relative isolate min-h-[26rem] overflow-hidden rounded-[2.25rem] sm:min-h-[32rem] lg:min-h-[36rem]"
-         >
-            {#if media.bannerUrl}
-               <div
-                  class="absolute inset-0 bg-cover bg-center"
-                  style={bannerStyle}
-                  aria-hidden="true"
-               ></div>
-            {:else}
-               <div
-                  class="from-primary/24 via-secondary/14 to-background absolute inset-0 bg-gradient-to-br"
-                  aria-hidden="true"
-               ></div>
-            {/if}
-            <div
-               class="from-background/0 via-background/28 to-background absolute inset-0 bg-gradient-to-b"
-               aria-hidden="true"
-            ></div>
-            <div
-               class="from-background/0 via-background/10 to-background absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t sm:h-56"
-               aria-hidden="true"
-            ></div>
-
-            <div
-               class="relative flex min-h-[26rem] items-end px-4 pt-10 pb-10 sm:min-h-[32rem] sm:px-6 sm:pt-12 sm:pb-12 lg:min-h-[36rem] lg:px-8 lg:pb-16 2xl:px-12"
-            >
-               <div class="max-w-4xl space-y-5">
-                  <div class="flex flex-wrap items-center gap-2">
-                     <Badge>
-                        {m.tournamentPage_eyebrow()}
-                     </Badge>
-                     <Badge variant="secondary">{status}</Badge>
-                     <Badge>
-                        {#if data.tournament.isArchived}
-                           {m.common_archived()}
-                        {:else if data.isStaffView && !data.tournament.isPublic}
-                           {m.common_private()}
-                        {:else}
-                           {m.common_public()}
-                        {/if}
-                     </Badge>
-                  </div>
-
-                  <div
-                     class="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:gap-5"
-                  >
-                     <Avatar
-                        class="bg-card/82 size-20 rounded-[1.65rem] shadow-[0_18px_45px_rgb(0_0_0_/_0.25)] sm:size-28 lg:size-32"
-                     >
-                        <AvatarImage
-                           src={media.iconUrl ?? media.logo ?? undefined}
-                           alt={m.tournamentPage_iconAlt({
-                              name: data.tournament.name,
-                           })}
-                           class="object-cover"
-                        />
-                        <AvatarFallback
-                           class="rounded-[1.65rem] text-xl font-semibold uppercase sm:text-2xl"
-                        >
-                           {data.tournament.acronym ??
-                              data.tournament.name.slice(0, 2)}
-                        </AvatarFallback>
-                     </Avatar>
-
-                     <div class="space-y-3 sm:pb-1">
-                        <h1
-                           class="text-4xl font-[family:var(--tournament-display-font)] font-semibold tracking-[-0.05em] text-white drop-shadow-[0_8px_24px_rgb(0_0_0_/_0.35)] sm:text-5xl lg:text-6xl"
-                        >
-                           {data.tournament.name}
-                        </h1>
-                        <p
-                           class="max-w-3xl text-sm leading-7 text-white/78 sm:text-base lg:text-lg"
-                        >
-                           {data.tournament.description ??
-                              m.tournamentPage_descriptionFallback()}
-                        </p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </section>
+         <TournamentHero
+            {media}
+            name={data.tournament.name}
+            acronym={data.tournament.acronym}
+            description={data.tournament.description ??
+               m.tournamentPage_descriptionFallback()}
+            {status}
+            {formattedDuration}
+            isStaffView={data.isStaffView}
+            isPublic={data.tournament.isPublic}
+         />
 
          <section class="space-y-6 px-1 py-2 sm:px-2">
             <div class="flex flex-wrap items-center gap-3">
