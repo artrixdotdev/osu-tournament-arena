@@ -17,3 +17,4 @@ export * from "./screening";
 export * from "./mappool";
 export * from "./qualifier";
 export * from "./bracket";
+export * from "./tournament-content";

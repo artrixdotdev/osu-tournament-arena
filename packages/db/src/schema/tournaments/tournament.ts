@@ -28,6 +28,7 @@ import { qualifierLobby } from "./qualifier";
 import { screening } from "./screening";
 import { staff } from "./staff";
 import { team } from "./team";
+import { tournamentContent } from "./tournament-content";
 
 export const TOURNAMENT_ACRONYM_MAX_LENGTH = 6;
 
@@ -135,7 +136,7 @@ export const tournament = sqliteTable(
  * Tournament relationships.
  * Defines one-to-many connections with child entities.
  */
-export const tournamentRelations = relations(tournament, ({ many }) => ({
+export const tournamentRelations = relations(tournament, ({ many, one }) => ({
    teams: many(team),
    players: many(player),
    brackets: many(bracket),
@@ -143,4 +144,8 @@ export const tournamentRelations = relations(tournament, ({ many }) => ({
    staff: many(staff),
    screenings: many(screening),
    qualifierLobbies: many(qualifierLobby),
+   content: one(tournamentContent, {
+      fields: [tournament.id],
+      references: [tournamentContent.tournamentId],
+   }),
 }));
