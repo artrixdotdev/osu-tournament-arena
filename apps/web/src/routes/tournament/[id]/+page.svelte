@@ -7,11 +7,13 @@
       getTournamentThemeStyle,
    } from "$lib/tournament-page";
 
-   import { Badge } from "@ota/ui/components/badge/index.ts";
-   import { Card } from "@ota/ui/components/card/index.ts";
    import type { PageProps } from "./$types";
-   import type { TournamentMediaShape } from "./tournament-page.types";
+   import type {
+      TournamentDetailItem,
+      TournamentMediaShape,
+   } from "./tournament-page.types";
    import TournamentHero from "./tournament-hero.svelte";
+   import TournamentSidebar from "./tournament-sidebar.svelte";
 
    let { data }: PageProps = $props();
 
@@ -79,31 +81,19 @@
       `${dateFormatter.format(new Date(data.tournament.startDate))} - ${dateFormatter.format(new Date(data.tournament.endDate))}`,
    );
 
-   const quickFacts = $derived([
-      {
-         label: m.tournamentPage_label_tournamentId(),
-         value: data.tournament.id,
-      },
-      {
-         label: m.tournamentPage_label_acronym(),
-         value: data.tournament.acronym ?? "N/A",
-      },
-      {
-         label: m.tournamentPage_label_rendition(),
-         value:
-            data.tournament.rendition !== null
-               ? numberFormatter.format(data.tournament.rendition)
-               : "N/A",
-      },
-      {
-         label: m.common_visibility(),
-         value: data.tournament.isPublic
-            ? m.common_public()
-            : m.common_private(),
-      },
-   ]);
+   const visibilityLabel = $derived.by(() => {
+      if (data.tournament.isArchived) {
+         return m.common_archived();
+      }
 
-   const scheduleItems = $derived([
+      return data.tournament.isPublic ? m.common_public() : m.common_private();
+   });
+
+   const description = $derived(
+      data.tournament.description ?? m.tournamentPage_descriptionFallback(),
+   );
+
+   const scheduleItems = $derived<TournamentDetailItem[]>([
       {
          label: m.common_startDate(),
          value: dateFormatter.format(new Date(data.tournament.startDate)),
@@ -122,7 +112,7 @@
       },
    ]);
 
-   const formatItems = $derived([
+   const formatItems = $derived<TournamentDetailItem[]>([
       {
          label: m.tournamentPage_label_teamSize(),
          value: numberFormatter.format(data.tournament.teamSize),
@@ -132,11 +122,10 @@
          value: numberFormatter.format(data.tournament.lobbySize),
       },
       {
-         label: m.common_status(),
-         value: status,
+         label: m.common_visibility(),
+         value: visibilityLabel,
       },
    ]);
-
 </script>
 
 <svelte:head>
@@ -154,153 +143,51 @@
 
 <div class="tournament-page min-h-full" style={wrapperStyle}>
    <div
-      class="grid min-h-full w-full gap-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-6 lg:grid-cols-[minmax(0,1.65fr)_24rem] lg:px-8 lg:pb-10 2xl:px-12"
+      class="min-h-full w-full pt-[clamp(1rem,2vw,1.5rem)] pb-[clamp(2rem,4vw,2.5rem)]"
    >
-      <section class="tournament-shell min-w-0 space-y-6">
+      <section
+         class="tournament-shell px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.25rem,1vw,0.75rem)]"
+      >
          <TournamentHero
             {media}
             name={data.tournament.name}
             acronym={data.tournament.acronym}
-            description={data.tournament.description ??
-               m.tournamentPage_descriptionFallback()}
+            {description}
             {status}
             {formattedDuration}
             isStaffView={data.isStaffView}
             isPublic={data.tournament.isPublic}
          />
-
-         <section class="space-y-6 px-1 py-2 sm:px-2">
-            <div class="flex flex-wrap items-center gap-3">
-               <Badge
-                  class="bg-background/82 text-foreground border-0 shadow-none"
-               >
-                  {scheduleWindow}
-               </Badge>
-               <Badge
-                  class="bg-secondary/82 text-secondary-foreground border-0 shadow-none"
-               >
-                  {formattedDuration}
-               </Badge>
-               <Badge
-                  class="text-foreground border-0 bg-[hsl(var(--chart-3)/0.16)] shadow-none"
-               >
-                  {status}
-               </Badge>
-            </div>
-
-            {#if data.pageContent?.renderedHtml.trim()}
-               <div
-                  class="prose-content prose prose-a:text-primary prose-strong:text-foreground prose-headings:text-foreground prose-code:text-foreground prose-blockquote:text-foreground prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_li]:text-muted-foreground [&_p]:text-muted-foreground [&_figcaption]:text-muted-foreground [&_td]:text-muted-foreground [&_th]:text-foreground min-h-[75vh] max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
-               >
-                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                  {@html data.pageContent.renderedHtml}
-               </div>
-            {:else}
-               <p
-                  class="max-w-3xl leading-8 text-[hsl(var(--tp-muted-foreground-current))]"
-               >
-                  {m.tournamentPage_customContentEmpty()}
-               </p>
-            {/if}
-         </section>
       </section>
 
-      <aside
-         class="tournament-shell space-y-4 pt-2 lg:sticky lg:top-6 lg:self-start lg:pt-24"
+      <div
+         class="grid min-h-full gap-[clamp(1.25rem,2.4vw,2rem)] px-[clamp(1rem,3vw,3rem)] pt-[clamp(1.25rem,2.4vw,2rem)] min-[72rem]:grid-cols-[minmax(0,1.65fr)_minmax(19rem,24rem)] min-[72rem]:items-start"
       >
-         <Card as="article" variant="secondary" class="space-y-4 p-5">
-            <div class="space-y-2">
-               <p
-                  class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
-               >
-                  {m.tournamentPage_section_quickFacts()}
-               </p>
-               <div class="grid grid-cols-2 gap-3">
-                  <Card variant="metricSecondary">
-                     <p
-                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
-                     >
-                        {m.tournamentPage_label_teamSize()}
-                     </p>
-                     <p class="mt-2 text-2xl font-semibold">
-                        {data.tournament.teamSize}
-                     </p>
-                  </Card>
-                  <Card variant="metricChart3">
-                     <p
-                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
-                     >
-                        {m.tournamentPage_label_lobbySize()}
-                     </p>
-                     <p class="mt-2 text-2xl font-semibold">
-                        {data.tournament.lobbySize}
-                     </p>
-                  </Card>
-               </div>
-            </div>
-
-            <dl class="space-y-3">
-               {#each quickFacts as fact (fact.label)}
-                  <Card variant="inset">
-                     <dt
-                        class="text-muted-foreground text-[11px] tracking-[0.14em] uppercase"
-                     >
-                        {fact.label}
-                     </dt>
-                     <dd class="mt-1 font-semibold break-all">
-                        {fact.value}
-                     </dd>
-                  </Card>
-               {/each}
-            </dl>
-         </Card>
-
-         <Card as="article" variant="chart2" class="space-y-4 p-5">
-            <p
-               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
-            >
-               {m.tournamentPage_section_schedule()}
-            </p>
-            <dl class="space-y-3">
-               {#each scheduleItems as item (item.label)}
-                  <Card
-                     variant="inset"
-                     class="flex items-start justify-between gap-4"
+         <section class="tournament-shell min-w-0 space-y-6">
+            <section class="space-y-6 px-[clamp(0.2rem,0.8vw,0.6rem)] py-2">
+               {#if data.pageContent?.renderedHtml.trim()}
+                  <div
+                     class="prose prose-a:text-primary prose-strong:text-foreground prose-headings:text-foreground prose-code:text-foreground prose-blockquote:text-foreground prose-img:rounded-[calc(var(--tp-radius-current)+0.2rem)] prose-pre:rounded-[calc(var(--tp-radius-current)+0.1rem)] prose-code:before:hidden prose-code:after:hidden [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_li]:text-muted-foreground [&_p]:text-muted-foreground [&_figcaption]:text-muted-foreground [&_td]:text-muted-foreground [&_th]:text-foreground min-h-[75vh] max-w-none [&_h1]:font-[family:var(--tournament-display-font)] [&_h2]:font-[family:var(--tournament-display-font)] [&_h3]:font-[family:var(--tournament-display-font)]"
                   >
-                     <dt class="text-muted-foreground text-sm">
-                        {item.label}
-                     </dt>
-                     <dd class="text-right font-semibold">
-                        {item.value}
-                     </dd>
-                  </Card>
-               {/each}
-            </dl>
-         </Card>
-
-         <Card as="article" variant="chart5" class="space-y-4 p-5">
-            <p
-               class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
-            >
-               {m.tournamentPage_section_format()}
-            </p>
-            <dl class="space-y-3">
-               {#each formatItems as item (item.label)}
-                  <Card
-                     variant="inset"
-                     class="flex items-start justify-between gap-4"
+                     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                     {@html data.pageContent.renderedHtml}
+                  </div>
+               {:else}
+                  <p
+                     class="max-w-3xl leading-8 text-[hsl(var(--tp-muted-foreground-current))]"
                   >
-                     <dt class="text-muted-foreground text-sm">
-                        {item.label}
-                     </dt>
-                     <dd class="text-right font-semibold">
-                        {item.value}
-                     </dd>
-                  </Card>
-               {/each}
-            </dl>
-         </Card>
-      </aside>
+                     {m.tournamentPage_customContentEmpty()}
+                  </p>
+               {/if}
+            </section>
+         </section>
+
+         <TournamentSidebar
+            isPublic={data.tournament.isPublic}
+            {scheduleItems}
+            {formatItems}
+         />
+      </div>
    </div>
 </div>
 
@@ -459,9 +346,5 @@
          var(--tp-light-input, var(--input))
       );
       --tp-ring-current: var(--tp-dark-ring, var(--tp-light-ring, var(--ring)));
-   }
-
-   .prose-content {
-      max-width: 100%;
    }
 </style>
