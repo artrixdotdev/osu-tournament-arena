@@ -2,9 +2,9 @@
    import type { DashboardData } from "$lib/features/dashboard/types";
    import { m } from "$i18n/messages";
    import {
+      getDashboardRoleLabel,
       getDashboardVisibilityLabel,
-      getRoleLabel,
-   } from "$lib/features/dashboard/access";
+   } from "$lib/features/dashboard/labels";
 
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
@@ -26,17 +26,13 @@
 </script>
 
 <div class="grid gap-4">
-   <Card
-      as="article"
-      variant="secondary"
-      class="from-background via-card/95 to-secondary/18 space-y-4 p-6"
-   >
+   <Card as="article" variant="secondary" class="space-y-4 p-6">
       <div class="space-y-2">
          <p class="text-muted-foreground text-xs tracking-[0.14em] uppercase">
             {m.tournamentDashboard_previewLink()}
          </p>
          <h2 class="text-lg font-semibold tracking-[-0.03em]">
-            Publishing surface
+            {m.tournamentDashboard_overview_publicPageTitle()}
          </h2>
       </div>
 
@@ -46,7 +42,7 @@
             <Badge
                class="bg-background/60 text-foreground border-0 shadow-none"
             >
-               {getRoleLabel(role)}
+               {getDashboardRoleLabel(role)}
             </Badge>
          {/each}
       </div>
@@ -58,13 +54,13 @@
       </Button>
    </Card>
 
-   <Card as="article" variant="chart2" class="space-y-4 p-6">
+   <Card as="article" variant="secondary" class="space-y-4 p-6">
       <div class="space-y-2">
          <p class="text-muted-foreground text-xs tracking-[0.14em] uppercase">
             {m.tournamentDashboard_customizationCoverage_title()}
          </p>
          <h2 class="text-lg font-semibold tracking-[-0.03em]">
-            Readiness checklist
+            {m.tournamentDashboard_overview_readinessTitle()}
          </h2>
       </div>
 
@@ -80,12 +76,14 @@
                           : m.tournamentDashboard_coverage_font()}
                   </span>
                   <span class="text-muted-foreground">
-                     {item.value ? "Ready" : "Missing"}
+                     {item.value
+                        ? m.tournamentDashboard_overview_ready()
+                        : m.tournamentDashboard_overview_missing()}
                   </span>
                </div>
                <div class="bg-muted h-2 overflow-hidden rounded-full">
                   <div
-                     class="bg-chart-2 h-full rounded-full"
+                     class="bg-primary h-full rounded-full"
                      style={`width: ${item.value ? 100 : 24}%`}
                   ></div>
                </div>

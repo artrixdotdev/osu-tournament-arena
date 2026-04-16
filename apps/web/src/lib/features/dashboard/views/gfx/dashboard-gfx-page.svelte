@@ -117,7 +117,7 @@
          onPreviewRequest: handlePreviewRequest,
          onUploadFiles: handleUploadFiles,
       }}
-      loadingLabel="Loading editor..."
+      loadingLabel={m.common_loading()}
       skeletonClass="min-h-[42rem]"
    />
 
@@ -132,7 +132,7 @@
             lightTheme,
             darkTheme,
          }}
-         loadingLabel="Loading theme controls..."
+         loadingLabel={m.common_loading()}
          skeletonClass="min-h-[24rem]"
       />
 
@@ -140,7 +140,7 @@
          loader={() =>
             import("$lib/features/dashboard/views/gfx/gfx-preview-panel.svelte")}
          componentProps={{ dashboard, saving, onSave: handleSave }}
-         loadingLabel="Loading preview utilities..."
+         loadingLabel={m.common_loading()}
          skeletonClass="min-h-[24rem]"
       />
    </div>

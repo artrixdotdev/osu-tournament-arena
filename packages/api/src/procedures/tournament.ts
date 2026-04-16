@@ -6,6 +6,7 @@ import { and, count, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
+   user as userTable,
    player as playerTable,
    screeningRequirements as screeningRequirementsTable,
    StaffRole,
@@ -745,6 +746,9 @@ export const tournamentProcedures = {
             playerCountResult,
             teamCountResult,
             staffCountResult,
+            players,
+            teams,
+            staffMembers,
             allStaff,
          ] = await Promise.all([
             getTournamentContentById(input.id),
@@ -769,6 +773,35 @@ export const tournamentProcedures = {
                .from(staffTable)
                .where(eq(staffTable.tournamentId, input.id))
                .then((rows) => rows[0]?.count ?? 0),
+            db
+               .select({
+                  id: playerTable.id,
+                  name: userTable.name,
+                  image: userTable.image,
+               })
+               .from(playerTable)
+               .innerJoin(userTable, eq(userTable.id, playerTable.userId))
+               .where(eq(playerTable.tournamentId, input.id))
+               .orderBy(desc(playerTable.createdAt)),
+            db
+               .select({
+                  id: teamTable.id,
+                  name: teamTable.name,
+               })
+               .from(teamTable)
+               .where(eq(teamTable.tournamentId, input.id))
+               .orderBy(desc(teamTable.createdAt)),
+            db
+               .select({
+                  id: staffTable.id,
+                  name: userTable.name,
+                  image: userTable.image,
+                  roles: staffTable.roles,
+               })
+               .from(staffTable)
+               .innerJoin(userTable, eq(userTable.id, staffTable.userId))
+               .where(eq(staffTable.tournamentId, input.id))
+               .orderBy(desc(staffTable.createdAt)),
             db
                .select({
                   roles: staffTable.roles,
@@ -812,6 +845,9 @@ export const tournamentProcedures = {
                playerCount: playerCountResult,
                teamCount: teamCountResult,
                staffCount: staffCountResult,
+               playerPreview: players,
+               teamPreview: teams,
+               staffPreview: staffMembers,
                customizationCoverage: [
                   {
                      id: "body",

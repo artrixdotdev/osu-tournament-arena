@@ -35,6 +35,21 @@ export interface DashboardData {
       playerCount: number;
       teamCount: number;
       staffCount: number;
+      playerPreview: {
+         id: number;
+         name: string;
+         image: string | null;
+      }[];
+      teamPreview: {
+         id: number;
+         name: string;
+      }[];
+      staffPreview: {
+         id: number;
+         name: string;
+         image: string | null;
+         roles: StaffRole[];
+      }[];
       customizationCoverage: {
          id: string;
          value: number;

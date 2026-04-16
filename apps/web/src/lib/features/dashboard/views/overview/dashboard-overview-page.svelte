@@ -6,39 +6,30 @@
    let { dashboard }: { dashboard: DashboardData } = $props();
 </script>
 
-<div class="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(19rem,22rem)]">
+<div class="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_20rem]">
    <div class="space-y-5">
       <DashboardLazySection
          loader={() =>
-            import("$lib/features/dashboard/views/overview/overview-stat-grid.svelte")}
+            import("$lib/features/dashboard/views/overview/overview-hero-panel.svelte")}
          componentProps={{ dashboard }}
          loadingLabel={m.common_loading()}
-         skeletonClass="min-h-[10rem]"
-         skeletonLines={2}
+         skeletonClass="min-h-[22rem]"
       />
 
       <DashboardLazySection
          loader={() =>
-            import("$lib/features/dashboard/views/overview/overview-role-breakdown.svelte")}
+            import("$lib/features/dashboard/views/overview/overview-secondary-cards.svelte")}
          componentProps={{ dashboard }}
-         loadingLabel="Loading staffing analytics..."
-         skeletonClass="min-h-[28rem]"
-      />
-
-      <DashboardLazySection
-         loader={() =>
-            import("$lib/features/dashboard/views/overview/overview-screening-panel.svelte")}
-         componentProps={{ dashboard }}
-         loadingLabel="Loading screening rules..."
+         loadingLabel={m.common_loading()}
          skeletonClass="min-h-[14rem]"
       />
    </div>
 
    <DashboardLazySection
       loader={() =>
-         import("$lib/features/dashboard/views/overview/overview-sidebar-rail.svelte")}
+         import("$lib/features/dashboard/views/overview/overview-metric-rail.svelte")}
       componentProps={{ dashboard }}
-      loadingLabel="Loading sidebar insights..."
+      loadingLabel={m.common_loading()}
       skeletonClass="min-h-[34rem]"
    />
 </div>

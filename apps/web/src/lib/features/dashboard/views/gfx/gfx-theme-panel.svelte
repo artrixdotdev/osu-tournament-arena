@@ -28,10 +28,11 @@
       <p class="text-muted-foreground text-xs tracking-[0.14em] uppercase">
          {m.common_branding()}
       </p>
-      <h2 class="text-lg font-semibold tracking-[-0.03em]">Theme controls</h2>
+      <h2 class="text-lg font-semibold tracking-[-0.03em]">
+         {m.tournamentDashboard_gfx_themeTitle()}
+      </h2>
       <p class="text-muted-foreground text-sm leading-6">
-         Tune typography, radius, and light/dark palette tokens for the public
-         page.
+         {m.tournamentDashboard_gfx_themeDescription()}
       </p>
    </div>
 
@@ -42,7 +43,7 @@
       <select
          id="font-family"
          bind:value={fontFamily}
-         class="bg-background/75 h-11 w-full rounded-2xl px-4 text-sm ring-1 ring-white/8 transition outline-none focus:ring-white/16"
+         class="border-input bg-background h-11 w-full rounded-2xl border px-4 text-sm transition outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
       >
          <option value="">{m.locale_system()}</option>
          {#each TOURNAMENT_FONT_OPTIONS as font (font)}
@@ -64,13 +65,11 @@
    </div>
 
    <div class="space-y-3">
-      <div class="bg-muted/60 inline-flex rounded-full p-1 shadow-inner">
+      <div class="bg-muted inline-flex rounded-full p-1 shadow-inner">
          <Button
             variant={themeMode === "light" ? "secondary" : "ghost"}
             size="sm"
-            class={themeMode === "light"
-               ? "bg-chart-3 hover:bg-chart-3/90 rounded-full text-black"
-               : "rounded-full"}
+            class="rounded-full"
             onclick={() => {
                themeMode = "light";
             }}
@@ -80,9 +79,7 @@
          <Button
             variant={themeMode === "dark" ? "secondary" : "ghost"}
             size="sm"
-            class={themeMode === "dark"
-               ? "bg-chart-5 hover:bg-chart-5/90 rounded-full text-black"
-               : "rounded-full"}
+            class="rounded-full"
             onclick={() => {
                themeMode = "dark";
             }}

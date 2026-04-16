@@ -11,7 +11,7 @@
 </script>
 
 <div
-   class={`rounded-[1.9rem] border border-white/8 bg-white/[0.03] p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.18)] ${className}`}
+   class={`border-border bg-card rounded-[1.9rem] border p-5 ${className}`}
 >
    <div class="space-y-3">
       <Skeleton class="h-4 w-28 rounded-full" />

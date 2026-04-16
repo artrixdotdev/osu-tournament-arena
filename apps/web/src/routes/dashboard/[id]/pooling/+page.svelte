@@ -1,17 +1,16 @@
 <script lang="ts">
    import DashboardLazySection from "$lib/features/dashboard/components/dashboard-lazy-section.svelte";
+   import { m } from "$i18n/messages";
 </script>
 
 <DashboardLazySection
    loader={() =>
       import("$lib/features/dashboard/views/dashboard-placeholder-page.svelte")}
    componentProps={{
-      title: "Pooling workspace",
-      description:
-         "This page is reserved for map pool work, playtest coordination, and pool-specific checkpoints.",
-      footnote:
-         "The route, tab visibility, and permission boundary are now in place. The detailed tooling can be added without touching the dashboard shell.",
+      title: m.tournamentDashboard_pooling_title(),
+      description: m.tournamentDashboard_pooling_description(),
+      footnote: m.tournamentDashboard_pooling_footnote(),
    }}
-   loadingLabel="Loading pooling workspace..."
+   loadingLabel={m.common_loading()}
    skeletonClass="min-h-[22rem]"
 />

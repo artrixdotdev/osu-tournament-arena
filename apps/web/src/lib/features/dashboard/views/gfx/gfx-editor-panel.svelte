@@ -24,11 +24,10 @@
             {m.tournamentDashboard_customization_title()}
          </p>
          <h2 class="text-lg font-semibold tracking-[-0.03em]">
-            Front page content
+            {m.tournamentDashboard_gfx_frontPageTitle()}
          </h2>
          <p class="text-muted-foreground text-sm leading-6">
-            Keep the public-facing tournament page polished without mixing
-            presentation controls into operational views.
+            {m.tournamentDashboard_gfx_frontPageDescription()}
          </p>
       </div>
    </div>

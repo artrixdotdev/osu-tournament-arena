@@ -1,5 +1,6 @@
 <script lang="ts">
    import type { DashboardTabId } from "$lib/features/dashboard/access";
+   import { m } from "$i18n/messages";
 
    import { Button } from "@ota/ui/components/button/index.ts";
 
@@ -9,16 +10,27 @@
    }: {
       tabs: {
          id: DashboardTabId;
-         label: string;
-         description: string;
          href: string;
       }[];
       activeTab: DashboardTabId;
    } = $props();
+
+   function getTabLabel(tabId: DashboardTabId) {
+      switch (tabId) {
+         case "overview":
+            return m.tournamentDashboard_metrics_title();
+         case "gfx":
+            return m.tournamentDashboard_tab_gfx();
+         case "pooling":
+            return m.tournamentDashboard_tab_pooling();
+         case "settings":
+            return m.tournamentDashboard_tab_settings();
+      }
+   }
 </script>
 
 <nav
-   class="rounded-[2rem] border border-white/8 bg-white/[0.035] p-2 shadow-[0_24px_60px_rgb(0_0_0_/_0.14)]"
+   class="border-border bg-background rounded-[1.5rem] border p-1"
    aria-label="Dashboard tabs"
 >
    <div class="flex flex-wrap gap-2">
@@ -27,11 +39,11 @@
             href={tab.href}
             variant={tab.id === activeTab ? "secondary" : "ghost"}
             class={tab.id === activeTab
-               ? "rounded-full bg-sky-400/16 text-sky-100 shadow-none hover:bg-sky-400/24"
-               : "rounded-full text-slate-300 hover:bg-white/8 hover:text-white"}
+               ? "rounded-full shadow-none"
+               : "text-muted-foreground rounded-full"}
             aria-current={tab.id === activeTab ? "page" : undefined}
          >
-            {tab.label}
+            {getTabLabel(tab.id)}
          </Button>
       {/each}
    </div>

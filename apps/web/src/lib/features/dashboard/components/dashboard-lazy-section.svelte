@@ -28,12 +28,12 @@
       <Section {...componentProps} />
    {:catch error}
       <div
-         class="rounded-[1.9rem] border border-rose-400/30 bg-rose-500/10 p-5"
+         class="border-border bg-card rounded-[1.9rem] border p-5"
       >
-         <p class="text-sm font-medium text-rose-100">
-            Failed to load section.
+         <p class="text-sm font-medium">
+            {m.tournamentDashboard_error_sectionLoadFailed()}
          </p>
-         <p class="mt-2 text-sm text-rose-100/70">{error.message}</p>
+         <p class="text-muted-foreground mt-2 text-sm">{error.message}</p>
       </div>
    {/await}
 
