@@ -1,6 +1,6 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
-   import DashboardShell from "$lib/features/dashboard/components/dashboard-shell.svelte";
+   import DashboardShell from "./(views)/shared/components/dashboard-shell.svelte";
 
    import type { LayoutProps } from "./$types";
 

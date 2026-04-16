@@ -1,18 +1,23 @@
 <script lang="ts">
-   import type {
-      DashboardData,
-      DashboardThemeState,
-   } from "$lib/features/dashboard/types";
    import { untrack } from "svelte";
-   import { m } from "$i18n/messages";
-   import DashboardLazySection from "$lib/features/dashboard/components/dashboard-lazy-section.svelte";
-   import { client } from "$lib/orpc";
    import { toast } from "svelte-sonner";
+
+   import { m } from "$i18n/messages";
+   import { client } from "$lib/orpc";
 
    import { uploadFile } from "@ota/storage/client";
 
-   let { dashboard }: { dashboard: DashboardData } = $props();
-   const initialContent = untrack(() => dashboard.content);
+   import DashboardLazySection from "../shared/components/dashboard-lazy-section.svelte";
+   import type {
+      DashboardData,
+      DashboardThemeState,
+   } from "../shared/types";
+
+   import type { PageProps } from "./$types";
+
+   let { data }: PageProps = $props();
+   const dashboard = $derived(data.dashboard as DashboardData);
+   const initialContent = untrack(() => data.dashboard.content);
 
    let body = $state(initialContent?.body ?? "");
    let fontFamily = $state(initialContent?.fontFamily ?? "");
@@ -110,8 +115,7 @@
 
 <div class="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(22rem,0.8fr)]">
    <DashboardLazySection
-      loader={() =>
-         import("$lib/features/dashboard/views/gfx/gfx-editor-panel.svelte")}
+      loader={() => import("./components/gfx-editor-panel.svelte")}
       componentProps={{
          body,
          onPreviewRequest: handlePreviewRequest,
@@ -123,8 +127,7 @@
 
    <div class="grid gap-4">
       <DashboardLazySection
-         loader={() =>
-            import("$lib/features/dashboard/views/gfx/gfx-theme-panel.svelte")}
+         loader={() => import("./components/gfx-theme-panel.svelte")}
          componentProps={{
             fontFamily,
             radius,
@@ -137,8 +140,7 @@
       />
 
       <DashboardLazySection
-         loader={() =>
-            import("$lib/features/dashboard/views/gfx/gfx-preview-panel.svelte")}
+         loader={() => import("./components/gfx-preview-panel.svelte")}
          componentProps={{ dashboard, saving, onSave: handleSave }}
          loadingLabel={m.common_loading()}
          skeletonClass="min-h-[24rem]"

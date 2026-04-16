@@ -14,7 +14,7 @@
 </script>
 
 <Card as="article" variant="secondary" class="p-8">
-   <div class="max-w-3xl space-y-4">
+   <div class="space-y-4">
       <p class="text-muted-foreground text-xs tracking-[0.16em] uppercase">
          {m.tournamentDashboard_placeholderEyebrow()}
       </p>

@@ -1,11 +1,12 @@
 <script lang="ts">
-   import type { DashboardData } from "$lib/features/dashboard/types";
    import type { Snippet } from "svelte";
    import { page } from "$app/state";
    import {
       getDashboardTabFromPath,
       getVisibleDashboardTabs,
-   } from "$lib/features/dashboard/access";
+   } from "../access";
+
+   import type { DashboardData } from "../types";
 
    import DashboardHeader from "./dashboard-header.svelte";
    import DashboardTabs from "./dashboard-tabs.svelte";
@@ -22,7 +23,7 @@
    const activeTab = $derived(getDashboardTabFromPath(page.url.pathname));
 </script>
 
-<div class="bg-background min-h-full">
+<div class="min-h-full">
    <div class="flex w-full flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
       <DashboardHeader {dashboard} />
       <DashboardTabs tabs={visibleTabs} {activeTab} />

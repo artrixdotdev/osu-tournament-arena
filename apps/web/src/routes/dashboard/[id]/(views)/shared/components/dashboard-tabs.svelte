@@ -1,8 +1,9 @@
 <script lang="ts">
-   import type { DashboardTabId } from "$lib/features/dashboard/access";
    import { m } from "$i18n/messages";
 
    import { Button } from "@ota/ui/components/button/index.ts";
+
+   import type { DashboardTabId } from "../access";
 
    let {
       tabs,
@@ -30,8 +31,8 @@
 </script>
 
 <nav
-   class="border-border bg-background rounded-[1.5rem] border p-1"
-   aria-label="Dashboard tabs"
+   class="border-border bg-background rounded-[1rem] border p-1"
+   aria-label={m.tournamentDashboard_tabs_ariaLabel()}
 >
    <div class="flex flex-wrap gap-2">
       {#each tabs as tab (tab.id)}
@@ -39,8 +40,8 @@
             href={tab.href}
             variant={tab.id === activeTab ? "secondary" : "ghost"}
             class={tab.id === activeTab
-               ? "rounded-full shadow-none"
-               : "text-muted-foreground rounded-full"}
+               ? "rounded-md shadow-none"
+               : "text-muted-foreground rounded-md"}
             aria-current={tab.id === activeTab ? "page" : undefined}
          >
             {getTabLabel(tab.id)}

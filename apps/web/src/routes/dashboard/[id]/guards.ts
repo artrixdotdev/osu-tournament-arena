@@ -1,7 +1,7 @@
-import type { DashboardTabId } from "$lib/features/dashboard/access";
-import type { DashboardData } from "$lib/features/dashboard/types";
+import type { DashboardTabId } from "./(views)/shared/access";
+import type { DashboardData } from "./(views)/shared/types";
 import { error } from "@sveltejs/kit";
-import { canAccessDashboardTab } from "$lib/features/dashboard/access";
+import { canAccessDashboardTab } from "./(views)/shared/access";
 
 export function assertDashboardTabAccess(
    dashboard: DashboardData,

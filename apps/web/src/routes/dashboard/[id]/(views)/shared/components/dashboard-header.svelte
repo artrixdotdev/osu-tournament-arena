@@ -1,13 +1,14 @@
 <script lang="ts">
-   import type { DashboardData } from "$lib/features/dashboard/types";
    import { m } from "$i18n/messages";
-   import {
-      getDashboardRoleLabel,
-      getDashboardVisibilityLabel,
-   } from "$lib/features/dashboard/labels";
 
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
+
+   import {
+      getDashboardRoleLabel,
+      getDashboardVisibilityLabel,
+   } from "../labels";
+   import type { DashboardData } from "../types";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 
@@ -71,11 +72,6 @@
          <Button href={previewPath} variant="secondary">
             {m.tournamentDashboard_openPage()}
          </Button>
-         {#if dashboard.permissions.canCustomizePage}
-            <Button href={`/dashboard/${dashboard.tournament.id}/gfx`} variant="ghost">
-               {m.tournamentDashboard_tab_gfx()}
-            </Button>
-         {/if}
       </div>
    </div>
 </section>

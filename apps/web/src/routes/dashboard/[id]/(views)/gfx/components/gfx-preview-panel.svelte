@@ -1,15 +1,13 @@
 <script lang="ts">
-   import type { DashboardData } from "$lib/features/dashboard/types";
    import { m } from "$i18n/messages";
-   import {
-      getDashboardRoleLabel,
-      getDashboardVisibilityLabel,
-   } from "$lib/features/dashboard/labels";
 
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
+
+   import { getDashboardRoleLabel, getDashboardVisibilityLabel } from "../../shared/labels";
+   import type { DashboardData } from "../../shared/types";
 
    let {
       dashboard,
@@ -92,7 +90,7 @@
       </div>
    </Card>
 
-   <Button class="h-11 rounded-full" onclick={onSave} disabled={saving}>
+   <Button class="h-11" onclick={onSave} disabled={saving}>
       {saving
          ? m.tournamentDashboard_savingChanges()
          : m.tournamentDashboard_saveChanges()}

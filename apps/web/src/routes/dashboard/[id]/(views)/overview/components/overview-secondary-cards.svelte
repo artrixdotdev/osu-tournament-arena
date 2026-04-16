@@ -1,14 +1,12 @@
 <script lang="ts">
-   import type { DashboardData } from "$lib/features/dashboard/types";
-   import {
-      getDashboardRoleLabel,
-      getDashboardVisibilityLabel,
-   } from "$lib/features/dashboard/labels";
    import { m } from "$i18n/messages";
 
    import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
+
+   import { getDashboardRoleLabel, getDashboardVisibilityLabel } from "../../shared/labels";
+   import type { DashboardData } from "../../shared/types";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 

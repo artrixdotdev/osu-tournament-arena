@@ -48,7 +48,6 @@ export interface DashboardData {
          id: number;
          name: string;
          image: string | null;
-         roles: StaffRole[];
       }[];
       customizationCoverage: {
          id: string;

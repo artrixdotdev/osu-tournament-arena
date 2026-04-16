@@ -1,5 +1,4 @@
 <script lang="ts">
-   import type { DashboardThemeState } from "$lib/features/dashboard/types";
    import { m } from "$i18n/messages";
    import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
    import { TOURNAMENT_FONT_OPTIONS } from "$lib/tournament-page";
@@ -7,6 +6,8 @@
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
+
+   import type { DashboardThemeState } from "../../shared/types";
 
    let {
       fontFamily = $bindable(""),
@@ -43,7 +44,7 @@
       <select
          id="font-family"
          bind:value={fontFamily}
-         class="border-input bg-background h-11 w-full rounded-2xl border px-4 text-sm transition outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+         class="border-input bg-background h-11 w-full rounded-md border px-4 text-sm transition outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
       >
          <option value="">{m.locale_system()}</option>
          {#each TOURNAMENT_FONT_OPTIONS as font (font)}
@@ -65,11 +66,11 @@
    </div>
 
    <div class="space-y-3">
-      <div class="bg-muted inline-flex rounded-full p-1 shadow-inner">
+      <div class="bg-muted inline-flex rounded-md p-1 shadow-inner">
          <Button
             variant={themeMode === "light" ? "secondary" : "ghost"}
             size="sm"
-            class="rounded-full"
+            class="rounded-sm"
             onclick={() => {
                themeMode = "light";
             }}
@@ -79,7 +80,7 @@
          <Button
             variant={themeMode === "dark" ? "secondary" : "ghost"}
             size="sm"
-            class="rounded-full"
+            class="rounded-sm"
             onclick={() => {
                themeMode = "dark";
             }}

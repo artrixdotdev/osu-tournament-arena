@@ -782,7 +782,8 @@ export const tournamentProcedures = {
                .from(playerTable)
                .innerJoin(userTable, eq(userTable.id, playerTable.userId))
                .where(eq(playerTable.tournamentId, input.id))
-               .orderBy(desc(playerTable.createdAt)),
+               .orderBy(desc(playerTable.createdAt))
+               .limit(18),
             db
                .select({
                   id: teamTable.id,
@@ -790,18 +791,19 @@ export const tournamentProcedures = {
                })
                .from(teamTable)
                .where(eq(teamTable.tournamentId, input.id))
-               .orderBy(desc(teamTable.createdAt)),
+               .orderBy(desc(teamTable.createdAt))
+               .limit(18),
             db
                .select({
                   id: staffTable.id,
                   name: userTable.name,
                   image: userTable.image,
-                  roles: staffTable.roles,
                })
                .from(staffTable)
                .innerJoin(userTable, eq(userTable.id, staffTable.userId))
                .where(eq(staffTable.tournamentId, input.id))
-               .orderBy(desc(staffTable.createdAt)),
+               .orderBy(desc(staffTable.createdAt))
+               .limit(18),
             db
                .select({
                   roles: staffTable.roles,
