@@ -8,8 +8,8 @@
 
 <DashboardLazySection
    loader={() =>
-      import("$lib/features/dashboard/views/overview/dashboard-overview-page.svelte")}
+      import("$lib/features/dashboard/views/gfx/dashboard-gfx-page.svelte")}
    componentProps={{ dashboard: data.dashboard }}
-   loadingLabel="Loading overview..."
-   skeletonClass="min-h-[42rem]"
+   loadingLabel="Loading GFX workspace..."
+   skeletonClass="min-h-[48rem]"
 />

@@ -1,10 +1,10 @@
 import type { PageServerLoad } from "./$types";
-import { assertDashboardTabAccess } from "./guards";
+import { assertDashboardTabAccess } from "../guards";
 
 export const load: PageServerLoad = async ({ parent }) => {
    const { dashboard } = await parent();
 
-   assertDashboardTabAccess(dashboard, "overview");
+   assertDashboardTabAccess(dashboard, "gfx");
 
    return {};
 };
