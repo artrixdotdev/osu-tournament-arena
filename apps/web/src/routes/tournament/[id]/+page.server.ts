@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { client } from "$lib/server/orpc";
 
-import { tournamentIdSchema } from "@ota/validators";
+import { dashboardDataSchema, tournamentIdSchema } from "@ota/validators";
 
 import type { PageServerLoad } from "./$types";
 
@@ -33,9 +33,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
    }
 
    try {
-      const dashboard = await client.tournament.getDashboard({
-         id: params.id,
-      });
+      const dashboard = dashboardDataSchema.parse(
+         await client.tournament.getDashboard({
+            id: params.id,
+         }),
+      );
 
       return {
          tournament: dashboard.tournament,

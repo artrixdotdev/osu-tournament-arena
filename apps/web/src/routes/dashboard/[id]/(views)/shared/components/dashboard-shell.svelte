@@ -1,12 +1,12 @@
 <script lang="ts">
    import type { Snippet } from "svelte";
    import { page } from "$app/state";
+
+   import type { DashboardData } from "@ota/validators";
    import {
       getDashboardTabFromPath,
       getVisibleDashboardTabs,
-   } from "../access";
-
-   import type { DashboardData } from "../types";
+   } from "@ota/validators";
 
    import DashboardHeader from "./dashboard-header.svelte";
    import DashboardTabs from "./dashboard-tabs.svelte";
@@ -27,7 +27,7 @@
    <div class="flex w-full flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
       <DashboardHeader {dashboard} />
       <DashboardTabs tabs={visibleTabs} {activeTab} />
-      <div class="pb-6">
+      <div>
          {@render children()}
       </div>
    </div>

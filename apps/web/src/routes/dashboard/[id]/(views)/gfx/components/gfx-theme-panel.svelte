@@ -6,8 +6,7 @@
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
-
-   import type { DashboardThemeState } from "../../shared/types";
+   import type { DashboardThemeState } from "@ota/validators";
 
    let {
       fontFamily = $bindable(""),

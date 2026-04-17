@@ -1,10 +1,4 @@
 import type { PageServerLoad } from "./$types";
-import { assertDashboardTabAccess } from "../../guards";
+import { createDashboardTabGuardLoad } from "$lib/server/dashboard";
 
-export const load: PageServerLoad = async ({ parent }) => {
-   const { dashboard } = await parent();
-
-   assertDashboardTabAccess(dashboard, "pooling");
-
-   return {};
-};
+export const load: PageServerLoad = createDashboardTabGuardLoad("pooling");

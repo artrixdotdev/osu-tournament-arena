@@ -6,17 +6,14 @@
    import { client } from "$lib/orpc";
 
    import { uploadFile } from "@ota/storage/client";
+   import type { DashboardThemeState } from "@ota/validators";
 
    import DashboardLazySection from "../shared/components/dashboard-lazy-section.svelte";
-   import type {
-      DashboardData,
-      DashboardThemeState,
-   } from "../shared/types";
 
    import type { PageProps } from "./$types";
 
    let { data }: PageProps = $props();
-   const dashboard = $derived(data.dashboard as DashboardData);
+   const dashboard = $derived(data.dashboard);
    const initialContent = untrack(() => data.dashboard.content);
 
    let body = $state(initialContent?.body ?? "");

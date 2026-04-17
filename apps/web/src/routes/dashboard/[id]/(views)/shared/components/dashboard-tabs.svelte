@@ -1,9 +1,9 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
 
-   import { Button } from "@ota/ui/components/button/index.ts";
-
-   import type { DashboardTabId } from "../access";
+   import type { DashboardTabId } from "@ota/validators";
+   import * as Tabs from "@ota/ui/components/tabs/index.ts";
+   import { cn } from "@ota/ui/utils.js";
 
    let {
       tabs,
@@ -30,23 +30,32 @@
    }
 </script>
 
-<nav
-   class="border-border bg-card rounded-[1.75rem] border p-2"
-   aria-label={m.tournamentDashboard_tabs_ariaLabel()}
->
-   <div class="flex flex-wrap gap-2">
-      {#each tabs as tab (tab.id)}
-         <Button
-            href={tab.href}
-            variant={tab.id === activeTab ? "secondary" : "ghost"}
-            size="lg"
-            class={tab.id === activeTab
-               ? "rounded-xl"
-               : "text-muted-foreground hover:bg-muted rounded-xl"}
-            aria-current={tab.id === activeTab ? "page" : undefined}
-         >
-            {getTabLabel(tab.id)}
-         </Button>
-      {/each}
-   </div>
+<nav aria-label={m.tournamentDashboard_tabs_ariaLabel()}>
+   <Tabs.Root value={activeTab} class="w-full">
+      <Tabs.List
+         class=" h-auto w-full flex-wrap justify-start gap-2 bg-transparent p-2"
+      >
+         {#each tabs as tab (tab.id)}
+            <Tabs.Trigger
+               value={tab.id}
+               class={cn(
+                  "h-10 flex-none rounded-xl px-6",
+                  tab.id !== activeTab
+                     ? "text-muted-foreground hover:bg-muted"
+                     : "bg-accent text-accent-foreground",
+               )}
+            >
+               {#snippet child({ props })}
+                  <a
+                     {...props}
+                     href={tab.href}
+                     aria-current={tab.id === activeTab ? "page" : undefined}
+                  >
+                     {getTabLabel(tab.id)}
+                  </a>
+               {/snippet}
+            </Tabs.Trigger>
+         {/each}
+      </Tabs.List>
+   </Tabs.Root>
 </nav>

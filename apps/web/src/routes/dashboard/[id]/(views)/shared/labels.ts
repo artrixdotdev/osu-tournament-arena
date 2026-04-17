@@ -1,8 +1,7 @@
 import { StaffRole } from "@ota/db/schema";
+import type { DashboardData } from "@ota/validators";
 
 import { m } from "$i18n/messages";
-
-import type { DashboardData } from "./types";
 
 export function getDashboardVisibilityLabel(dashboard: DashboardData) {
    if (dashboard.tournament.isArchived) {

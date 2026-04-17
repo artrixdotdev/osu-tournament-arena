@@ -52,7 +52,7 @@ const themeTokenSchema = z
       "Theme tokens must be valid HSL values such as 222.2 47.4% 11.2%",
    );
 
-const tournamentThemeTokensSchema = z.object({
+export const tournamentThemeTokensSchema = z.object({
    background: themeTokenSchema.optional(),
    foreground: themeTokenSchema.optional(),
    card: themeTokenSchema.optional(),
@@ -73,7 +73,7 @@ const tournamentThemeTokensSchema = z.object({
    ring: themeTokenSchema.optional(),
 });
 
-const tournamentPageThemeSchema = z.object({
+export const tournamentPageThemeSchema = z.object({
    radius: z.number().min(0).max(2).nullable().optional(),
    light: tournamentThemeTokensSchema.nullable().optional(),
    dark: tournamentThemeTokensSchema.nullable().optional(),

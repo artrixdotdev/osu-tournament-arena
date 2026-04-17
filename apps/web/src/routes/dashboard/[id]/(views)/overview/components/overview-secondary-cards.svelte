@@ -2,23 +2,14 @@
    import { ChartIcon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
 
+   import type { DashboardData } from "@ota/validators";
    import * as Avatar from "@ota/ui/components/avatar/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
-
-   import type { DashboardData } from "../../shared/types";
+   import { getNameInitials } from "@ota/ui/utils.js";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 
    const players = $derived(dashboard.metrics.playerPreview);
-
-   function initials(name: string) {
-      return name
-         .split(/\s+/)
-         .filter(Boolean)
-         .slice(0, 2)
-         .map((part) => part[0]?.toUpperCase() ?? "")
-         .join("");
-   }
 </script>
 
 <div class="grid gap-5 2xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
@@ -53,9 +44,9 @@
                            src={player.image ?? undefined}
                            alt={player.name}
                         />
-                        <Avatar.Fallback
-                           >{initials(player.name)}</Avatar.Fallback
-                        >
+                        <Avatar.Fallback>
+                           {getNameInitials(player.name)}
+                        </Avatar.Fallback>
                      </Avatar.Root>
 
                      <div class="min-w-0">

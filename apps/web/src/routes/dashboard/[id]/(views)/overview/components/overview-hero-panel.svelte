@@ -8,8 +8,7 @@
    import { HugeiconsIcon } from "@hugeicons/svelte";
 
    import { Card } from "@ota/ui/components/card/index.ts";
-
-   import type { DashboardData } from "../../shared/types";
+   import type { DashboardData } from "@ota/validators";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 

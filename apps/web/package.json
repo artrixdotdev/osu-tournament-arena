@@ -22,6 +22,7 @@
       "@ota/auth": "workspace:*",
       "@ota/db": "workspace:*",
       "@ota/ui": "workspace:*",
+      "@ota/validators": "workspace:*",
       "better-auth": "catalog:",
       "bits-ui": "catalog:",
       "date-fns": "catalog:",

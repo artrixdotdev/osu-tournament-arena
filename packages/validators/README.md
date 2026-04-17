@@ -1,6 +1,6 @@
 # @ota/validators
 
-Shared Zod validation schemas for use across the frontend and backend.
+Shared Zod validation schemas and domain contracts for use across the frontend and backend.
 
 ## Technologies
 
@@ -10,7 +10,9 @@ Shared Zod validation schemas for use across the frontend and backend.
 
 ```
 src/
-└── index.ts    # Schema exports
+├── dashboard.ts   # Dashboard response contracts and access helpers
+├── tournament.ts  # Tournament input and content schemas
+└── index.ts       # Package exports
 ```
 
 ## Usage
