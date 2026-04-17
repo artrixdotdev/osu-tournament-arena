@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 
-import { canAccessDashboardTab } from "@ota/validators";
 import type { DashboardData, DashboardTabId } from "@ota/validators";
+import { canAccessDashboardTab } from "@ota/validators";
 
 export function assertDashboardTabAccess(
    dashboard: DashboardData,

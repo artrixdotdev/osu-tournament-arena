@@ -3,10 +3,10 @@
    import TournamentThemeFields from "$lib/components/tournament-theme-fields.svelte";
    import { TOURNAMENT_FONT_OPTIONS } from "$lib/tournament-page";
 
+   import type { DashboardThemeState } from "@ota/validators";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
-   import type { DashboardThemeState } from "@ota/validators";
 
    let {
       fontFamily = $bindable(""),
@@ -43,7 +43,7 @@
       <select
          id="font-family"
          bind:value={fontFamily}
-         class="border-input bg-background h-11 w-full rounded-md border px-4 text-sm transition outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+         class="border-input bg-background focus-visible:ring-ring/50 h-11 w-full rounded-md border px-4 text-sm transition outline-none focus-visible:ring-[3px]"
       >
          <option value="">{m.locale_system()}</option>
          {#each TOURNAMENT_FONT_OPTIONS as font (font)}

@@ -32,7 +32,7 @@ const MARKDOWN_ALLOWED_TAGS = [
 const MARKDOWN_ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] =
    {
       a: ["href", "name", "target", "rel"],
-      img: ["src", "alt", "title", "width", "height", "loading"],
+      img: ["src", "alt", "title", "width", "height"],
    };
 
 const MARKDOWN_ALLOWED_SCHEMES = ["http", "https", "mailto", "tel"];

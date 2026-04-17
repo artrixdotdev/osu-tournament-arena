@@ -1,6 +1,7 @@
 <script lang="ts">
-   import * as Avatar from ".";
    import { getNameInitials } from "@ota/ui/utils.js";
+
+   import * as Avatar from ".";
 
    let {
       items,

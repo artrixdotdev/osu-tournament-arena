@@ -1,6 +1,6 @@
 <script lang="ts">
-   import { Badge } from "@ota/ui/components/badge/index.ts";
    import type { DashboardData } from "@ota/validators";
+   import { Badge } from "@ota/ui/components/badge/index.ts";
 
    import {
       getDashboardRoleLabel,

@@ -4,12 +4,12 @@ import { z } from "zod";
 import {
    screeningRequirements as screeningRequirementsTable,
    StaffRole,
-   tournament as tournamentTable,
    tournamentContent as tournamentContentTable,
+   tournament as tournamentTable,
 } from "@ota/db/schema";
 
-import { tournamentPageThemeSchema } from "./tournament";
 import type { tournamentThemeTokensSchema } from "./tournament";
+import { tournamentPageThemeSchema } from "./tournament";
 
 const dashboardTournamentSchema = createSelectSchema(tournamentTable);
 
@@ -99,7 +99,10 @@ export type DashboardMetrics = z.infer<typeof dashboardMetricsSchema>;
 export type DashboardTabId = z.infer<typeof dashboardTabIdSchema>;
 export type DashboardThemeState = z.infer<typeof tournamentThemeTokensSchema>;
 
-function hasAnyRole(roles: readonly StaffRole[], allowedRoles: readonly StaffRole[]) {
+function hasAnyRole(
+   roles: readonly StaffRole[],
+   allowedRoles: readonly StaffRole[],
+) {
    return allowedRoles.some((role) => roles.includes(role));
 }
 

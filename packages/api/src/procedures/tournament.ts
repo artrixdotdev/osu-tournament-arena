@@ -6,7 +6,6 @@ import { and, count, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
-   user as userTable,
    player as playerTable,
    screeningRequirements as screeningRequirementsTable,
    StaffRole,
@@ -14,6 +13,7 @@ import {
    team as teamTable,
    tournamentContent as tournamentContentTable,
    tournament as tournamentTable,
+   user as userTable,
 } from "@ota/db/schema";
 import { createS3Storage } from "@ota/storage";
 import {

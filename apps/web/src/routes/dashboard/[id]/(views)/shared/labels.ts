@@ -1,14 +1,16 @@
-import { StaffRole } from "@ota/db/schema";
-import type { DashboardData } from "@ota/validators";
-
 import { m } from "$i18n/messages";
+
+import type { DashboardData } from "@ota/validators";
+import { StaffRole } from "@ota/db/schema";
 
 export function getDashboardVisibilityLabel(dashboard: DashboardData) {
    if (dashboard.tournament.isArchived) {
       return m.common_archived();
    }
 
-   return dashboard.tournament.isPublic ? m.common_public() : m.common_private();
+   return dashboard.tournament.isPublic
+      ? m.common_public()
+      : m.common_private();
 }
 
 export function getDashboardRoleLabel(role: StaffRole) {

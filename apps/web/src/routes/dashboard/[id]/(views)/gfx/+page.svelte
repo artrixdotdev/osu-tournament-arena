@@ -1,16 +1,14 @@
 <script lang="ts">
    import { untrack } from "svelte";
-   import { toast } from "svelte-sonner";
-
    import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
+   import { toast } from "svelte-sonner";
 
-   import { uploadFile } from "@ota/storage/client";
    import type { DashboardThemeState } from "@ota/validators";
-
-   import DashboardLazySection from "../shared/components/dashboard-lazy-section.svelte";
+   import { uploadFile } from "@ota/storage/client";
 
    import type { PageProps } from "./$types";
+   import DashboardLazySection from "../shared/components/dashboard-lazy-section.svelte";
 
    let { data }: PageProps = $props();
    const dashboard = $derived(data.dashboard);

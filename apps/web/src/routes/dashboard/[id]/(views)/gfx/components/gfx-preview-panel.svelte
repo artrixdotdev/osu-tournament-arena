@@ -2,10 +2,10 @@
    import { m } from "$i18n/messages";
    import { getTournamentPublicPath } from "$lib/tournament-page";
 
+   import type { DashboardData } from "@ota/validators";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
-   import type { DashboardData } from "@ota/validators";
 
    import DashboardAccessBadges from "../../shared/components/dashboard-access-badges.svelte";
 
@@ -36,7 +36,7 @@
       </div>
 
       <DashboardAccessBadges
-         dashboard={dashboard}
+         {dashboard}
          roleBadgeClass="bg-background/60 text-foreground border-0 shadow-none"
       />
 
