@@ -27,9 +27,7 @@
       {@const Section = module.default as Component<object>}
       <Section {...componentProps} />
    {:catch error}
-      <div
-         class="border-border bg-card rounded-[1.9rem] border p-5"
-      >
+      <div class="border-border bg-card rounded-[1.9rem] border p-5">
          <p class="text-sm font-medium">
             {m.tournamentDashboard_error_sectionLoadFailed()}
          </p>

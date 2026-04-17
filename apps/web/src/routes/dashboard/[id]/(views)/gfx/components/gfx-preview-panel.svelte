@@ -1,13 +1,13 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
+   import { getTournamentPublicPath } from "$lib/tournament-page";
 
-   import { Badge } from "@ota/ui/components/badge/index.ts";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
    import { Input } from "@ota/ui/components/input/index.ts";
+   import type { DashboardData } from "@ota/validators";
 
-   import { getDashboardRoleLabel, getDashboardVisibilityLabel } from "../../shared/labels";
-   import type { DashboardData } from "../../shared/types";
+   import DashboardAccessBadges from "../../shared/components/dashboard-access-badges.svelte";
 
    let {
       dashboard,
@@ -19,8 +19,9 @@
       onSave: () => Promise<void>;
    } = $props();
 
-   const previewPath = $derived(`/tournament/${dashboard.tournament.id}`);
-   const visibilityLabel = $derived(getDashboardVisibilityLabel(dashboard));
+   const previewPath = $derived(
+      getTournamentPublicPath(dashboard.tournament.id),
+   );
 </script>
 
 <div class="grid gap-4">
@@ -34,16 +35,10 @@
          </h2>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-         <Badge variant="secondary">{visibilityLabel}</Badge>
-         {#each dashboard.roles as role (role)}
-            <Badge
-               class="bg-background/60 text-foreground border-0 shadow-none"
-            >
-               {getDashboardRoleLabel(role)}
-            </Badge>
-         {/each}
-      </div>
+      <DashboardAccessBadges
+         dashboard={dashboard}
+         roleBadgeClass="bg-background/60 text-foreground border-0 shadow-none"
+      />
 
       <Input value={previewPath} readonly />
 

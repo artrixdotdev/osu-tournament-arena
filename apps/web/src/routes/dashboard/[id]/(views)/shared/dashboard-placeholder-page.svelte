@@ -1,5 +1,6 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
+
    import { Card } from "@ota/ui/components/card/index.ts";
 
    let {
@@ -20,7 +21,7 @@
       </p>
       <h2 class="text-3xl font-semibold tracking-[-0.06em]">{title}</h2>
       <p class="text-muted-foreground text-base leading-7">{description}</p>
-      <div class="bg-muted rounded-[1.5rem] border border-dashed p-5">
+      <div class="bg-muted rounded border border-dashed p-5">
          <p class="text-muted-foreground text-sm leading-6">{footnote}</p>
       </div>
    </div>

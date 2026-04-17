@@ -1,29 +1,29 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
+   import {
+      getTournamentMonogram,
+      getTournamentPublicPath,
+   } from "$lib/tournament-page";
 
-   import { Badge } from "@ota/ui/components/badge/index.ts";
+   import type { DashboardData } from "@ota/validators";
    import { Button } from "@ota/ui/components/button/index.ts";
    import { Card } from "@ota/ui/components/card/index.ts";
 
-   import type { DashboardData } from "../types";
-   import {
-      getDashboardRoleLabel,
-      getDashboardVisibilityLabel,
-   } from "../labels";
+   import { getDashboardVisibilityLabel } from "../labels";
+   import DashboardAccessBadges from "./dashboard-access-badges.svelte";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 
+   const previewPath = $derived(
+      getTournamentPublicPath(dashboard.tournament.id),
+   );
+   const participantSummary = $derived(
+      `${dashboard.metrics.teamCount.toLocaleString()} teams and ${dashboard.metrics.playerCount.toLocaleString()} players`,
+   );
    const visibilityLabel = $derived(getDashboardVisibilityLabel(dashboard));
-   const previewPath = $derived(`/tournament/${dashboard.tournament.id}`);
-   const tournamentMonogram = $derived.by(() => {
-      const source = dashboard.tournament.acronym ?? dashboard.tournament.name;
-      return source
-         .split(/\s+/)
-         .filter(Boolean)
-         .slice(0, 2)
-         .map((token) => token[0]?.toUpperCase() ?? "")
-         .join("");
-   });
+   const tournamentMonogram = $derived(
+      getTournamentMonogram(dashboard.tournament),
+   );
 </script>
 
 <section class="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_20rem]">
@@ -80,14 +80,10 @@
          </div>
 
          <div class="flex flex-wrap items-end justify-between gap-4">
-            <div class="flex flex-wrap gap-2">
-               <Badge variant="secondary">{visibilityLabel}</Badge>
-               {#each dashboard.roles as role (role)}
-                  <Badge class="border-0 shadow-none">
-                     {getDashboardRoleLabel(role)}
-                  </Badge>
-               {/each}
-            </div>
+            <DashboardAccessBadges
+               {dashboard}
+               roleBadgeClass="border-0 shadow-none"
+            />
 
             <Button href={previewPath} variant="secondary" size="lg">
                {m.tournamentDashboard_openPage()}
@@ -125,10 +121,7 @@
             <h2 class="text-2xl font-semibold tracking-[-0.05em]">
                {dashboard.tournament.name}
             </h2>
-            <p class="text-muted-foreground text-sm">
-               {dashboard.metrics.teamCount.toLocaleString()} teams and{" "}
-               {dashboard.metrics.playerCount.toLocaleString()} players
-            </p>
+            <p class="text-muted-foreground text-sm">{participantSummary}</p>
          </div>
 
          <div class="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-1">
@@ -148,9 +141,7 @@
                >
                   Page
                </p>
-               <p class="mt-2 text-lg font-semibold">
-                  {visibilityLabel}
-               </p>
+               <p class="mt-2 text-lg font-semibold">{visibilityLabel}</p>
             </div>
          </div>
       </div>

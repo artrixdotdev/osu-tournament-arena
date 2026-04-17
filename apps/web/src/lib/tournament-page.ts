@@ -1,4 +1,5 @@
 import type { TournamentPageTheme } from "@ota/db/schema";
+import { getNameInitials } from "@ota/ui/utils.js";
 
 export const TOURNAMENT_FONT_OPTIONS = [
    "Readex Pro",
@@ -62,6 +63,17 @@ export function getTournamentFontStack(fontFamily?: string | null) {
 
    const trimmed = fontFamily.trim();
    return `"${trimmed}", var(--font-sans)`;
+}
+
+export function getTournamentMonogram(tournament: {
+   name: string;
+   acronym?: string | null;
+}) {
+   return getNameInitials(tournament.acronym ?? tournament.name);
+}
+
+export function getTournamentPublicPath(tournamentId: string) {
+   return `/tournament/${tournamentId}`;
 }
 
 export function stringifyTournamentTheme(theme?: TournamentPageTheme | null) {

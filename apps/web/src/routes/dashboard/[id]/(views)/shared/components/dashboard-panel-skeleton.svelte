@@ -10,9 +10,7 @@
    } = $props();
 </script>
 
-<div
-   class={`border-border bg-card rounded-[1.9rem] border p-5 ${className}`}
->
+<div class={`border-border bg-card rounded-[1.9rem] border p-5 ${className}`}>
    <div class="space-y-3">
       <Skeleton class="h-4 w-28 rounded-full" />
       <Skeleton class="h-8 w-56 rounded-full" />

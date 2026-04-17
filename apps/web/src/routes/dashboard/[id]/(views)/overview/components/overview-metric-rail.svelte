@@ -1,16 +1,11 @@
 <script lang="ts">
-   import { Badge } from "@ota/ui/components/badge/index.ts";
+   import type { DashboardData } from "@ota/validators";
    import { Card } from "@ota/ui/components/card/index.ts";
 
-   import type { DashboardData } from "../../shared/types";
-   import {
-      getDashboardRoleLabel,
-      getDashboardVisibilityLabel,
-   } from "../../shared/labels";
+   import DashboardAccessBadges from "../../shared/components/dashboard-access-badges.svelte";
 
    let { dashboard }: { dashboard: DashboardData } = $props();
 
-   const visibilityLabel = $derived(getDashboardVisibilityLabel(dashboard));
    const teams = $derived(dashboard.metrics.teamPreview);
 </script>
 
@@ -60,11 +55,8 @@
             >
                Tournament access
             </p>
-            <div class="mt-3 flex flex-wrap gap-2">
-               <Badge variant="secondary">{visibilityLabel}</Badge>
-               {#each dashboard.roles as role (role)}
-                  <Badge>{getDashboardRoleLabel(role)}</Badge>
-               {/each}
+            <div class="mt-3">
+               <DashboardAccessBadges {dashboard} />
             </div>
          </div>
       </div>
