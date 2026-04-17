@@ -6,6 +6,15 @@ export function cn(...inputs: ClassValue[]) {
    return twMerge(clsx(inputs));
 }
 
+export function getNameInitials(name: string, maxParts = 2) {
+   return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, maxParts)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("");
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

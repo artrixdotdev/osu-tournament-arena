@@ -1,5 +1,6 @@
 <script lang="ts">
-   import * as Avatar from "@ota/ui/components/avatar/index.ts";
+   import * as Avatar from ".";
+   import { getNameInitials } from "@ota/ui/utils.js";
 
    let {
       items,
@@ -17,15 +18,6 @@
 
    const visibleItems = $derived(items.slice(0, max));
    const overflowCount = $derived(Math.max(0, items.length - max));
-
-   function initials(name: string) {
-      return name
-         .split(/\s+/)
-         .filter(Boolean)
-         .slice(0, 2)
-         .map((part) => part[0]?.toUpperCase() ?? "")
-         .join("");
-   }
 </script>
 
 <div class="flex flex-wrap items-center gap-0">
@@ -38,7 +30,7 @@
          {#if kind === "image"}
             <Avatar.Image src={item.image ?? undefined} alt={item.name} />
          {/if}
-         <Avatar.Fallback>{initials(item.name)}</Avatar.Fallback>
+         <Avatar.Fallback>{getNameInitials(item.name)}</Avatar.Fallback>
       </Avatar.Root>
    {/each}
 
