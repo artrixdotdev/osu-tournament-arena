@@ -112,10 +112,10 @@
    <DashboardLazySection
       loader={() => import("./components/gfx-editor-panel.svelte")}
       componentProps={{
-         body,
          onPreviewRequest: handlePreviewRequest,
          onUploadFiles: handleUploadFiles,
       }}
+      bind:body
       loadingLabel={m.common_loading()}
       skeletonClass="min-h-[42rem]"
    />
@@ -123,13 +123,11 @@
    <div class="grid gap-4">
       <DashboardLazySection
          loader={() => import("./components/gfx-theme-panel.svelte")}
-         componentProps={{
-            fontFamily,
-            radius,
-            themeMode,
-            lightTheme,
-            darkTheme,
-         }}
+         bind:fontFamily
+         bind:radius
+         bind:themeMode
+         bind:lightTheme
+         bind:darkTheme
          loadingLabel={m.common_loading()}
          skeletonClass="min-h-[24rem]"
       />
