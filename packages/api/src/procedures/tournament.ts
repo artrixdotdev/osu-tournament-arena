@@ -1,19 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
+import { randomUUID } from "node:crypto";
 import { ORPCError } from "@orpc/server";
-import { and, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
+import { and, count, desc, DrizzleQueryError, eq, lt } from "drizzle-orm";
 
 import { db } from "@ota/db/client";
 import {
+   user as userTable,
+   player as playerTable,
    screeningRequirements as screeningRequirementsTable,
-   staff,
    StaffRole,
+   staff as staffTable,
+   team as teamTable,
+   tournamentContent as tournamentContentTable,
    tournament as tournamentTable,
 } from "@ota/db/schema";
+import { createS3Storage } from "@ota/storage";
 import {
+   createTournamentContentImageUploadSchema,
    createTournamentSchema,
+   previewTournamentMarkdownSchema,
    tournamentIdSchema,
    tournamentListSchema,
+   updateTournamentContentSchema,
    updateTournamentDetailsSchema,
    updateTournamentDiscordSchema,
    updateTournamentScheduleSchema,
@@ -22,13 +31,71 @@ import {
    updateTournamentVisibilitySchema,
 } from "@ota/validators/tournament";
 
-import { requireAdmin, requireHost } from "../middleware/staff";
+import {
+   requireAdmin,
+   requireCommentator,
+   requireHost,
+} from "../middleware/staff";
 import { authorized, base } from "../orpc";
+import { renderSafeTournamentMarkdown } from "../utils/tournament-content";
 
 const updateTournamentSettingsAndScreeningSchema =
    updateTournamentSettingsSchema.and(
       updateTournamentScreeningRequirementsSchema,
    );
+const tournamentStorage = createS3Storage();
+const TOURNAMENT_CONTENT_UPLOAD_EXPIRY_SECONDS = 900;
+
+function sanitizeFileName(fileName: string): string {
+   const normalized = fileName.trim().toLowerCase();
+   const sanitized = normalized
+      .replace(/[^a-z0-9._-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+
+   return sanitized.slice(0, 120) || "image";
+}
+
+async function getTournamentById(id: string) {
+   const [tournament] = await db
+      .select()
+      .from(tournamentTable)
+      .where(
+         and(eq(tournamentTable.id, id), eq(tournamentTable.isDeleted, false)),
+      )
+      .limit(1);
+
+   return tournament ?? null;
+}
+
+async function getTournamentContentById(id: string) {
+   const [content] = await db
+      .select()
+      .from(tournamentContentTable)
+      .where(eq(tournamentContentTable.tournamentId, id))
+      .limit(1);
+
+   return content ?? null;
+}
+
+async function upsertTournamentContent(
+   id: string,
+   fields: Omit<typeof tournamentContentTable.$inferInsert, "tournamentId">,
+) {
+   const [content] = await db
+      .insert(tournamentContentTable)
+      .values({
+         tournamentId: id,
+         ...fields,
+      })
+      .onConflictDoUpdate({
+         target: tournamentContentTable.tournamentId,
+         set: fields,
+      })
+      .returning();
+
+   return content;
+}
 
 /**
  * Applies a partial update to a tournament record.
@@ -184,6 +251,37 @@ export const tournamentProcedures = {
          return tournament;
       }),
 
+   getContent: base
+      .route({
+         method: "GET",
+         path: "/tournament/{id}/content",
+         summary: "Get tournament page content",
+         description:
+            "Retrieves public tournament page customization content, including rendered markdown.",
+         tags: ["tournament"],
+      })
+      .input(tournamentIdSchema)
+      .handler(async ({ input }) => {
+         const tournament = await getTournamentById(input.id);
+
+         if (!tournament) {
+            return null;
+         }
+
+         if (!tournament.isPublic && !tournament.isArchived) {
+            return null;
+         }
+
+         const content = await getTournamentContentById(input.id);
+
+         return {
+            content,
+            renderedHtml: await renderSafeTournamentMarkdown(
+               content?.body ?? "",
+            ),
+         };
+      }),
+
    /**
     * Lists public tournaments with pagination.
     *
@@ -304,7 +402,7 @@ export const tournamentProcedures = {
                   });
                }
 
-               await tx.insert(staff).values({
+               await tx.insert(staffTable).values({
                   tournamentId: createdTournament.id,
                   userId: context.user.id,
                   roles: [StaffRole.HOST],
@@ -627,6 +725,220 @@ export const tournamentProcedures = {
          return {
             updated: true as const,
             screeningRequirements,
+         };
+      }),
+
+   getDashboard: authorized
+      .input(tournamentIdSchema)
+      .use(requireCommentator())
+      .handler(async ({ input, context }) => {
+         const tournament = await getTournamentById(input.id);
+
+         if (!tournament) {
+            throw new ORPCError("NOT_FOUND", {
+               message: "Tournament not found",
+            });
+         }
+
+         const [
+            content,
+            screeningRequirements,
+            playerCountResult,
+            teamCountResult,
+            staffCountResult,
+            players,
+            teams,
+            staffMembers,
+            allStaff,
+         ] = await Promise.all([
+            getTournamentContentById(input.id),
+            db
+               .select()
+               .from(screeningRequirementsTable)
+               .where(eq(screeningRequirementsTable.tournamentId, input.id))
+               .limit(1)
+               .then((rows) => rows[0] ?? null),
+            db
+               .select({ count: count() })
+               .from(playerTable)
+               .where(eq(playerTable.tournamentId, input.id))
+               .then((rows) => rows[0]?.count ?? 0),
+            db
+               .select({ count: count() })
+               .from(teamTable)
+               .where(eq(teamTable.tournamentId, input.id))
+               .then((rows) => rows[0]?.count ?? 0),
+            db
+               .select({ count: count() })
+               .from(staffTable)
+               .where(eq(staffTable.tournamentId, input.id))
+               .then((rows) => rows[0]?.count ?? 0),
+            db
+               .select({
+                  id: playerTable.id,
+                  name: userTable.name,
+                  image: userTable.image,
+               })
+               .from(playerTable)
+               .innerJoin(userTable, eq(userTable.id, playerTable.userId))
+               .where(eq(playerTable.tournamentId, input.id))
+               .orderBy(desc(playerTable.createdAt))
+               .limit(18),
+            db
+               .select({
+                  id: teamTable.id,
+                  name: teamTable.name,
+               })
+               .from(teamTable)
+               .where(eq(teamTable.tournamentId, input.id))
+               .orderBy(desc(teamTable.createdAt))
+               .limit(18),
+            db
+               .select({
+                  id: staffTable.id,
+                  name: userTable.name,
+                  image: userTable.image,
+               })
+               .from(staffTable)
+               .innerJoin(userTable, eq(userTable.id, staffTable.userId))
+               .where(eq(staffTable.tournamentId, input.id))
+               .orderBy(desc(staffTable.createdAt))
+               .limit(18),
+            db
+               .select({
+                  roles: staffTable.roles,
+               })
+               .from(staffTable)
+               .where(eq(staffTable.tournamentId, input.id)),
+         ]);
+
+         const roleCounts = Object.values(StaffRole).reduce(
+            (accumulator, role) => {
+               accumulator[role] = 0;
+               return accumulator;
+            },
+            {} as Record<StaffRole, number>,
+         );
+
+         for (const staffMember of allStaff) {
+            for (const role of staffMember.roles) {
+               roleCounts[role] += 1;
+            }
+         }
+
+         return {
+            tournament,
+            content,
+            renderedHtml: await renderSafeTournamentMarkdown(
+               content?.body ?? "",
+            ),
+            screeningRequirements,
+            roles: context.staff.roles,
+            permissions: {
+               canCustomizePage:
+                  context.staff.roles.includes(StaffRole.HOST) ||
+                  context.staff.roles.includes(StaffRole.ADMIN),
+               canManageTournament:
+                  context.staff.roles.includes(StaffRole.HOST) ||
+                  context.staff.roles.includes(StaffRole.ADMIN),
+               canViewStaffInsights: true,
+            },
+            metrics: {
+               playerCount: playerCountResult,
+               teamCount: teamCountResult,
+               staffCount: staffCountResult,
+               playerPreview: players,
+               teamPreview: teams,
+               staffPreview: staffMembers,
+               customizationCoverage: [
+                  {
+                     id: "body",
+                     value: content?.body.trim() ? 1 : 0,
+                  },
+                  {
+                     id: "theme",
+                     value: content?.theme ? 1 : 0,
+                  },
+                  {
+                     id: "font",
+                     value: content?.fontFamily ? 1 : 0,
+                  },
+               ],
+               staffRoleCounts: Object.entries(roleCounts).map(
+                  ([role, total]) => ({
+                     role: role as StaffRole,
+                     total,
+                  }),
+               ),
+            },
+         };
+      }),
+
+   updateContent: authorized
+      .input(updateTournamentContentSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         const { id, ...fields } = input;
+         const hasUpdates = Object.values(fields).some(
+            (value) => value !== undefined,
+         );
+
+         if (!hasUpdates) {
+            return { updated: false as const };
+         }
+
+         const existingContent = await getTournamentContentById(id);
+         const content = await upsertTournamentContent(id, {
+            body: fields.body ?? existingContent?.body ?? "",
+            fontFamily:
+               fields.fontFamily === undefined
+                  ? (existingContent?.fontFamily ?? null)
+                  : fields.fontFamily,
+            theme:
+               fields.theme === undefined
+                  ? (existingContent?.theme ?? null)
+                  : fields.theme,
+         });
+
+         return {
+            updated: true as const,
+            content,
+         };
+      }),
+
+   previewMarkdown: authorized
+      .input(previewTournamentMarkdownSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         return {
+            html: await renderSafeTournamentMarkdown(input.body),
+         };
+      }),
+
+   createContentImageUpload: authorized
+      .input(createTournamentContentImageUploadSchema)
+      .use(requireAdmin())
+      .handler(async ({ input }) => {
+         const fileName = sanitizeFileName(input.fileName);
+         const extension = input.contentType.split("/")[1] ?? "png";
+         const key = `${input.id}/content/${randomUUID()}-${fileName}.${extension}`;
+         const uploadUrl = await tournamentStorage.createPresignedPutUrl(
+            "tournamentMedia",
+            key,
+            {
+               expiresIn: TOURNAMENT_CONTENT_UPLOAD_EXPIRY_SECONDS,
+               contentType: input.contentType,
+            },
+         );
+         const publicUrl = tournamentStorage.getPublicUrl(
+            "tournamentMedia",
+            key,
+         );
+
+         return {
+            uploadUrl,
+            publicUrl,
+            markdown: `![](${publicUrl})`,
          };
       }),
 

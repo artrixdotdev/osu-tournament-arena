@@ -4,6 +4,13 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+   optimizeDeps: {
+      exclude: [
+         "svelte-codemirror-editor",
+         "codemirror",
+         "@codemirror/lang-markdown",
+      ],
+   },
    plugins: [
       sveltekit(),
       paraglideVitePlugin({
@@ -20,6 +27,7 @@ export default defineConfig({
          /^runed/,
          /^@ota\/ui/,
          "svelte-sonner",
+         "svelte-codemirror-editor",
       ],
    },
 });

@@ -32,16 +32,20 @@
       "ui:update": "bunx shadcn-svelte@latest update"
    },
    "dependencies": {
+      "@codemirror/lang-markdown": "^6.5.0",
+      "@jaames/iro": "^5.5.2",
       "class-variance-authority": "^0.7.1",
       "clsx": "^2.1.1",
+      "codemirror": "^6.0.2",
       "color-space": "^2.3.2",
       "radix-ui": "^1.4.3",
-      "sonner": "^2.0.7"
+      "sonner": "^2.0.7",
+      "svelte-codemirror-editor": "^2.1.0"
    },
    "devDependencies": {
       "@hugeicons/core-free-icons": "catalog:",
       "@hugeicons/svelte": "catalog:",
-      "@internationalized/date": "^3.11.0",
+      "@internationalized/date": "^3.12.0",
       "@ota/eslint-config": "workspace:*",
       "@ota/prettier-config": "workspace:*",
       "@ota/svelte-config": "workspace:*",
@@ -49,7 +53,7 @@
       "@sveltejs/kit": "catalog:",
       "@sveltejs/package": "^2.5.0",
       "@sveltejs/vite-plugin-svelte": "catalog:",
-      "bits-ui": "catalog:",
+      "bits-ui": "^2.16.3",
       "eslint": "catalog:",
       "formsnap": "catalog:",
       "mode-watcher": "catalog:",

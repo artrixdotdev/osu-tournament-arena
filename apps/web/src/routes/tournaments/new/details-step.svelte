@@ -188,8 +188,7 @@
       remove: m.common_remove(),
       uploadingImage: m.common_uploadingImage(),
       uploadBannerImage: m.common_uploadBannerImage(),
-      dragAndDropOrClickToChooseFile:
-         m.common_dragAndDropOrClickToChooseFile(),
+      dragAndDropOrClickToChooseFile: m.common_dragAndDropOrClickToChooseFile(),
       clickToUploadOrDragAndDrop: m.common_clickToUploadOrDragAndDrop(),
    };
 
