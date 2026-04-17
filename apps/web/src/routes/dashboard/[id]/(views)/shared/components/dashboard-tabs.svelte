@@ -31,7 +31,7 @@
 </script>
 
 <nav
-   class="border-border bg-background rounded-[1rem] border p-1"
+   class="border-border bg-card rounded-[1.75rem] border p-2"
    aria-label={m.tournamentDashboard_tabs_ariaLabel()}
 >
    <div class="flex flex-wrap gap-2">
@@ -39,9 +39,10 @@
          <Button
             href={tab.href}
             variant={tab.id === activeTab ? "secondary" : "ghost"}
+            size="lg"
             class={tab.id === activeTab
-               ? "rounded-md shadow-none"
-               : "text-muted-foreground rounded-md"}
+               ? "rounded-xl"
+               : "text-muted-foreground hover:bg-muted rounded-xl"}
             aria-current={tab.id === activeTab ? "page" : undefined}
          >
             {getTabLabel(tab.id)}

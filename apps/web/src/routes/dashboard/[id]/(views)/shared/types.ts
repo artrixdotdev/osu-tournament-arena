@@ -10,6 +10,7 @@ export interface DashboardData {
       name: string;
       acronym: string | null;
       description: string | null;
+      bannerUrl: string | null;
       iconUrl: string | null;
       isPublic: boolean;
       isArchived: boolean;

@@ -22,12 +22,9 @@ const POOLING_ROLES = [
 
 const SETTINGS_ROLES = [StaffRole.ADMIN, StaffRole.HOST] as const;
 
-const DASHBOARD_TABS = [
-   { id: "overview" },
-   { id: "gfx" },
-   { id: "pooling" },
-   { id: "settings" },
-] satisfies { id: DashboardTabId }[];
+const DASHBOARD_TABS = DASHBOARD_TAB_IDS.map((id) => ({ id })) satisfies {
+   id: DashboardTabId;
+}[];
 
 function hasAnyRole(roles: StaffRole[], allowedRoles: readonly StaffRole[]) {
    return allowedRoles.some((role) => roles.includes(role));
@@ -45,19 +42,19 @@ export function getDashboardTabHref(
 }
 
 export function getDashboardTabFromPath(pathname: string): DashboardTabId {
-   if (pathname.endsWith("/gfx")) {
-      return "gfx";
+   // Get last / segment
+   const segments = pathname.split("/");
+   const lastSegment = segments[segments.length - 1];
+   // If last segment doesnt exist, return overview
+   if (!lastSegment) {
+      return "overview";
    }
 
-   if (pathname.endsWith("/pooling")) {
-      return "pooling";
+   if (DASHBOARD_TAB_IDS.includes(lastSegment as DashboardTabId)) {
+      return lastSegment as DashboardTabId;
+   } else {
+      return "overview";
    }
-
-   if (pathname.endsWith("/settings")) {
-      return "settings";
-   }
-
-   return "overview";
 }
 
 export function canAccessDashboardTab(
