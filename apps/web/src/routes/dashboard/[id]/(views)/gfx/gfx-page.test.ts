@@ -104,4 +104,48 @@ describe("dashboard gfx page", () => {
          });
       });
    });
+
+   it("saves updated body and font values edited through lazy panels", async () => {
+      render(Page, {
+         props: {
+            data: {
+               dashboard: {
+                  tournament: {
+                     id: "tournament-1",
+                  },
+                  content: null,
+               },
+            } as never,
+            form: undefined,
+            params: {
+               id: "tournament-1",
+            },
+         },
+      });
+
+      await fireEvent.input(await screen.findByLabelText("Body"), {
+         target: { value: "Updated public page" },
+      });
+      await fireEvent.change(
+         await screen.findByLabelText("tournamentDashboard_field_font"),
+         {
+            target: { value: "Inter" },
+         },
+      );
+
+      await fireEvent.click(
+         await screen.findByRole("button", {
+            name: "Save changes",
+         }),
+      );
+
+      await waitFor(() => {
+         expect(updateContent).toHaveBeenCalledWith({
+            id: "tournament-1",
+            body: "Updated public page",
+            fontFamily: "Inter",
+            theme: null,
+         });
+      });
+   });
 });
