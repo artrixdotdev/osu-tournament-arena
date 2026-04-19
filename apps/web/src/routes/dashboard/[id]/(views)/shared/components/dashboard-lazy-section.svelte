@@ -1,33 +1,21 @@
 <script lang="ts">
-   import type { Component } from "svelte";
+   import type { Component, Snippet } from "svelte";
    import { untrack } from "svelte";
    import { m } from "$i18n/messages";
-
-   import type { DashboardThemeState } from "@ota/validators";
 
    import DashboardPanelSkeleton from "./dashboard-panel-skeleton.svelte";
 
    let {
       loader,
       componentProps = {},
-      body = $bindable<string | undefined>(undefined),
-      fontFamily = $bindable<string | undefined>(undefined),
-      radius = $bindable<string | undefined>(undefined),
-      themeMode = $bindable<"light" | "dark" | undefined>(undefined),
-      lightTheme = $bindable<DashboardThemeState | undefined>(undefined),
-      darkTheme = $bindable<DashboardThemeState | undefined>(undefined),
+      children,
       loadingLabel = m.common_loading(),
       skeletonClass = "min-h-[14rem]",
       skeletonLines = 5,
    }: {
       loader: () => Promise<{ default: unknown }>;
       componentProps?: Record<string, unknown>;
-      body?: string;
-      fontFamily?: string;
-      radius?: string;
-      themeMode?: "light" | "dark";
-      lightTheme?: DashboardThemeState;
-      darkTheme?: DashboardThemeState;
+      children?: Snippet<[Component<object>]>;
       loadingLabel?: string;
       skeletonClass?: string;
       skeletonLines?: number;
@@ -39,22 +27,8 @@
 <svelte:boundary>
    {#await sectionPromise then module}
       {@const Section = module.default as Component<object>}
-      {#if body !== undefined}
-         <Section {...componentProps} bind:body />
-      {:else if
-         fontFamily !== undefined ||
-         radius !== undefined ||
-         themeMode !== undefined ||
-         lightTheme !== undefined ||
-         darkTheme !== undefined}
-         <Section
-            {...componentProps}
-            bind:fontFamily
-            bind:radius
-            bind:themeMode
-            bind:lightTheme
-            bind:darkTheme
-         />
+      {#if children}
+         {@render children(Section)}
       {:else}
          <Section {...componentProps} />
       {/if}
