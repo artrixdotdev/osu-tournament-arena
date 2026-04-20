@@ -111,26 +111,34 @@
 <div class="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(22rem,0.8fr)]">
    <DashboardLazySection
       loader={() => import("./components/gfx-editor-panel.svelte")}
-      componentProps={{
-         onPreviewRequest: handlePreviewRequest,
-         onUploadFiles: handleUploadFiles,
-      }}
-      bind:body
       loadingLabel={m.common_loading()}
       skeletonClass="min-h-[42rem]"
-   />
+   >
+      {#snippet children(Section)}
+         <Section
+            bind:body
+            onPreviewRequest={handlePreviewRequest}
+            onUploadFiles={handleUploadFiles}
+         />
+      {/snippet}
+   </DashboardLazySection>
 
    <div class="grid gap-4">
       <DashboardLazySection
          loader={() => import("./components/gfx-theme-panel.svelte")}
-         bind:fontFamily
-         bind:radius
-         bind:themeMode
-         bind:lightTheme
-         bind:darkTheme
          loadingLabel={m.common_loading()}
          skeletonClass="min-h-[24rem]"
-      />
+      >
+         {#snippet children(Section)}
+            <Section
+               bind:fontFamily
+               bind:radius
+               bind:themeMode
+               bind:lightTheme
+               bind:darkTheme
+            />
+         {/snippet}
+      </DashboardLazySection>
 
       <DashboardLazySection
          loader={() => import("./components/gfx-preview-panel.svelte")}
