@@ -37,7 +37,9 @@
          <p class="text-sm font-medium">
             {m.tournamentDashboard_error_sectionLoadFailed()}
          </p>
-         <p class="text-muted-foreground mt-2 text-sm">{error.message}</p>
+         <p class="text-muted-foreground mt-2 text-sm">
+            {error instanceof Error ? error.message : String(error)}
+         </p>
       </div>
    {/await}
 
