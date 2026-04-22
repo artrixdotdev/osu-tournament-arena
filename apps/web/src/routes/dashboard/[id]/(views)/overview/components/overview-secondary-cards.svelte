@@ -1,6 +1,8 @@
 <script lang="ts">
    import { ChartIcon } from "@hugeicons/core-free-icons";
    import { HugeiconsIcon } from "@hugeicons/svelte";
+   import { m } from "$i18n/messages";
+   import { getLocale } from "$i18n/runtime";
 
    import type { DashboardData } from "@ota/validators";
    import * as Avatar from "@ota/ui/components/avatar/index.ts";
@@ -20,14 +22,18 @@
                <p
                   class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
                >
-                  Player list
+                  {m.tournamentDashboard_overview_playerListEyebrow()}
                </p>
                <h2 class="text-2xl font-semibold tracking-[-0.05em]">
-                  Active players
+                  {m.tournamentDashboard_overview_activePlayersTitle()}
                </h2>
             </div>
             <p class="text-muted-foreground text-sm">
-               {dashboard.metrics.playerCount.toLocaleString()} registered
+               {m.tournamentDashboard_overview_registeredCount({
+                  count: dashboard.metrics.playerCount.toLocaleString(
+                     getLocale(),
+                  ),
+               })}
             </p>
          </div>
 
@@ -54,15 +60,11 @@
                            {player.name}
                         </p>
                         <p class="text-muted-foreground text-xs">
-                           Player slot {index + 1}
+                           {m.tournamentDashboard_overview_playerSlot({
+                              index: index + 1,
+                           })}
                         </p>
                      </div>
-                  </div>
-
-                  <div
-                     class="bg-card text-muted-foreground rounded-xl px-3 py-2 text-xs font-medium"
-                  >
-                     Ready
                   </div>
                </div>
             {/each}
@@ -77,10 +79,10 @@
                <p
                   class="text-muted-foreground text-xs tracking-[0.16em] uppercase"
                >
-                  Match activity
+                  {m.tournamentDashboard_overview_matchActivityEyebrow()}
                </p>
                <h2 class="text-2xl font-semibold tracking-[-0.05em]">
-                  Bracket momentum
+                  {m.tournamentDashboard_overview_bracketMomentumTitle()}
                </h2>
             </div>
 
@@ -99,25 +101,31 @@
                   <p
                      class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
                   >
-                     Status
+                     {m.tournamentDashboard_overview_statusLabel()}
                   </p>
-                  <p class="mt-2 text-base font-semibold">Placeholder</p>
+                  <p class="mt-2 text-base font-semibold">
+                     {m.tournamentDashboard_overview_statusPlaceholder()}
+                  </p>
                </div>
                <div class="bg-muted rounded-2xl px-4 py-3">
                   <p
                      class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
                   >
-                     Range
+                     {m.tournamentDashboard_overview_rangeLabel()}
                   </p>
-                  <p class="mt-2 text-base font-semibold">Coming later</p>
+                  <p class="mt-2 text-base font-semibold">
+                     {m.tournamentDashboard_overview_rangePlaceholder()}
+                  </p>
                </div>
                <div class="bg-muted rounded-2xl px-4 py-3">
                   <p
                      class="text-muted-foreground text-xs tracking-[0.14em] uppercase"
                   >
-                     Source
+                     {m.tournamentDashboard_overview_sourceLabel()}
                   </p>
-                  <p class="mt-2 text-base font-semibold">Match data</p>
+                  <p class="mt-2 text-base font-semibold">
+                     {m.tournamentDashboard_overview_sourcePlaceholder()}
+                  </p>
                </div>
             </div>
 
@@ -148,9 +156,15 @@
                <div
                   class="absolute inset-x-5 bottom-5 flex items-center justify-between"
                >
-                  <span class="text-muted-foreground text-xs">Round 1</span>
-                  <span class="text-muted-foreground text-xs">Semis</span>
-                  <span class="text-muted-foreground text-xs">Finals</span>
+                  <span class="text-muted-foreground text-xs">
+                     {m.tournamentDashboard_overview_roundOneLabel()}
+                  </span>
+                  <span class="text-muted-foreground text-xs">
+                     {m.tournamentDashboard_overview_semisLabel()}
+                  </span>
+                  <span class="text-muted-foreground text-xs">
+                     {m.tournamentDashboard_overview_finalsLabel()}
+                  </span>
                </div>
             </div>
          </div>
