@@ -11,14 +11,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       error(404, "Tournament not found");
    }
 
-   const [tournament, pageContent] = await Promise.all([
-      client.tournament.get({
-         id: params.id,
-      }),
-      client.tournament.getContent({
-         id: params.id,
-      }),
-   ]);
+   let tournament;
+   let pageContent;
+
+   try {
+      [tournament, pageContent] = await Promise.all([
+         client.tournament.get({
+            id: params.id,
+         }),
+         client.tournament.getContent({
+            id: params.id,
+         }),
+      ]);
+   } catch {
+      tournament = null;
+      pageContent = null;
+   }
 
    if (tournament) {
       return {
