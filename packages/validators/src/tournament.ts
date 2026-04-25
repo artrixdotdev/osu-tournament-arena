@@ -6,12 +6,22 @@ import {
    StaffRole,
    TOURNAMENT_ACRONYM_MAX_LENGTH,
    TOURNAMENT_PAGE_BODY_MAX_LENGTH,
-   TOURNAMENT_PAGE_FONT_MAX_LENGTH,
    tournament as tournamentTable,
 } from "@ota/db/schema";
 
 const tournamentPageBodyMaxLength = Number(TOURNAMENT_PAGE_BODY_MAX_LENGTH);
-const tournamentPageFontMaxLength = Number(TOURNAMENT_PAGE_FONT_MAX_LENGTH);
+const tournamentPageFontFamilies = [
+   "Readex Pro",
+   "Lora",
+   "JetBrains Mono",
+   "Inter",
+   "Manrope",
+   "Poppins",
+   "Space Grotesk",
+   "Merriweather",
+   "IBM Plex Sans",
+   "Roboto Slab",
+] as const;
 
 const staffRoleLiteral = z.union([
    z.literal(StaffRole.ADMIN),
@@ -291,9 +301,7 @@ export const updateTournamentContentSchema = baseIdSchema.extend({
       .optional()
       .describe("Tournament markdown body content"),
    fontFamily: z
-      .string()
-      .trim()
-      .max(tournamentPageFontMaxLength)
+      .enum(tournamentPageFontFamilies)
       .nullable()
       .optional()
       .describe("Tournament page font family"),
