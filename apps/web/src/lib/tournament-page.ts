@@ -24,6 +24,8 @@ const GOOGLE_FONT_FAMILIES = new Set([
    "Roboto Slab",
 ]);
 
+const TOURNAMENT_FONT_FAMILIES = new Set<string>(TOURNAMENT_FONT_OPTIONS);
+
 function toCssVariableEntries(prefix: string, tokens?: object | null) {
    return Object.entries(tokens ?? {}).flatMap(([key, value]) => {
       if (typeof value !== "string" || !value) {
@@ -57,12 +59,11 @@ export function getTournamentFontStylesheetHref(fontFamily?: string | null) {
 }
 
 export function getTournamentFontStack(fontFamily?: string | null) {
-   if (!fontFamily) {
+   if (!fontFamily || !TOURNAMENT_FONT_FAMILIES.has(fontFamily)) {
       return "var(--font-sans)";
    }
 
-   const trimmed = fontFamily.trim();
-   return `"${trimmed}", var(--font-sans)`;
+   return `"${fontFamily}", var(--font-sans)`;
 }
 
 export function getTournamentMonogram(tournament: {
