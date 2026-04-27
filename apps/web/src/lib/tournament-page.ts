@@ -66,6 +66,23 @@ export function getTournamentFontStack(fontFamily?: string | null) {
    return `"${fontFamily}", var(--font-sans)`;
 }
 
+export function getSafeCssUrl(url: string) {
+   let parsed: URL;
+
+   try {
+      parsed = new URL(url);
+   } catch {
+      return "";
+   }
+
+   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return "";
+   }
+
+   const escapedUrl = url.replace(/["'()\\]/g, encodeURIComponent);
+   return `url("${escapedUrl}")`;
+}
+
 export function getTournamentMonogram(tournament: {
    name: string;
    acronym?: string | null;
