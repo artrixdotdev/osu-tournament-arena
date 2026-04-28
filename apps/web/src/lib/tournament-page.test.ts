@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+   getSafeCssUrl,
    getTournamentFontStack,
    getTournamentFontStylesheetHref,
 } from "./tournament-page";
@@ -19,5 +20,17 @@ describe("tournament page typography", () => {
          "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
       );
       expect(getTournamentFontStylesheetHref("Readex Pro")).toBeNull();
+   });
+});
+
+describe("safe CSS URLs", () => {
+   it("escapes characters that could break out of url()", () => {
+      expect(getSafeCssUrl("https://example.com/banner).png")).toBe(
+         'url("https://example.com/banner%29.png")',
+      );
+   });
+
+   it("rejects non-http protocols", () => {
+      expect(getSafeCssUrl("javascript:alert(1)")).toBe("");
    });
 });
