@@ -1,5 +1,6 @@
 <script lang="ts">
    import { m } from "$i18n/messages";
+   import { getSafeCssUrl } from "$lib/tournament-page";
 
    import {
       Avatar,
@@ -32,19 +33,25 @@
       isPublic,
    }: Props = $props();
 
-   const bannerStyle = $derived.by(() => {
+   const bannerImage = $derived.by(() => {
       if (!media.bannerUrl) {
          return "";
       }
 
-      return `background-image: linear-gradient(180deg, rgb(12 10 18 / 0.08) 0%, rgb(12 10 18 / 0.55) 25%, var(--background) 100%), url(${media.bannerUrl});`;
+      const safeBackgroundUrl = getSafeCssUrl(media.bannerUrl);
+
+      if (!safeBackgroundUrl) {
+         return "";
+      }
+
+      return `linear-gradient(180deg, rgb(12 10 18 / 0.08) 0%, rgb(12 10 18 / 0.55) 25%, var(--background) 100%), ${safeBackgroundUrl}`;
    });
 </script>
 
 <section class="space-y-5">
    <div
       class="bg-card relative isolate min-h-[clamp(20rem,46vw,30rem)] overflow-hidden rounded-3xl"
-      style={bannerStyle}
+      style:background-image={bannerImage}
       style:background-size="cover"
       style:background-position="center"
    >
