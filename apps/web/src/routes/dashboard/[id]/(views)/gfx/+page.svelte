@@ -2,6 +2,8 @@
    import { untrack } from "svelte";
    import { m } from "$i18n/messages";
    import { client } from "$lib/orpc";
+   import { TOURNAMENT_FONT_OPTIONS } from "$lib/tournament-page";
+   import type { TournamentFontFamily } from "$lib/tournament-page";
    import { toast } from "svelte-sonner";
 
    import type { DashboardThemeState } from "@ota/validators";
@@ -13,9 +15,18 @@
    let { data }: PageProps = $props();
    const dashboard = $derived(data.dashboard);
    const initialContent = untrack(() => data.dashboard.content);
+   const tournamentFontOptions = new Set<string>(TOURNAMENT_FONT_OPTIONS);
+
+   function getInitialFontFamily(font?: string | null) {
+      return font && tournamentFontOptions.has(font)
+         ? (font as TournamentFontFamily)
+         : "";
+   }
 
    let body = $state(initialContent?.body ?? "");
-   let fontFamily = $state(initialContent?.fontFamily ?? "");
+   let fontFamily = $state<TournamentFontFamily | "">(
+      getInitialFontFamily(initialContent?.fontFamily),
+   );
    let radius = $state(initialContent?.theme?.radius?.toString() ?? "");
    let lightTheme = $state<DashboardThemeState>(
       initialContent?.theme?.light ?? {},

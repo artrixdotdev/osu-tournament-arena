@@ -14,6 +14,8 @@ export const TOURNAMENT_FONT_OPTIONS = [
    "Roboto Slab",
 ] as const;
 
+export type TournamentFontFamily = (typeof TOURNAMENT_FONT_OPTIONS)[number];
+
 const GOOGLE_FONT_FAMILIES = new Set([
    "Inter",
    "Manrope",

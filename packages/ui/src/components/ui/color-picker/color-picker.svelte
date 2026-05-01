@@ -1,10 +1,3 @@
-<script lang="ts" module>
-   export type {
-      ColorPickerProps,
-      ColorPickerValue,
-   } from "./color-picker.shared.js";
-</script>
-
 <script lang="ts">
    import { IsMobile } from "@ota/ui/hooks/is-mobile.svelte.js";
 
