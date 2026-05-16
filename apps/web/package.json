@@ -9,6 +9,7 @@
       "build": "bunx --bun vite build",
       "preview": "bunx --bun vite preview",
       "prepare": "bun run localize && bunx --bun svelte-kit sync",
+      "test": "bunx --bun vitest run",
       "lint": "bunx --bun svelte-kit sync && bunx --bun svelte-check --tsconfig ./tsconfig.json && eslint .",
       "format": "prettier --write .",
       "check:watch": "bunx --bun svelte-kit sync && bunx --bun svelte-check --tsconfig ./tsconfig.json --watch"
@@ -22,6 +23,7 @@
       "@ota/auth": "workspace:*",
       "@ota/db": "workspace:*",
       "@ota/ui": "workspace:*",
+      "@ota/validators": "workspace:*",
       "better-auth": "catalog:",
       "bits-ui": "catalog:",
       "date-fns": "catalog:",
@@ -41,8 +43,10 @@
       "@ota/tsconfig": "workspace:*",
       "@sveltejs/kit": "catalog:",
       "@sveltejs/vite-plugin-svelte": "catalog:",
+      "@testing-library/svelte": "^5.3.1",
       "@types/node": "catalog:",
       "eslint": "catalog:",
+      "jsdom": "^29.0.2",
       "prettier": "catalog:",
       "svelte": "catalog:",
       "svelte-check": "catalog:",
@@ -52,6 +56,7 @@
       "tw-animate-css": "catalog:",
       "typescript": "catalog:",
       "vite": "catalog:",
+      "vitest": "^4.1.4",
       "wrangler": "4.53.0"
    },
    "prettier": "@ota/prettier-config"

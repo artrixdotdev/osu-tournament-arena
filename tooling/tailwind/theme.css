@@ -11,6 +11,7 @@
 
 @custom-variant dark (&: is(.dark *));
 
+@plugin "@tailwindcss/typography";
 :root {
    --background: oklch(0.9777 0.0041 301.4256);
    --foreground: oklch(0.3651 0.0325 287.0807);
@@ -193,4 +194,8 @@ body {
    letter-spacing: var(--tracking-normal);
    background: var(--background);
    color: var(--foreground);
+}
+
+.prose {
+   @apply text-foreground!;
 }
